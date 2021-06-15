@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,21 +46,21 @@ public class BrokenInputStreamTest {
             stream.read();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
 
         try {
             stream.read(new byte[1]);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
 
         try {
             stream.read(new byte[1], 0, 1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -71,7 +70,7 @@ public class BrokenInputStreamTest {
             stream.available();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -81,7 +80,7 @@ public class BrokenInputStreamTest {
             stream.skip(1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -91,7 +90,7 @@ public class BrokenInputStreamTest {
             stream.reset();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -101,7 +100,7 @@ public class BrokenInputStreamTest {
             stream.close();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 

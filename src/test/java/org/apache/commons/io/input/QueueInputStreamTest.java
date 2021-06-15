@@ -17,7 +17,7 @@
 package org.apache.commons.io.input;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
@@ -29,7 +29,6 @@ import java.io.InterruptedIOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.QueueOutputStream;
 import org.apache.commons.io.output.QueueOutputStreamTest;
@@ -68,7 +67,7 @@ public class QueueInputStreamTest {
                 final QueueOutputStream outputStream = inputStream.newQueueOutputStream()) {
             writeUnbuffered(outputStream, inputData);
             final String actualData = readUnbuffered(inputStream);
-            assertEquals(inputData, actualData);
+            assertThat(actualData).isEqualTo(inputData);
         }
     }
 
@@ -80,7 +79,7 @@ public class QueueInputStreamTest {
                 final QueueOutputStream outputStream = new QueueOutputStream(queue)) {
             outputStream.write(inputData.getBytes(UTF_8));
             final String actualData = IOUtils.toString(inputStream, UTF_8);
-            assertEquals(inputData, actualData);
+            assertThat(actualData).isEqualTo(inputData);
         }
     }
 
@@ -93,7 +92,7 @@ public class QueueInputStreamTest {
             outputStream.write(inputData.getBytes(UTF_8));
             outputStream.flush();
             final String actualData = readUnbuffered(inputStream);
-            assertEquals(inputData, actualData);
+            assertThat(actualData).isEqualTo(inputData);
         }
     }
 
@@ -106,7 +105,7 @@ public class QueueInputStreamTest {
             outputStream.write(inputData.getBytes(UTF_8));
             outputStream.flush();
             final String dataCopy = IOUtils.toString(inputStream, UTF_8);
-            assertEquals(inputData, dataCopy);
+            assertThat(dataCopy).isEqualTo(inputData);
         }
     }
 

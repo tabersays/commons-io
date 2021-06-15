@@ -17,11 +17,9 @@
 
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,8 +50,8 @@ public class IOExceptionWithCauseTestCase {
     }
 
     void validate(final Throwable throwable, final Throwable expectedCause, final String expectedMessage) {
-        assertEquals(expectedMessage, throwable.getMessage());
-        assertEquals(expectedCause, throwable.getCause());
-        assertSame(expectedCause, throwable.getCause());
+        assertThat(throwable.getMessage()).isEqualTo(expectedMessage);
+        assertThat(throwable.getCause()).isEqualTo(expectedCause);
+        assertThat(throwable.getCause()).isSameAs(expectedCause);
     }
 }

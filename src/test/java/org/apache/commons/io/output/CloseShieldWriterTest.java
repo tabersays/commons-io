@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -24,7 +24,6 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.Writer;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,8 +48,8 @@ public class CloseShieldWriterTest {
         verify(original, never()).close();
         assertThrows(IOException.class, () -> shielded.write('x'), "write(c)");
         original.write('y');
-        assertEquals(1, original.getBuilder().length());
-        assertEquals('y', original.toString().charAt(0));
+        assertThat(original.getBuilder().length()).isEqualTo(1);
+        assertThat(original.toString().charAt(0)).isEqualTo('y');
     }
 
 }

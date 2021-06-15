@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Test;
 
 public class UnixLineEndingInputStreamTest
@@ -29,48 +28,48 @@ public class UnixLineEndingInputStreamTest
 
     @Test
     public void simpleString() throws Exception {
-        assertEquals( "abc\n", roundtrip( "abc" ) );
+        assertThat(roundtrip("abc")).isEqualTo("abc\n");
     }
 
     @Test
     public void inTheMiddleOfTheLine() throws Exception {
-        assertEquals( "a\nbc\n", roundtrip( "a\r\nbc" ) );
+        assertThat(roundtrip("a\r\nbc")).isEqualTo("a\nbc\n");
     }
 
     @Test
     public void multipleBlankLines() throws Exception {
-        assertEquals( "a\n\nbc\n", roundtrip( "a\r\n\r\nbc" ) );
+        assertThat(roundtrip("a\r\n\r\nbc")).isEqualTo("a\n\nbc\n");
     }
 
     @Test
     public void twoLinesAtEnd() throws Exception {
-        assertEquals( "a\n\n", roundtrip( "a\r\n\r\n" ) );
+        assertThat(roundtrip("a\r\n\r\n")).isEqualTo("a\n\n");
     }
 
     @Test
     public void crOnlyEnsureAtEof()
         throws Exception
     {
-        assertEquals( "a\nb\n", roundtrip( "a\rb" ) );
+        assertThat(roundtrip("a\rb")).isEqualTo("a\nb\n");
     }
 
     @Test
     public void crOnlyNotAtEof()
         throws Exception
     {
-        assertEquals( "a\nb", roundtrip( "a\rb", false ) );
+        assertThat(roundtrip("a\rb", false)).isEqualTo("a\nb");
     }
 
     @Test
     public void crAtEnd() throws Exception {
-        assertEquals( "a\n", roundtrip( "a\r" ) );
+        assertThat(roundtrip("a\r")).isEqualTo("a\n");
     }
 
 
     @Test
     public void retainLineFeed() throws Exception {
-        assertEquals( "a\n\n", roundtrip( "a\r\n\r\n", false ) );
-        assertEquals( "a", roundtrip( "a", false ) );
+        assertThat(roundtrip("a\r\n\r\n", false)).isEqualTo("a\n\n");
+        assertThat(roundtrip("a", false)).isEqualTo("a");
     }
 
     private String roundtrip( final String msg ) throws IOException {

@@ -17,16 +17,13 @@
 
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.EOFException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -39,14 +36,14 @@ public class IOExceptionListTestCase {
         final EOFException cause = new EOFException();
         final List<EOFException> list = Collections.singletonList(cause);
         final IOExceptionList sqlExceptionList = new IOExceptionList(list);
-        assertEquals(cause, sqlExceptionList.getCause());
-        assertEquals(cause, sqlExceptionList.getCause(0));
-        assertEquals(list, sqlExceptionList.getCauseList());
-        assertEquals(list, sqlExceptionList.getCauseList(EOFException.class));
-        assertEquals(cause, sqlExceptionList.getCause(0, EOFException.class));
+        assertThat(sqlExceptionList.getCause()).isEqualTo(cause);
+        assertThat(sqlExceptionList.getCause(0)).isEqualTo(cause);
+        assertThat(sqlExceptionList.getCauseList()).isEqualTo(list);
+        assertThat(sqlExceptionList.getCauseList(EOFException.class)).isEqualTo(list);
+        assertThat(sqlExceptionList.getCause(0, EOFException.class)).isEqualTo(cause);
         // No CCE:
         final List<EOFException> causeList = sqlExceptionList.getCauseList();
-        assertEquals(list, causeList);
+        assertThat(causeList).isEqualTo(list);
     }
 
     @Test
@@ -54,23 +51,23 @@ public class IOExceptionListTestCase {
         final EOFException cause = new EOFException();
         final List<EOFException> list = Collections.singletonList(cause);
         final IOExceptionList sqlExceptionList = new IOExceptionList("Hello", list);
-        assertEquals("Hello", sqlExceptionList.getMessage());
+        assertThat(sqlExceptionList.getMessage()).isEqualTo("Hello");
         //
-        assertEquals(cause, sqlExceptionList.getCause());
-        assertEquals(cause, sqlExceptionList.getCause(0));
-        assertEquals(list, sqlExceptionList.getCauseList());
-        assertEquals(list, sqlExceptionList.getCauseList(EOFException.class));
-        assertEquals(cause, sqlExceptionList.getCause(0, EOFException.class));
+        assertThat(sqlExceptionList.getCause()).isEqualTo(cause);
+        assertThat(sqlExceptionList.getCause(0)).isEqualTo(cause);
+        assertThat(sqlExceptionList.getCauseList()).isEqualTo(list);
+        assertThat(sqlExceptionList.getCauseList(EOFException.class)).isEqualTo(list);
+        assertThat(sqlExceptionList.getCause(0, EOFException.class)).isEqualTo(cause);
         // No CCE:
         final List<EOFException> causeList = sqlExceptionList.getCauseList();
-        assertEquals(list, causeList);
+        assertThat(causeList).isEqualTo(list);
     }
 
     @Test
     public void testNullCause() {
         final IOExceptionList sqlExceptionList = new IOExceptionList(null);
-        assertNull(sqlExceptionList.getCause());
-        assertTrue(sqlExceptionList.getCauseList().isEmpty());
+        assertThat(sqlExceptionList.getCause()).isNull();
+        assertThat(sqlExceptionList.getCauseList().isEmpty()).isTrue();
     }
 
     @Test
@@ -82,7 +79,7 @@ public class IOExceptionListTestCase {
         final PrintWriter pw = new PrintWriter(sw);
         sqlExceptionList.printStackTrace(pw);
         final String st = sw.toString();
-        assertTrue(st.startsWith("org.apache.commons.io.IOExceptionList: 1 exceptions: [java.io.EOFException]"));
-        assertTrue(st.contains("Caused by: java.io.EOFException"));
+        assertThat(st.startsWith("org.apache.commons.io.IOExceptionList: 1 exceptions: [java.io.EOFException]")).isTrue();
+        assertThat(st.contains("Caused by: java.io.EOFException")).isTrue();
     }
 }

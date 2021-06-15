@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -25,7 +24,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Random;
-
 import org.apache.commons.io.input.DemuxInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.DemuxOutputStream;
@@ -53,14 +51,14 @@ public class DemuxTestCase {
     private String getOutput(final String threadName) {
         final ByteArrayOutputStream output =
                 outputMap.get(threadName);
-        assertNotNull(output, "getOutput()");
+        assertThat(output).as("getOutput()").isNotNull();
 
         return output.toString(StandardCharsets.UTF_8);
     }
 
     private String getInput(final String threadName) {
         final ReaderThread thread = (ReaderThread) threadMap.get(threadName);
-        assertNotNull(thread, "getInput()");
+        assertThat(thread).as("getInput()").isNotNull();
 
         return thread.getData();
     }
@@ -110,10 +108,10 @@ public class DemuxTestCase {
         doStart();
         doJoin();
 
-        assertEquals(DATA1, getOutput(T1), "Data1");
-        assertEquals(DATA2, getOutput(T2), "Data2");
-        assertEquals(DATA3, getOutput(T3), "Data3");
-        assertEquals(DATA4, getOutput(T4), "Data4");
+        assertThat(getOutput(T1)).as("Data1").isEqualTo(DATA1);
+        assertThat(getOutput(T2)).as("Data2").isEqualTo(DATA2);
+        assertThat(getOutput(T3)).as("Data3").isEqualTo(DATA3);
+        assertThat(getOutput(T4)).as("Data4").isEqualTo(DATA4);
     }
 
     @Test
@@ -128,10 +126,10 @@ public class DemuxTestCase {
         doStart();
         doJoin();
 
-        assertEquals(DATA1, getInput(T1), "Data1");
-        assertEquals(DATA2, getInput(T2), "Data2");
-        assertEquals(DATA3, getInput(T3), "Data3");
-        assertEquals(DATA4, getInput(T4), "Data4");
+        assertThat(getInput(T1)).as("Data1").isEqualTo(DATA1);
+        assertThat(getInput(T2)).as("Data2").isEqualTo(DATA2);
+        assertThat(getInput(T3)).as("Data3").isEqualTo(DATA3);
+        assertThat(getInput(T4)).as("Data4").isEqualTo(DATA4);
     }
 
     private static class ReaderThread

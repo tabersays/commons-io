@@ -16,14 +16,13 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
 
 public class WriterOutputStreamTest {
@@ -48,7 +47,7 @@ public class WriterOutputStreamTest {
                 out.write(b);
             }
         }
-        assertEquals(testString, writer.toString());
+        assertThat(writer.toString()).isEqualTo(testString);
     }
 
     private void testWithBufferedWrite(final String testString, final String charsetName) throws IOException {
@@ -62,7 +61,7 @@ public class WriterOutputStreamTest {
                 offset += length;
             }
         }
-        assertEquals(testString, writer.toString());
+        assertThat(writer.toString()).isEqualTo(testString);
     }
 
     @Test
@@ -133,9 +132,9 @@ public class WriterOutputStreamTest {
         final StringWriter writer = new StringWriter();
         try (final WriterOutputStream out = new WriterOutputStream(writer, "us-ascii", 1024, false)) {
             out.write("abc".getBytes(StandardCharsets.US_ASCII));
-            assertEquals(0, writer.getBuffer().length());
+            assertThat(writer.getBuffer().length()).isEqualTo(0);
             out.flush();
-            assertEquals("abc", writer.toString());
+            assertThat(writer.toString()).isEqualTo("abc");
         }
     }
 
@@ -144,7 +143,7 @@ public class WriterOutputStreamTest {
         final StringWriter writer = new StringWriter();
         try (final WriterOutputStream out = new WriterOutputStream(writer, "us-ascii", 1024, true)) {
             out.write("abc".getBytes(StandardCharsets.US_ASCII));
-            assertEquals("abc", writer.toString());
+            assertThat(writer.toString()).isEqualTo("abc");
         }
     }
 }

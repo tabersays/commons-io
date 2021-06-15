@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
 
 public class MessageDigestCalculatingInputStreamTest {
@@ -42,7 +41,7 @@ public class MessageDigestCalculatingInputStreamTest {
                     new MessageDigestCalculatingInputStream(new ByteArrayInputStream(buffer))) {
                 md5InputStream.consume();
                 final byte[] got = md5InputStream.getMessageDigest().digest();
-                assertArrayEquals(expect, got);
+                assertThat(got).containsExactly(expect);
             }
         }
     }

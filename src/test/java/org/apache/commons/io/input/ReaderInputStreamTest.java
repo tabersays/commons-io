@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -25,7 +24,6 @@ import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
 
 public class ReaderInputStreamTest {
@@ -47,11 +45,11 @@ public class ReaderInputStreamTest {
         try (final ReaderInputStream in = new ReaderInputStream(new StringReader(testString), charsetName)) {
             for (final byte b : bytes) {
                 final int read = in.read();
-                assertTrue(read >= 0);
-                assertTrue(read <= 255);
-                assertEquals(b, (byte) read);
+                assertThat(read >= 0).isTrue();
+                assertThat(read <= 255).isTrue();
+                assertThat((byte) read).isEqualTo(b);
             }
-            assertEquals(-1, in.read());
+            assertThat(in.read()).isEqualTo(-1);
         }
     }
 
@@ -65,13 +63,13 @@ public class ReaderInputStreamTest {
                 final int bufferLength = random.nextInt(64);
                 int read = in.read(buffer, bufferOffset, bufferLength);
                 if (read == -1) {
-                    assertEquals(offset, expected.length);
+                    assertThat(expected.length).isEqualTo(offset);
                     break;
                 }
-                assertTrue(read <= bufferLength);
+                assertThat(read <= bufferLength).isTrue();
                 while (read > 0) {
-                    assertTrue(offset < expected.length);
-                    assertEquals(expected[offset], buffer[bufferOffset]);
+                    assertThat(offset < expected.length).isTrue();
+                    assertThat(buffer[bufferOffset]).isEqualTo(expected[offset]);
                     offset++;
                     bufferOffset++;
                     read--;
@@ -111,10 +109,10 @@ public class ReaderInputStreamTest {
         final String inStr = "test";
         try (final ReaderInputStream inputStream = new ReaderInputStream(new StringReader(inStr))) {
             final byte[] bytes = new byte[30];
-            assertEquals(0, inputStream.read(bytes, 0, 0));
-            assertEquals(inStr.length(), inputStream.read(bytes, 0, inStr.length() + 1));
+            assertThat(inputStream.read(bytes, 0, 0)).isEqualTo(0);
+            assertThat(inputStream.read(bytes, 0, inStr.length() + 1)).isEqualTo(inStr.length());
             // Should always return 0 for length == 0
-            assertEquals(0, inputStream.read(bytes, 0, 0));
+            assertThat(inputStream.read(bytes, 0, 0)).isEqualTo(0);
         }
     }
 
@@ -124,10 +122,10 @@ public class ReaderInputStreamTest {
         try (final ReaderInputStream inputStream = new ReaderInputStream(new StringReader(""))) {
             final byte[] bytes = new byte[30];
             // Should always return 0 for length == 0
-            assertEquals(0, inputStream.read(bytes, 0, 0));
-            assertEquals(-1, inputStream.read(bytes, 0, 1));
-            assertEquals(0, inputStream.read(bytes, 0, 0));
-            assertEquals(-1, inputStream.read(bytes, 0, 1));
+            assertThat(inputStream.read(bytes, 0, 0)).isEqualTo(0);
+            assertThat(inputStream.read(bytes, 0, 1)).isEqualTo(-1);
+            assertThat(inputStream.read(bytes, 0, 0)).isEqualTo(0);
+            assertThat(inputStream.read(bytes, 0, 1)).isEqualTo(-1);
         }
     }
 

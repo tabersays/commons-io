@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-
 import org.apache.commons.io.file.PathUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -44,8 +43,8 @@ public class FileUtilsCopyDirectoryToDirectoryTestCase {
             FileUtils.copyDirectoryToDirectory(srcDir, destDir);
         } catch (final Exception e) {
             final String msg = e.getMessage();
-            assertEquals(expectedExceptionType, e.getClass());
-            assertEquals(expectedMessage, msg);
+            assertThat(e.getClass()).isEqualTo(expectedExceptionType);
+            assertThat(msg).isEqualTo(expectedMessage);
             return;
         }
         fail();
@@ -56,7 +55,7 @@ public class FileUtilsCopyDirectoryToDirectoryTestCase {
     public File temporaryFolder;
 
     private void assertAclEntryList(final Path sourcePath, final Path destPath) throws IOException {
-        assertEquals(PathUtils.getAclEntryList(sourcePath), PathUtils.getAclEntryList(destPath));
+        assertThat(PathUtils.getAclEntryList(destPath)).isEqualTo(PathUtils.getAclEntryList(sourcePath));
     }
 
     @Test

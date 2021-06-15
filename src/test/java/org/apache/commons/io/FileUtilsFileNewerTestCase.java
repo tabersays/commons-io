@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedOutputStream;
@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-
 import org.apache.commons.io.test.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -132,14 +131,14 @@ public class FileUtilsFileNewerTestCase {
      * @see FileUtils#isFileNewer(File, File)
      */
     protected void testIsFileNewer(final String description, final File file, final long time, final boolean wantedResult) throws IOException  {
-        assertEquals(wantedResult, FileUtils.isFileNewer(file, time), description + " - time");
-        assertEquals(wantedResult, FileUtils.isFileNewer(file, new Date(time)), description + " - date");
+        assertThat(FileUtils.isFileNewer(file, time)).as(description + " - time").isEqualTo(wantedResult);
+        assertThat(FileUtils.isFileNewer(file, new Date(time))).as(description + " - date").isEqualTo(wantedResult);
 
         final File temporaryFile = testFile2;
 
         temporaryFile.setLastModified(time);
-        assertEquals(time, FileUtils.lastModified(temporaryFile), "The temporary file hasn't the right last modification date");
-        assertEquals(wantedResult, FileUtils.isFileNewer(file, temporaryFile), description + " - file");
+        assertThat(FileUtils.lastModified(temporaryFile)).as("The temporary file hasn't the right last modification date").isEqualTo(time);
+        assertThat(FileUtils.isFileNewer(file, temporaryFile)).as(description + " - file").isEqualTo(wantedResult);
     }
 
     /**

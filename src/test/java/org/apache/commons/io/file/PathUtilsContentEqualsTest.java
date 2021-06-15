@@ -17,8 +17,7 @@
 
 package org.apache.commons.io.file;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -44,14 +42,14 @@ public class PathUtilsContentEqualsTest {
         // Non-existent files
         final Path path1 = new File(temporaryFolder, getName()).toPath();
         final Path path2 = new File(temporaryFolder, getName() + "2").toPath();
-        assertTrue(PathUtils.fileContentEquals(null, null));
-        assertFalse(PathUtils.fileContentEquals(null, path1));
-        assertFalse(PathUtils.fileContentEquals(path1, null));
+        assertThat(PathUtils.fileContentEquals(null, null)).isTrue();
+        assertThat(PathUtils.fileContentEquals(null, path1)).isFalse();
+        assertThat(PathUtils.fileContentEquals(path1, null)).isFalse();
         // both don't exist
-        assertTrue(PathUtils.fileContentEquals(path1, path1));
-        assertTrue(PathUtils.fileContentEquals(path1, path2));
-        assertTrue(PathUtils.fileContentEquals(path2, path2));
-        assertTrue(PathUtils.fileContentEquals(path2, path1));
+        assertThat(PathUtils.fileContentEquals(path1, path1)).isTrue();
+        assertThat(PathUtils.fileContentEquals(path1, path2)).isTrue();
+        assertThat(PathUtils.fileContentEquals(path2, path2)).isTrue();
+        assertThat(PathUtils.fileContentEquals(path2, path1)).isTrue();
 
         // Directories
         try {
@@ -74,19 +72,19 @@ public class PathUtilsContentEqualsTest {
         objFile2.toFile().deleteOnExit();
         PathUtils.copyFile(getClass().getResource("/java/util/Collection.class"), objFile2);
 
-        assertFalse(PathUtils.fileContentEquals(objFile1, objFile2));
-        assertFalse(PathUtils.fileContentEquals(objFile1b, objFile2));
-        assertTrue(PathUtils.fileContentEquals(objFile1, objFile1b));
+        assertThat(PathUtils.fileContentEquals(objFile1, objFile2)).isFalse();
+        assertThat(PathUtils.fileContentEquals(objFile1b, objFile2)).isFalse();
+        assertThat(PathUtils.fileContentEquals(objFile1, objFile1b)).isTrue();
 
-        assertTrue(PathUtils.fileContentEquals(objFile1, objFile1));
-        assertTrue(PathUtils.fileContentEquals(objFile1b, objFile1b));
-        assertTrue(PathUtils.fileContentEquals(objFile2, objFile2));
+        assertThat(PathUtils.fileContentEquals(objFile1, objFile1)).isTrue();
+        assertThat(PathUtils.fileContentEquals(objFile1b, objFile1b)).isTrue();
+        assertThat(PathUtils.fileContentEquals(objFile2, objFile2)).isTrue();
 
         // Equal files
         Files.createFile(path1);
         Files.createFile(path2);
-        assertTrue(PathUtils.fileContentEquals(path1, path1));
-        assertTrue(PathUtils.fileContentEquals(path1, path2));
+        assertThat(PathUtils.fileContentEquals(path1, path1)).isTrue();
+        assertThat(PathUtils.fileContentEquals(path1, path2)).isTrue();
     }
 
     @Test
@@ -94,54 +92,54 @@ public class PathUtilsContentEqualsTest {
         // Non-existent files
         final Path path1 = new File(temporaryFolder, getName()).toPath();
         final Path path2 = new File(temporaryFolder, getName() + "2").toPath();
-        assertTrue(PathUtils.directoryContentEquals(null, null));
-        assertFalse(PathUtils.directoryContentEquals(null, path1));
-        assertFalse(PathUtils.directoryContentEquals(path1, null));
+        assertThat(PathUtils.directoryContentEquals(null, null)).isTrue();
+        assertThat(PathUtils.directoryContentEquals(null, path1)).isFalse();
+        assertThat(PathUtils.directoryContentEquals(path1, null)).isFalse();
         // both don't exist
-        assertTrue(PathUtils.directoryContentEquals(path1, path1));
-        assertTrue(PathUtils.directoryContentEquals(path1, path2));
-        assertTrue(PathUtils.directoryContentEquals(path2, path2));
-        assertTrue(PathUtils.directoryContentEquals(path2, path1));
+        assertThat(PathUtils.directoryContentEquals(path1, path1)).isTrue();
+        assertThat(PathUtils.directoryContentEquals(path1, path2)).isTrue();
+        assertThat(PathUtils.directoryContentEquals(path2, path2)).isTrue();
+        assertThat(PathUtils.directoryContentEquals(path2, path1)).isTrue();
         // Tree equals true tests
         {
             // Trees of files only that contain the same files.
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-files-only/directory-files-only1");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-files-only/directory-files-only2");
-            assertTrue(PathUtils.directoryContentEquals(dir1, dir2));
-            assertTrue(PathUtils.directoryContentEquals(dir2, dir2));
-            assertTrue(PathUtils.directoryContentEquals(dir1, dir1));
-            assertTrue(PathUtils.directoryContentEquals(dir2, dir2));
+            assertThat(PathUtils.directoryContentEquals(dir1, dir2)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir2, dir2)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir1, dir1)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir2, dir2)).isTrue();
         }
         {
             // Trees of directories containing other directories.
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-then-files/dir1");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-then-files/dir2");
-            assertTrue(PathUtils.directoryContentEquals(dir1, dir2));
-            assertTrue(PathUtils.directoryContentEquals(dir2, dir2));
-            assertTrue(PathUtils.directoryContentEquals(dir1, dir1));
-            assertTrue(PathUtils.directoryContentEquals(dir2, dir2));
+            assertThat(PathUtils.directoryContentEquals(dir1, dir2)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir2, dir2)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir1, dir1)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir2, dir2)).isTrue();
         }
         {
             // Trees of directories containing other directories and files.
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files/dirs-and-files1");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files/dirs-and-files1");
-            assertTrue(PathUtils.directoryContentEquals(dir1, dir2));
-            assertTrue(PathUtils.directoryContentEquals(dir2, dir2));
-            assertTrue(PathUtils.directoryContentEquals(dir1, dir1));
-            assertTrue(PathUtils.directoryContentEquals(dir2, dir2));
+            assertThat(PathUtils.directoryContentEquals(dir1, dir2)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir2, dir2)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir1, dir1)).isTrue();
+            assertThat(PathUtils.directoryContentEquals(dir2, dir2)).isTrue();
         }
         // Tree equals false tests
         {
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files/dirs-and-files1/directory-files-only1");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files/dirs-and-files1/");
-            assertFalse(PathUtils.directoryContentEquals(dir1, dir2));
-            assertFalse(PathUtils.directoryContentEquals(dir2, dir1));
+            assertThat(PathUtils.directoryContentEquals(dir1, dir2)).isFalse();
+            assertThat(PathUtils.directoryContentEquals(dir2, dir1)).isFalse();
         }
         {
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-then-files");
-            assertFalse(PathUtils.directoryContentEquals(dir1, dir2));
-            assertFalse(PathUtils.directoryContentEquals(dir2, dir1));
+            assertThat(PathUtils.directoryContentEquals(dir1, dir2)).isFalse();
+            assertThat(PathUtils.directoryContentEquals(dir2, dir1)).isFalse();
         }
     }
 
@@ -150,54 +148,54 @@ public class PathUtilsContentEqualsTest {
         // Non-existent files
         final Path path1 = new File(temporaryFolder, getName()).toPath();
         final Path path2 = new File(temporaryFolder, getName() + "2").toPath();
-        assertTrue(PathUtils.directoryAndFileContentEquals(null, null));
-        assertFalse(PathUtils.directoryAndFileContentEquals(null, path1));
-        assertFalse(PathUtils.directoryAndFileContentEquals(path1, null));
+        assertThat(PathUtils.directoryAndFileContentEquals(null, null)).isTrue();
+        assertThat(PathUtils.directoryAndFileContentEquals(null, path1)).isFalse();
+        assertThat(PathUtils.directoryAndFileContentEquals(path1, null)).isFalse();
         // both don't exist
-        assertTrue(PathUtils.directoryAndFileContentEquals(path1, path1));
-        assertTrue(PathUtils.directoryAndFileContentEquals(path1, path2));
-        assertTrue(PathUtils.directoryAndFileContentEquals(path2, path2));
-        assertTrue(PathUtils.directoryAndFileContentEquals(path2, path1));
+        assertThat(PathUtils.directoryAndFileContentEquals(path1, path1)).isTrue();
+        assertThat(PathUtils.directoryAndFileContentEquals(path1, path2)).isTrue();
+        assertThat(PathUtils.directoryAndFileContentEquals(path2, path2)).isTrue();
+        assertThat(PathUtils.directoryAndFileContentEquals(path2, path1)).isTrue();
         // Tree equals true tests
         {
             // Trees of files only that contain the same files.
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-files-only/directory-files-only1");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-files-only/directory-files-only2");
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir1, dir2));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir2, dir2));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir1, dir1));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir2, dir2));
+            assertThat(PathUtils.directoryAndFileContentEquals(dir1, dir2)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir2, dir2)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir1, dir1)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir2, dir2)).isTrue();
         }
         {
             // Trees of directories containing other directories.
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-then-files/dir1");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-then-files/dir2");
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir1, dir2));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir2, dir2));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir1, dir1));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir2, dir2));
+            assertThat(PathUtils.directoryAndFileContentEquals(dir1, dir2)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir2, dir2)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir1, dir1)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir2, dir2)).isTrue();
         }
         {
             // Trees of directories containing other directories and files.
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files/dirs-and-files1");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files/dirs-and-files1");
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir1, dir2));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir2, dir2));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir1, dir1));
-            assertTrue(PathUtils.directoryAndFileContentEquals(dir2, dir2));
+            assertThat(PathUtils.directoryAndFileContentEquals(dir1, dir2)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir2, dir2)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir1, dir1)).isTrue();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir2, dir2)).isTrue();
         }
         // Tree equals false tests
         {
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files/dirs-and-files1/directory-files-only1");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files/dirs-and-files1/");
-            assertFalse(PathUtils.directoryAndFileContentEquals(dir1, dir2));
-            assertFalse(PathUtils.directoryAndFileContentEquals(dir2, dir1));
+            assertThat(PathUtils.directoryAndFileContentEquals(dir1, dir2)).isFalse();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir2, dir1)).isFalse();
         }
         {
             final Path dir1 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-and-files");
             final Path dir2 = Paths.get("src/test/resources/dir-equals-tests/dir-equals-dirs-then-files");
-            assertFalse(PathUtils.directoryAndFileContentEquals(dir1, dir2));
-            assertFalse(PathUtils.directoryAndFileContentEquals(dir2, dir1));
+            assertThat(PathUtils.directoryAndFileContentEquals(dir1, dir2)).isFalse();
+            assertThat(PathUtils.directoryAndFileContentEquals(dir2, dir1)).isFalse();
         }
     }
 

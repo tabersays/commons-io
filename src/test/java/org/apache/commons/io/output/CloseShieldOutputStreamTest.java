@@ -16,13 +16,11 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,11 +50,11 @@ public class CloseShieldOutputStreamTest {
     @Test
     public void testClose() throws IOException {
         shielded.close();
-        assertFalse(closed, "closed");
+        assertThat(closed).as("closed").isFalse();
         assertThrows(IOException.class, () -> shielded.write('x'), "write(b)");
         original.write('y');
-        assertEquals(1, original.size());
-        assertEquals('y', original.toByteArray()[0]);
+        assertThat(original.size()).isEqualTo(1);
+        assertThat(original.toByteArray()[0]).isEqualTo('y');
     }
 
 }

@@ -20,11 +20,9 @@ package org.apache.commons.io;
 import static org.apache.commons.io.StandardLineSeparator.CR;
 import static org.apache.commons.io.StandardLineSeparator.CRLF;
 import static org.apache.commons.io.StandardLineSeparator.LF;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -34,32 +32,32 @@ public class StandardLineSeparatorTest {
 
     @Test
     public void testCR() {
-        assertEquals("\r", CR.getString());
+        assertThat(CR.getString()).isEqualTo("\r");
     }
 
     @Test
     public void testCR_getBytes() {
-        assertArrayEquals("\r".getBytes(StandardCharsets.ISO_8859_1), CR.getBytes(StandardCharsets.ISO_8859_1));
+        assertThat(CR.getBytes(StandardCharsets.ISO_8859_1)).containsExactly("\r".getBytes(StandardCharsets.ISO_8859_1));
     }
 
     @Test
     public void testCRLF() {
-        assertEquals("\r\n", CRLF.getString());
+        assertThat(CRLF.getString()).isEqualTo("\r\n");
     }
 
     @Test
     public void testCRLF_getBytes() {
-        assertArrayEquals("\r\n".getBytes(StandardCharsets.ISO_8859_1), CRLF.getBytes(StandardCharsets.ISO_8859_1));
+        assertThat(CRLF.getBytes(StandardCharsets.ISO_8859_1)).containsExactly("\r\n".getBytes(StandardCharsets.ISO_8859_1));
     }
 
     @Test
     public void testLF() {
-        assertEquals("\n", LF.getString());
+        assertThat(LF.getString()).isEqualTo("\n");
     }
 
     @Test
     public void testLF_getBytes() {
-        assertArrayEquals("\n".getBytes(StandardCharsets.ISO_8859_1), LF.getBytes(StandardCharsets.ISO_8859_1));
+        assertThat(LF.getBytes(StandardCharsets.ISO_8859_1)).containsExactly("\n".getBytes(StandardCharsets.ISO_8859_1));
     }
 
 }

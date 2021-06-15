@@ -17,9 +17,8 @@
 package org.apache.commons.io.output;
 
 import static org.apache.commons.io.test.TestUtils.checkFile;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -30,7 +29,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -106,8 +104,8 @@ public class FileWriterWithEncodingTest {
             writeTestPayload(fw1, fw2);
             checkFile(file1, file2);
         }
-        assertTrue(file1.exists());
-        assertTrue(file2.exists());
+        assertThat(file1.exists()).isTrue();
+        assertThat(file2.exists()).isTrue();
     }
 
     @Test
@@ -126,8 +124,8 @@ public class FileWriterWithEncodingTest {
                 }
 
             }
-            assertTrue(file1.exists());
-            assertTrue(file2.exists());
+            assertThat(file1.exists()).isTrue();
+            assertThat(file2.exists()).isTrue();
         }
         if (Charset.isSupported("UTF-16LE")) {
             try (
@@ -143,14 +141,14 @@ public class FileWriterWithEncodingTest {
                 }
 
             }
-            assertTrue(file1.exists());
-            assertTrue(file2.exists());
+            assertThat(file1.exists()).isTrue();
+            assertThat(file2.exists()).isTrue();
         }
     }
 
     private void writeTestPayload(final FileWriter fw1, final FileWriterWithEncoding fw2) throws IOException {
-        assertTrue(file1.exists());
-        assertTrue(file2.exists());
+        assertThat(file1.exists()).isTrue();
+        assertThat(file2.exists()).isTrue();
 
         fw1.write(textContent);
         fw2.write(textContent);
@@ -174,7 +172,7 @@ public class FileWriterWithEncodingTest {
                 Writer writer = new FileWriterWithEncoding(file1, "BAD-ENCODE")
             ){ }
          });
-        assertFalse(file1.exists());
+        assertThat(file1.exists()).isFalse();
     }
 
     @Test
@@ -184,7 +182,7 @@ public class FileWriterWithEncodingTest {
                 Writer writer = new FileWriterWithEncoding(temporaryFolder, defaultEncoding)
             ){ }
          });
-        assertFalse(file1.exists());
+        assertThat(file1.exists()).isFalse();
     }
 
     @Test
@@ -194,7 +192,7 @@ public class FileWriterWithEncodingTest {
                 Writer writer = new FileWriterWithEncoding((File) null, defaultEncoding)
             ){ }
          });
-        assertFalse(file1.exists());
+        assertThat(file1.exists()).isFalse();
     }
 
     @Test
@@ -204,7 +202,7 @@ public class FileWriterWithEncodingTest {
                 Writer writer = new FileWriterWithEncoding((String) null, defaultEncoding)
             ){ }
          });
-        assertFalse(file1.exists());
+        assertThat(file1.exists()).isFalse();
     }
 
     @Test

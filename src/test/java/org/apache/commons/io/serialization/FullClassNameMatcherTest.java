@@ -18,8 +18,7 @@
  */
 package org.apache.commons.io.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,13 +29,13 @@ public class FullClassNameMatcherTest {
     @Test
     public void noNames() {
         final FullClassNameMatcher m = new FullClassNameMatcher();
-        assertFalse(m.matches(Integer.class.getName()));
+        assertThat(m.matches(Integer.class.getName())).isFalse();
     }
 
     @Test
     public void withNames() {
         final FullClassNameMatcher m = new FullClassNameMatcher(NAMES_ARRAY);
-        assertTrue(m.matches(Integer.class.getName()));
-        assertFalse(m.matches(String.class.getName()));
+        assertThat(m.matches(Integer.class.getName())).isTrue();
+        assertThat(m.matches(String.class.getName())).isFalse();
     }
 }

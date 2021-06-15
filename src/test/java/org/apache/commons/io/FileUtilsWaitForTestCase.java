@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -54,7 +53,7 @@ public class FileUtilsWaitForTestCase {
         started.await();
         thread1.interrupt();
         thread1.join();
-        assertTrue( wasInterrupted.get() );
+        assertThat(wasInterrupted.get()).isTrue();
     }
 
 }

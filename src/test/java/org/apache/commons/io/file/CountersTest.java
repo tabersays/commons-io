@@ -19,7 +19,7 @@ package org.apache.commons.io.file;
 
 import static org.apache.commons.io.file.CounterAssertions.assertCounter;
 import static org.apache.commons.io.file.CounterAssertions.assertCounts;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.commons.io.file.Counters.Counter;
 import org.apache.commons.io.file.Counters.PathCounters;
@@ -47,9 +47,9 @@ public class CountersTest extends TestArguments {
         final Counter byteCounter = pathCounter.getByteCounter();
         final long old = byteCounter.get();
         byteCounter.add(1);
-        assertEquals(old + 1, byteCounter.get());
+        assertThat(byteCounter.get()).isEqualTo(old + 1);
         byteCounter.reset();
-        assertEquals(0, byteCounter.get());
+        assertThat(byteCounter.get()).isEqualTo(0);
     }
 
     @ParameterizedTest
@@ -58,9 +58,9 @@ public class CountersTest extends TestArguments {
         final Counter byteCounter = pathCounter.getByteCounter();
         final long old = byteCounter.get();
         byteCounter.add(1);
-        assertEquals(old + 1, byteCounter.get());
+        assertThat(byteCounter.get()).isEqualTo(old + 1);
         pathCounter.reset();
-        assertEquals(0, byteCounter.get());
+        assertThat(byteCounter.get()).isEqualTo(0);
     }
 
     @ParameterizedTest

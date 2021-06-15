@@ -16,14 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 public class MarkShieldInputStreamTest {
@@ -35,8 +32,8 @@ public class MarkShieldInputStreamTest {
 
             msis.mark(1024);
 
-            assertEquals(0, in.markcount);
-            assertEquals(0, in.readlimit);
+            assertThat(in.markcount).isEqualTo(0);
+            assertThat(in.readlimit).isEqualTo(0);
         }
     }
 
@@ -47,8 +44,8 @@ public class MarkShieldInputStreamTest {
 
             msis.mark(1024);
 
-            assertEquals(0, in.markcount);
-            assertEquals(0, in.readlimit);
+            assertThat(in.markcount).isEqualTo(0);
+            assertThat(in.readlimit).isEqualTo(0);
         }
     }
 
@@ -56,10 +53,10 @@ public class MarkShieldInputStreamTest {
     public void markSupportedIsFalseWhenUnderlyingFalse() throws IOException {
         // test wrapping an underlying stream which does NOT support marking
         try (final InputStream is = new NullInputStream(64, false, false)) {
-            assertFalse(is.markSupported());
+            assertThat(is.markSupported()).isFalse();
 
             try (final MarkShieldInputStream msis = new MarkShieldInputStream(is)) {
-                assertFalse(msis.markSupported());
+                assertThat(msis.markSupported()).isFalse();
             }
         }
     }
@@ -68,10 +65,10 @@ public class MarkShieldInputStreamTest {
     public void markSupportedIsFalseWhenUnderlyingTrue() throws IOException {
         // test wrapping an underlying stream which supports marking
         try (final InputStream is = new NullInputStream(64, true, false)) {
-            assertTrue(is.markSupported());
+            assertThat(is.markSupported()).isTrue();
 
             try (final MarkShieldInputStream msis = new MarkShieldInputStream(is)) {
-                assertFalse(msis.markSupported());
+                assertThat(msis.markSupported()).isFalse();
             }
         }
     }

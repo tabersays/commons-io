@@ -17,19 +17,18 @@
 
 package org.apache.commons.io.file;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigInteger;
-
 import org.apache.commons.io.file.Counters.Counter;
 import org.apache.commons.io.file.Counters.PathCounters;
 
 public class CounterAssertions {
 
     static void assertCounter(final long expected, final Counter actual, final String message) {
-        assertEquals(expected, actual.get(), message);
-        assertEquals(Long.valueOf(expected), actual.getLong(), message);
-        assertEquals(BigInteger.valueOf(expected), actual.getBigInteger(), message);
+        assertThat(actual.get()).as(message).isEqualTo(expected);
+        assertThat(actual.getLong()).as(message).isEqualTo(Long.valueOf(expected));
+        assertThat(actual.getBigInteger()).as(message).isEqualTo(BigInteger.valueOf(expected));
     }
 
     static void assertCounts(final long expectedDirCount, final long expectedFileCount, final long expectedByteCount,
@@ -46,7 +45,7 @@ public class CounterAssertions {
 
     public static void assertZeroCounters(final PathCounters pathCounters) {
         assertCounts(0, 0, 0, pathCounters);
-        assertEquals(Counters.longPathCounters(), pathCounters);
+        assertThat(pathCounters).isEqualTo(Counters.longPathCounters());
     }
 
 }

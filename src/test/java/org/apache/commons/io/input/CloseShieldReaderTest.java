@@ -16,14 +16,13 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.Reader;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,9 +49,9 @@ public class CloseShieldReaderTest {
         shielded.close();
         verify(original, never()).close();
         final char[] cbuf = new char[10];
-        assertEquals(-1, shielded.read(cbuf, 0, 10), "read(cbuf, off, len)");
-        assertEquals(data.length(), original.read(cbuf, 0, 10), "read(cbuf, off, len)");
-        assertEquals(data, new String(cbuf, 0, data.length()));
+        assertThat(shielded.read(cbuf, 0, 10)).as("read(cbuf, off, len)").isEqualTo(-1);
+        assertThat(original.read(cbuf, 0, 10)).as("read(cbuf, off, len)").isEqualTo(data.length());
+        assertThat(new String(cbuf, 0, data.length())).isEqualTo(data);
     }
 
 }

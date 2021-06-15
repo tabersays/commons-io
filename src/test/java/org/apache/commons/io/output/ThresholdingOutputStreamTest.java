@@ -17,14 +17,12 @@
 
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.jupiter.api.Test;
 
 public class ThresholdingOutputStreamTest {
@@ -48,9 +46,9 @@ public class ThresholdingOutputStreamTest {
             }
         }) {
             tos.write('a');
-            assertFalse(reached.get());
+            assertThat(reached.get()).isFalse();
             tos.write('a');
-            assertTrue(reached.get());
+            assertThat(reached.get()).isTrue();
         }
     }
 
@@ -62,26 +60,26 @@ public class ThresholdingOutputStreamTest {
         try (final ThresholdingOutputStream tos = new ThresholdingOutputStream(1, null,
             os -> new ByteArrayOutputStream(4))) {
             tos.write('a');
-            assertFalse(reached.get());
+            assertThat(reached.get()).isFalse();
             tos.write('a');
-            assertFalse(reached.get());
+            assertThat(reached.get()).isFalse();
         }
         // Null output stream function
         reached.set(false);
         try (final ThresholdingOutputStream tos = new ThresholdingOutputStream(1, os -> reached.set(true), null)) {
             tos.write('a');
-            assertFalse(reached.get());
+            assertThat(reached.get()).isFalse();
             tos.write('a');
-            assertTrue(reached.get());
+            assertThat(reached.get()).isTrue();
         }
         // non-null inputs.
         reached.set(false);
         try (final ThresholdingOutputStream tos = new ThresholdingOutputStream(1, os -> reached.set(true),
             os -> new ByteArrayOutputStream(4))) {
             tos.write('a');
-            assertFalse(reached.get());
+            assertThat(reached.get()).isFalse();
             tos.write('a');
-            assertTrue(reached.get());
+            assertThat(reached.get()).isTrue();
         }
     }
 

@@ -16,9 +16,8 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -34,7 +33,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.DefaultLocale;
@@ -49,27 +47,27 @@ public class XmlStreamReaderTest {
     protected void _testRawNoBomValid(final String encoding) throws Exception {
         InputStream is = getXmlStream("no-bom", XML1, encoding, encoding);
         XmlStreamReader xmlReader = new XmlStreamReader(is, false);
-        assertEquals(xmlReader.getEncoding(), "UTF-8");
+        assertThat("UTF-8").isEqualTo(xmlReader.getEncoding());
         xmlReader.close();
 
         is = getXmlStream("no-bom", XML2, encoding, encoding);
         xmlReader = new XmlStreamReader(is);
-        assertEquals(xmlReader.getEncoding(), "UTF-8");
+        assertThat("UTF-8").isEqualTo(xmlReader.getEncoding());
         xmlReader.close();
 
         is = getXmlStream("no-bom", XML3, encoding, encoding);
         xmlReader = new XmlStreamReader(is);
-        assertEquals(xmlReader.getEncoding(), encoding);
+        assertThat(encoding).isEqualTo(xmlReader.getEncoding());
         xmlReader.close();
 
         is = getXmlStream("no-bom", XML4, encoding, encoding);
         xmlReader = new XmlStreamReader(is);
-        assertEquals(xmlReader.getEncoding(), encoding);
+        assertThat(encoding).isEqualTo(xmlReader.getEncoding());
         xmlReader.close();
 
         is = getXmlStream("no-bom", XML5, encoding, encoding);
         xmlReader = new XmlStreamReader(is);
-        assertEquals(xmlReader.getEncoding(), encoding);
+        assertThat(encoding).isEqualTo(xmlReader.getEncoding());
         xmlReader.close();
     }
 
@@ -79,7 +77,7 @@ public class XmlStreamReaderTest {
             (new XmlStreamReader(is, false)).close();
             fail("It should have failed");
         } catch (final IOException ex) {
-            assertTrue(ex.getMessage().contains("Invalid encoding,"));
+            assertThat(ex.getMessage().contains("Invalid encoding,")).isTrue();
         }
     }
 
@@ -148,10 +146,10 @@ public class XmlStreamReaderTest {
                 encoding);
         final XmlStreamReader xmlReader = new XmlStreamReader(is, false);
         if (!encoding.equals("UTF-16") && !encoding.equals("UTF-32")) {
-            assertEquals(xmlReader.getEncoding(), encoding);
+            assertThat(encoding).isEqualTo(xmlReader.getEncoding());
         } else {
-            assertEquals(xmlReader.getEncoding()
-                    .substring(0, encoding.length()), encoding);
+            assertThat(encoding).isEqualTo(xmlReader.getEncoding()
+                    .substring(0, encoding.length()));
         }
         xmlReader.close();
     }
@@ -167,7 +165,7 @@ public class XmlStreamReaderTest {
                     + streamEnc + " and prologEnc " + prologEnc + ": found "
                     + foundEnc);
         } catch (final IOException ex) {
-            assertTrue(ex.getMessage().contains("Invalid encoding,"));
+            assertThat(ex.getMessage().contains("Invalid encoding,")).isTrue();
         }
         if (xmlReader != null) {
             xmlReader.close();
@@ -312,8 +310,8 @@ public class XmlStreamReaderTest {
             final String xml = getXML("no-bom", XML3, encoding, encoding);
             try (final ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes(encoding));
                     final XmlStreamReader xmlReader = new XmlStreamReader(is)) {
-                assertTrue(encoding.equalsIgnoreCase(xmlReader.getEncoding()), "Check encoding : " + encoding);
-                assertEquals(xml, IOUtils.toString(xmlReader), "Check content");
+                assertThat(encoding.equalsIgnoreCase(xmlReader.getEncoding())).as("Check encoding : " + encoding).isTrue();
+                assertThat(IOUtils.toString(xmlReader)).as("Check content").isEqualTo(xml);
             }
         }
     }
@@ -324,8 +322,8 @@ public class XmlStreamReaderTest {
         final String xml = getXML("no-bom", XML3, encoding, encoding);
         final ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes(encoding));
         final XmlStreamReader xmlReader = new XmlStreamReader(is);
-        assertEquals(xmlReader.getEncoding(), encoding, "Check encoding");
-        assertEquals(xml, IOUtils.toString(xmlReader), "Check content");
+        assertThat(encoding).as("Check encoding").isEqualTo(xmlReader.getEncoding());
+        assertThat(IOUtils.toString(xmlReader)).as("Check content").isEqualTo(xml);
     }
 
     @Test
@@ -334,8 +332,8 @@ public class XmlStreamReaderTest {
         final String xml = getXML("no-bom", XML3, encoding, encoding);
         final ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes(encoding));
         final XmlStreamReader xmlReader = new XmlStreamReader(is, encoding);
-        assertEquals(xmlReader.getEncoding(), encoding, "Check encoding");
-        assertEquals(xml, IOUtils.toString(xmlReader), "Check content");
+        assertThat(encoding).as("Check encoding").isEqualTo(xmlReader.getEncoding());
+        assertThat(IOUtils.toString(xmlReader)).as("Check content").isEqualTo(xml);
     }
 
     public void _testAlternateDefaultEncoding(final String cT, final String bomEnc,
@@ -349,11 +347,11 @@ public class XmlStreamReaderTest {
             // ISO-8859-1 look alike for the chars used for detection
             // (niallp 2010-10-06 - I re-instated the check below - the tests(6) passed)
             final String enc = alternateEnc != null ? alternateEnc : streamEnc;
-            assertEquals(xmlReader.getEncoding(), enc);
+            assertThat(enc).isEqualTo(xmlReader.getEncoding());
         } else {
             //String enc = (alternateEnc != null) ? alternateEnc : streamEnc;
-            assertEquals(xmlReader.getEncoding().substring(0,
-                    streamEnc.length()), streamEnc);
+            assertThat(streamEnc).isEqualTo(xmlReader.getEncoding().substring(0,
+                    streamEnc.length()));
         }
         xmlReader.close();
     }
@@ -367,10 +365,10 @@ public class XmlStreamReaderTest {
             // we can not assert things here because UTF-8, US-ASCII and
             // ISO-8859-1 look alike for the chars used for detection
             // (niallp 2010-10-06 - I re-instated the check below and removed the 2 tests that failed)
-            assertEquals(xmlReader.getEncoding(), streamEnc);
+            assertThat(streamEnc).isEqualTo(xmlReader.getEncoding());
         } else {
-            assertEquals(xmlReader.getEncoding().substring(0,
-                    streamEnc.length()), streamEnc);
+            assertThat(streamEnc).isEqualTo(xmlReader.getEncoding().substring(0,
+                    streamEnc.length()));
         }
         xmlReader.close();
     }
@@ -385,7 +383,7 @@ public class XmlStreamReaderTest {
                     + bomEnc + ", streamEnc " + streamEnc + " and prologEnc "
                     + prologEnc);
         } catch (final IOException ex) {
-            assertTrue(ex.getMessage().contains("Invalid encoding,"));
+            assertThat(ex.getMessage().contains("Invalid encoding,")).isTrue();
         }
     }
 
@@ -394,7 +392,7 @@ public class XmlStreamReaderTest {
         final InputStream is = getXmlStream(bomEnc,
                 prologEnc == null ? XML2 : XML3, streamEnc, prologEnc);
         final XmlStreamReader xmlReader = new XmlStreamReader(is, cT, true);
-        assertEquals(xmlReader.getEncoding(), shouldbe);
+        assertThat(shouldbe).isEqualTo(xmlReader.getEncoding());
         xmlReader.close();
     }
 
@@ -410,7 +408,7 @@ public class XmlStreamReaderTest {
         final InputStream is = new ByteArrayInputStream(ENCODING_ATTRIBUTE_XML
                 .getBytes(StandardCharsets.UTF_8));
         final XmlStreamReader xmlReader = new XmlStreamReader(is, "", true);
-        assertEquals(xmlReader.getEncoding(), "UTF-8");
+        assertThat("UTF-8").isEqualTo(xmlReader.getEncoding());
         xmlReader.close();
     }
 

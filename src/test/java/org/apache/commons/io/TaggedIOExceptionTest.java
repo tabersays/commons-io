@@ -16,14 +16,11 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -36,10 +33,10 @@ public class TaggedIOExceptionTest {
         final Serializable tag = UUID.randomUUID();
         final IOException exception = new IOException("Test exception");
         final TaggedIOException tagged = new TaggedIOException(exception, tag);
-        assertTrue(TaggedIOException.isTaggedWith(tagged, tag));
-        assertFalse(TaggedIOException.isTaggedWith(tagged, UUID.randomUUID()));
-        assertEquals(exception, tagged.getCause());
-        assertEquals(exception.getMessage(), tagged.getMessage());
+        assertThat(TaggedIOException.isTaggedWith(tagged, tag)).isTrue();
+        assertThat(TaggedIOException.isTaggedWith(tagged, UUID.randomUUID())).isFalse();
+        assertThat(tagged.getCause()).isEqualTo(exception);
+        assertThat(tagged.getMessage()).isEqualTo(exception.getMessage());
     }
 
 }

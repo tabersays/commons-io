@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -35,7 +34,7 @@ public class ChunkedOutputStreamTest {
         try (final ByteArrayOutputStream baos = newByteArrayOutputStream(numWrites);
             final ChunkedOutputStream chunked = new ChunkedOutputStream(baos, 10)) {
             chunked.write("0123456789012345678901234567891".getBytes());
-            assertEquals(4, numWrites.get());
+            assertThat(numWrites.get()).isEqualTo(4);
         }
     }
 
@@ -50,7 +49,7 @@ public class ChunkedOutputStreamTest {
         try (final ByteArrayOutputStream baos = newByteArrayOutputStream(numWrites);
             final ChunkedOutputStream chunked = new ChunkedOutputStream(baos)) {
             chunked.write(new byte[1024 * 4 + 1]);
-            assertEquals(2, numWrites.get());
+            assertThat(numWrites.get()).isEqualTo(2);
         }
     }
 

@@ -16,9 +16,7 @@
  */
 package org.apache.commons.io.test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
@@ -35,7 +33,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
@@ -59,9 +56,9 @@ public abstract class TestUtils {
                 numRead = is.read(b1, count, b0.length);
                 count += numRead;
             }
-            assertEquals(b0.length, count, "Different number of bytes: ");
+            assertThat(count).as("Different number of bytes: ").isEqualTo(b0.length);
             for (int i = 0; i < count; i++) {
-                assertEquals(b0[i], b1[i], "byte " + i + " differs");
+                assertThat(b1[i]).as("byte " + i + " differs").isEqualTo(b0[i]);
             }
         }
     }
@@ -81,9 +78,9 @@ public abstract class TestUtils {
                 numRead = ir.read(c1, count, c0.length);
                 count += numRead;
             }
-            assertEquals(c0.length, count, "Different number of chars: ");
+            assertThat(count).as("Different number of chars: ").isEqualTo(c0.length);
             for (int i = 0; i < count; i++) {
-                assertEquals(c0[i], c1[i], "char " + i + " differs");
+                assertThat(c1[i]).as("char " + i + " differs").isEqualTo(c0[i]);
             }
         }
     }
@@ -109,11 +106,10 @@ public abstract class TestUtils {
                 while (-1 != n0) {
                     n0 = is0.read(buf0);
                     n1 = is1.read(buf1);
-                    assertTrue((n0 == n1),
-                            "The files " + f0 + " and " + f1 +
-                            " have differing number of bytes available (" + n0 + " vs " + n1 + ")");
+                    assertThat((n0 == n1)).as("The files " + f0 + " and " + f1 +
+                            " have differing number of bytes available (" + n0 + " vs " + n1 + ")").isTrue();
 
-                    assertArrayEquals(buf0, buf1, "The files " + f0 + " and " + f1 + " have different content");
+                    assertThat(buf1).as("The files " + f0 + " and " + f1 + " have different content").containsExactly(buf0);
                 }
             }
         }
@@ -121,7 +117,7 @@ public abstract class TestUtils {
 
     public static void checkFile(final File file, final File referenceFile)
             throws Exception {
-        assertTrue(file.exists(), "Check existence of output file");
+        assertThat(file.exists()).as("Check existence of output file").isTrue();
         assertEqualContent(referenceFile, file);
     }
 
@@ -166,7 +162,7 @@ public abstract class TestUtils {
 
     public static void deleteFile(final File file) {
         if (file.exists()) {
-            assertTrue(file.delete(), "Couldn't delete file: " + file);
+            assertThat(file.delete()).as("Couldn't delete file: " + file).isTrue();
         }
     }
 

@@ -16,51 +16,50 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Test;
 
 public class WindowsLineEndingInputStreamTest {
     @Test
     public void simpleString() throws Exception {
-        assertEquals( "abc\r\n", roundtrip( "abc" ) );
+        assertThat(roundtrip("abc")).isEqualTo("abc\r\n");
     }
 
     @Test
     public void inTheMiddleOfTheLine() throws Exception {
-        assertEquals( "a\r\nbc\r\n", roundtrip( "a\r\nbc" ) );
+        assertThat(roundtrip("a\r\nbc")).isEqualTo("a\r\nbc\r\n");
     }
 
     @Test
     public void multipleBlankLines() throws Exception {
-        assertEquals( "a\r\n\r\nbc\r\n", roundtrip( "a\r\n\r\nbc" ) );
+        assertThat(roundtrip("a\r\n\r\nbc")).isEqualTo("a\r\n\r\nbc\r\n");
     }
 
     @Test
     public void twoLinesAtEnd() throws Exception {
-        assertEquals( "a\r\n\r\n", roundtrip( "a\r\n\r\n" ) );
+        assertThat(roundtrip("a\r\n\r\n")).isEqualTo("a\r\n\r\n");
     }
 
     @Test
     public void linuxLinefeeds() throws Exception {
         final String roundtrip = roundtrip( "ab\nc", false );
-        assertEquals( "ab\r\nc", roundtrip );
+        assertThat(roundtrip).isEqualTo("ab\r\nc");
     }
 
 
     @Test
     public void malformed() throws Exception {
-        assertEquals( "a\rbc", roundtrip( "a\rbc", false ) );
+        assertThat(roundtrip("a\rbc", false)).isEqualTo("a\rbc");
     }
 
     @Test
     public void retainLineFeed() throws Exception {
-        assertEquals( "a\r\n\r\n", roundtrip( "a\r\n\r\n", false ) );
-        assertEquals( "a", roundtrip( "a", false ) );
+        assertThat(roundtrip("a\r\n\r\n", false)).isEqualTo("a\r\n\r\n");
+        assertThat(roundtrip("a", false)).isEqualTo("a");
     }
 
     private String roundtrip( final String msg ) throws IOException {

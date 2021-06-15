@@ -18,9 +18,8 @@
  */
 package org.apache.commons.io.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -32,7 +31,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.UUID;
 import java.util.regex.Pattern;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +51,7 @@ public class ValidatingObjectInputStreamTest extends AbstractCloseableListTest {
 
     private void assertSerialization(final ObjectInputStream ois) throws ClassNotFoundException, IOException {
         final MockSerializedClass result = (MockSerializedClass) (ois.readObject());
-        assertEquals(testObject, result);
+        assertThat(result).isEqualTo(testObject);
     }
 
     @Test
@@ -70,7 +68,7 @@ public class ValidatingObjectInputStreamTest extends AbstractCloseableListTest {
             fail("Expected an InvalidClassException");
         } catch(final InvalidClassException ice) {
             final String name = MockSerializedClass.class.getName();
-            assertTrue(ice.getMessage().contains(name), "Expecting message to contain " + name);
+            assertThat(ice.getMessage().contains(name)).as("Expecting message to contain " + name).isTrue();
         }
     }
 

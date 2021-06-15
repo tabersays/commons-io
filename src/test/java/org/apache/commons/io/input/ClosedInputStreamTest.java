@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ public class ClosedInputStreamTest {
     @Test
     public void testRead() throws Exception {
         try (final ClosedInputStream cis = new ClosedInputStream()) {
-            assertEquals(-1, cis.read(), "read()");
+            assertThat(cis.read()).as("read()").isEqualTo(-1);
         }
     }
 

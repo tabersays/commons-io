@@ -16,12 +16,10 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.DefaultLocale;
 
@@ -55,8 +53,8 @@ public class XmlStreamWriterTest {
         writer.write(xml);
         writer.close();
         final byte[] xmlContent = out.toByteArray();
-        assertTrue(encoding.equalsIgnoreCase(writer.getEncoding()));
-        assertArrayEquals(xml.getBytes(encoding), xmlContent);
+        assertThat(encoding.equalsIgnoreCase(writer.getEncoding())).isTrue();
+        assertThat(xmlContent).containsExactly(xml.getBytes(encoding));
 
     }
 

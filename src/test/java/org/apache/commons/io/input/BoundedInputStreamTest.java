@@ -16,10 +16,9 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -38,23 +37,23 @@ public class BoundedInputStreamTest {
         // limit = length
         bounded = new BoundedInputStream(new ByteArrayInputStream(helloWorld), helloWorld.length);
         for (int i = 0; i < helloWorld.length; i++) {
-            assertEquals(helloWorld[i], bounded.read(), "limit = length byte[" + i + "]");
+            assertThat(bounded.read()).as("limit = length byte[" + i + "]").isEqualTo(helloWorld[i]);
         }
-        assertEquals(-1, bounded.read(), "limit = length end");
+        assertThat(bounded.read()).as("limit = length end").isEqualTo(-1);
 
         // limit > length
         bounded = new BoundedInputStream(new ByteArrayInputStream(helloWorld), helloWorld.length + 1);
         for (int i = 0; i < helloWorld.length; i++) {
-            assertEquals(helloWorld[i], bounded.read(), "limit > length byte[" + i + "]");
+            assertThat(bounded.read()).as("limit > length byte[" + i + "]").isEqualTo(helloWorld[i]);
         }
-        assertEquals(-1, bounded.read(), "limit > length end");
+        assertThat(bounded.read()).as("limit > length end").isEqualTo(-1);
 
         // limit < length
         bounded = new BoundedInputStream(new ByteArrayInputStream(helloWorld), hello.length);
         for (int i = 0; i < hello.length; i++) {
-            assertEquals(hello[i], bounded.read(), "limit < length byte[" + i + "]");
+            assertThat(bounded.read()).as("limit < length byte[" + i + "]").isEqualTo(hello[i]);
         }
-        assertEquals(-1, bounded.read(), "limit < length end");
+        assertThat(bounded.read()).as("limit < length end").isEqualTo(-1);
     }
 
     @Test
@@ -81,9 +80,9 @@ public class BoundedInputStreamTest {
     }
 
     private void compare(final String msg, final byte[] expected, final byte[] actual) {
-        assertEquals(expected.length, actual.length, msg + " length");
+        assertThat(actual.length).as(msg + " length").isEqualTo(expected.length);
         for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], actual[i], msg + " byte[" + i + "]");
+            assertThat(actual[i]).as(msg + " byte[" + i + "]").isEqualTo(expected[i]);
         }
     }
 }

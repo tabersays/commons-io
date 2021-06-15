@@ -18,15 +18,14 @@
 package org.apache.commons.io.file;
 
 import static org.apache.commons.io.file.CounterAssertions.assertCounts;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.apache.commons.io.file.Counters.PathCounters;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -113,7 +112,7 @@ public class DeletingPathVisitorTest extends TestArguments {
         final CountingPathVisitor visitor = new DeletingPathVisitor(pathCounters, skipFileName);
         assertCounts(1, 1, 1, PathUtils.visitFileTree(visitor, tempDir));
         final Path skippedFile = tempDir.resolve(skipFileName);
-        Assertions.assertTrue(Files.exists(skippedFile));
+        assertThat(Files.exists(skippedFile)).isTrue();
         Files.delete(skippedFile);
     }
 

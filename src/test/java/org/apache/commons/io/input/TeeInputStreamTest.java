@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -28,7 +28,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.test.ThrowOnCloseInputStream;
 import org.apache.commons.io.test.ThrowOnCloseOutputStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,65 +53,65 @@ public class TeeInputStreamTest  {
 
     @Test
     public void testReadNothing() throws Exception {
-        assertEquals("", new String(output.toString(ASCII)));
+        assertThat(new String(output.toString(ASCII))).isEqualTo("");
     }
 
     @Test
     public void testReadOneByte() throws Exception {
-        assertEquals('a', tee.read());
-        assertEquals("a", new String(output.toString(ASCII)));
+        assertThat(tee.read()).isEqualTo('a');
+        assertThat(new String(output.toString(ASCII))).isEqualTo("a");
     }
 
     @Test
     public void testReadEverything() throws Exception {
-        assertEquals('a', tee.read());
-        assertEquals('b', tee.read());
-        assertEquals('c', tee.read());
-        assertEquals(-1, tee.read());
-        assertEquals("abc", new String(output.toString(ASCII)));
+        assertThat(tee.read()).isEqualTo('a');
+        assertThat(tee.read()).isEqualTo('b');
+        assertThat(tee.read()).isEqualTo('c');
+        assertThat(tee.read()).isEqualTo(-1);
+        assertThat(new String(output.toString(ASCII))).isEqualTo("abc");
     }
 
     @Test
     public void testReadToArray() throws Exception {
         final byte[] buffer = new byte[8];
-        assertEquals(3, tee.read(buffer));
-        assertEquals('a', buffer[0]);
-        assertEquals('b', buffer[1]);
-        assertEquals('c', buffer[2]);
-        assertEquals(-1, tee.read(buffer));
-        assertEquals("abc", new String(output.toString(ASCII)));
+        assertThat(tee.read(buffer)).isEqualTo(3);
+        assertThat(buffer[0]).isEqualTo('a');
+        assertThat(buffer[1]).isEqualTo('b');
+        assertThat(buffer[2]).isEqualTo('c');
+        assertThat(tee.read(buffer)).isEqualTo(-1);
+        assertThat(new String(output.toString(ASCII))).isEqualTo("abc");
     }
 
     @Test
     public void testReadToArrayWithOffset() throws Exception {
         final byte[] buffer = new byte[8];
-        assertEquals(3, tee.read(buffer, 4, 4));
-        assertEquals('a', buffer[4]);
-        assertEquals('b', buffer[5]);
-        assertEquals('c', buffer[6]);
-        assertEquals(-1, tee.read(buffer, 4, 4));
-        assertEquals("abc", new String(output.toString(ASCII)));
+        assertThat(tee.read(buffer, 4, 4)).isEqualTo(3);
+        assertThat(buffer[4]).isEqualTo('a');
+        assertThat(buffer[5]).isEqualTo('b');
+        assertThat(buffer[6]).isEqualTo('c');
+        assertThat(tee.read(buffer, 4, 4)).isEqualTo(-1);
+        assertThat(new String(output.toString(ASCII))).isEqualTo("abc");
     }
 
     @Test
     public void testSkip() throws Exception {
-        assertEquals('a', tee.read());
-        assertEquals(1, tee.skip(1));
-        assertEquals('c', tee.read());
-        assertEquals(-1, tee.read());
-        assertEquals("ac", new String(output.toString(ASCII)));
+        assertThat(tee.read()).isEqualTo('a');
+        assertThat(tee.skip(1)).isEqualTo(1);
+        assertThat(tee.read()).isEqualTo('c');
+        assertThat(tee.read()).isEqualTo(-1);
+        assertThat(new String(output.toString(ASCII))).isEqualTo("ac");
     }
 
     @Test
     public void testMarkReset() throws Exception {
-        assertEquals('a', tee.read());
+        assertThat(tee.read()).isEqualTo('a');
         tee.mark(1);
-        assertEquals('b', tee.read());
+        assertThat(tee.read()).isEqualTo('b');
         tee.reset();
-        assertEquals('b', tee.read());
-        assertEquals('c', tee.read());
-        assertEquals(-1, tee.read());
-        assertEquals("abbc", new String(output.toString(ASCII)));
+        assertThat(tee.read()).isEqualTo('b');
+        assertThat(tee.read()).isEqualTo('c');
+        assertThat(tee.read()).isEqualTo(-1);
+        assertThat(new String(output.toString(ASCII))).isEqualTo("abbc");
     }
 
     /**

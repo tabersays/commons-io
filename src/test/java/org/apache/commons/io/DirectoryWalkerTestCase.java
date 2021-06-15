@@ -16,9 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -27,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.NameFileFilter;
@@ -77,8 +74,8 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testFilter() {
         final List<File> results = new TestFileFinder(dirsAndFilesFilter, -1).find(javaDir);
-        assertEquals(1 + dirs.length + ioFiles.length + outputFiles.length, results.size(), "Result Size");
-        assertTrue(results.contains(javaDir), "Start Dir");
+        assertThat(results.size()).as("Result Size").isEqualTo(1 + dirs.length + ioFiles.length + outputFiles.length);
+        assertThat(results.contains(javaDir)).as("Start Dir").isTrue();
         checkContainsFiles("Dir", dirs, results);
         checkContainsFiles("IO File", ioFiles, results);
         checkContainsFiles("Output File", outputFiles, results);
@@ -90,8 +87,8 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testFilterAndLimitA() {
         final List<File> results = new TestFileFinder(NOT_SVN, 0).find(javaDir);
-        assertEquals(1, results.size(), "[A] Result Size");
-        assertTrue(results.contains(javaDir), "[A] Start Dir");
+        assertThat(results.size()).as("[A] Result Size").isEqualTo(1);
+        assertThat(results.contains(javaDir)).as("[A] Start Dir").isTrue();
     }
 
     /**
@@ -100,9 +97,9 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testFilterAndLimitB() {
         final List<File> results = new TestFileFinder(NOT_SVN, 1).find(javaDir);
-        assertEquals(2, results.size(), "[B] Result Size");
-        assertTrue(results.contains(javaDir), "[B] Start Dir");
-        assertTrue(results.contains(orgDir), "[B] Org Dir");
+        assertThat(results.size()).as("[B] Result Size").isEqualTo(2);
+        assertThat(results.contains(javaDir)).as("[B] Start Dir").isTrue();
+        assertThat(results.contains(orgDir)).as("[B] Org Dir").isTrue();
     }
 
     /**
@@ -111,11 +108,11 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testFilterAndLimitC() {
         final List<File> results = new TestFileFinder(NOT_SVN, 3).find(javaDir);
-        assertEquals(4, results.size(), "[C] Result Size");
-        assertTrue(results.contains(javaDir), "[C] Start Dir");
-        assertTrue(results.contains(orgDir), "[C] Org Dir");
-        assertTrue(results.contains(apacheDir), "[C] Apache Dir");
-        assertTrue(results.contains(commonsDir), "[C] Commons Dir");
+        assertThat(results.size()).as("[C] Result Size").isEqualTo(4);
+        assertThat(results.contains(javaDir)).as("[C] Start Dir").isTrue();
+        assertThat(results.contains(orgDir)).as("[C] Org Dir").isTrue();
+        assertThat(results.contains(apacheDir)).as("[C] Apache Dir").isTrue();
+        assertThat(results.contains(commonsDir)).as("[C] Commons Dir").isTrue();
     }
 
     /**
@@ -124,8 +121,8 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testFilterAndLimitD() {
         final List<File> results = new TestFileFinder(dirsAndFilesFilter, 5).find(javaDir);
-        assertEquals(1 + dirs.length + ioFiles.length, results.size(), "[D] Result Size");
-        assertTrue(results.contains(javaDir), "[D] Start Dir");
+        assertThat(results.size()).as("[D] Result Size").isEqualTo(1 + dirs.length + ioFiles.length);
+        assertThat(results.contains(javaDir)).as("[D] Start Dir").isTrue();
         checkContainsFiles("[D] Dir", dirs, results);
         checkContainsFiles("[D] File", ioFiles, results);
     }
@@ -136,8 +133,8 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testFilterDirAndFile1() {
         final List<File> results = new TestFileFinder(dirsFilter, iofilesFilter, -1).find(javaDir);
-        assertEquals(1 + dirs.length + ioFiles.length, results.size(), "[DirAndFile1] Result Size");
-        assertTrue(results.contains(javaDir), "[DirAndFile1] Start Dir");
+        assertThat(results.size()).as("[DirAndFile1] Result Size").isEqualTo(1 + dirs.length + ioFiles.length);
+        assertThat(results.contains(javaDir)).as("[DirAndFile1] Start Dir").isTrue();
         checkContainsFiles("[DirAndFile1] Dir", dirs, results);
         checkContainsFiles("[DirAndFile1] File", ioFiles, results);
     }
@@ -148,8 +145,8 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testFilterDirAndFile2() {
         final List<File> results = new TestFileFinder(null, null, -1).find(javaDir);
-        assertTrue(results.size() > 1 + dirs.length + ioFiles.length, "[DirAndFile2] Result Size");
-        assertTrue(results.contains(javaDir), "[DirAndFile2] Start Dir");
+        assertThat(results.size() > 1 + dirs.length + ioFiles.length).as("[DirAndFile2] Result Size").isTrue();
+        assertThat(results.contains(javaDir)).as("[DirAndFile2] Start Dir").isTrue();
         checkContainsFiles("[DirAndFile2] Dir", dirs, results);
         checkContainsFiles("[DirAndFile2] File", ioFiles, results);
     }
@@ -161,8 +158,8 @@ public class DirectoryWalkerTestCase {
     public void testFilterDirAndFile3() {
         final List<File> results = new TestFileFinder(dirsFilter, null, -1).find(javaDir);
         final List<File> resultDirs = directoriesOnly(results);
-        assertEquals(1 + dirs.length, resultDirs.size(), "[DirAndFile3] Result Size");
-        assertTrue(results.contains(javaDir), "[DirAndFile3] Start Dir");
+        assertThat(resultDirs.size()).as("[DirAndFile3] Result Size").isEqualTo(1 + dirs.length);
+        assertThat(results.contains(javaDir)).as("[DirAndFile3] Start Dir").isTrue();
         checkContainsFiles("[DirAndFile3] Dir", dirs, resultDirs);
     }
 
@@ -173,8 +170,8 @@ public class DirectoryWalkerTestCase {
     public void testFilterDirAndFile4() {
         final List<File> results = new TestFileFinder(null, iofilesFilter, -1).find(javaDir);
         final List<File> resultFiles = filesOnly(results);
-        assertEquals(ioFiles.length, resultFiles.size(), "[DirAndFile4] Result Size");
-        assertTrue(results.contains(javaDir), "[DirAndFile4] Start Dir");
+        assertThat(resultFiles.size()).as("[DirAndFile4] Result Size").isEqualTo(ioFiles.length);
+        assertThat(results.contains(javaDir)).as("[DirAndFile4] Start Dir").isTrue();
         checkContainsFiles("[DirAndFile4] File", ioFiles, resultFiles);
     }
 
@@ -184,8 +181,8 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testLimitToCurrent() {
         final List<File> results = new TestFileFinder(null, 0).find(current);
-        assertEquals(1, results.size(), "Result Size");
-        assertTrue(results.contains(new File(".")), "Current Dir");
+        assertThat(results.size()).as("Result Size").isEqualTo(1);
+        assertThat(results.contains(new File("."))).as("Current Dir").isTrue();
     }
 
     /**
@@ -197,8 +194,8 @@ public class DirectoryWalkerTestCase {
         // TODO is this what we want with invalid directory?
         final File invalidDir = new File("invalid-dir");
         final List<File> results = new TestFileFinder(null, -1).find(invalidDir);
-        assertEquals(1, results.size(), "Result Size");
-        assertTrue(results.contains(invalidDir), "Current Dir");
+        assertThat(results.size()).as("Result Size").isEqualTo(1);
+        assertThat(results.contains(invalidDir)).as("Current Dir").isTrue();
 
         try {
             new TestFileFinder(null, -1).find(null);
@@ -215,7 +212,7 @@ public class DirectoryWalkerTestCase {
     public void testHandleStartDirectoryFalse() {
 
         final List<File> results = new TestFalseFileFinder(null, -1).find(current);
-        assertEquals(0, results.size(), "Result Size");
+        assertThat(results.size()).as("Result Size").isEqualTo(0);
 
     }
 
@@ -226,13 +223,13 @@ public class DirectoryWalkerTestCase {
      */
     private void checkContainsFiles(final String prefix, final File[] files, final Collection<File> results) {
         for (int i = 0; i < files.length; i++) {
-            assertTrue(results.contains(files[i]), prefix + "["+i+"] " + files[i]);
+            assertThat(results.contains(files[i])).as(prefix + "[" + i + "] " + files[i]).isTrue();
         }
     }
 
     private void checkContainsString(final String prefix, final File[] files, final Collection<String> results) {
         for (int i = 0; i < files.length; i++) {
-            assertTrue(results.contains(files[i].toString()), prefix + "["+i+"] " + files[i]);
+            assertThat(results.contains(files[i].toString())).as(prefix + "[" + i + "] " + files[i]).isTrue();
         }
     }
 
@@ -287,8 +284,8 @@ public class DirectoryWalkerTestCase {
             new TestCancelWalker(cancelName, false).find(javaDir);
             fail("CancelException not thrown for '" + cancelName + "'");
         } catch (final DirectoryWalker.CancelException cancel) {
-            assertEquals(cancelName, cancel.getFile().getName(), "File:  " + cancelName);
-            assertEquals(5, cancel.getDepth(), "Depth: " + cancelName);
+            assertThat(cancel.getFile().getName()).as("File:  " + cancelName).isEqualTo(cancelName);
+            assertThat(cancel.getDepth()).as("Depth: " + cancelName).isEqualTo(5);
         } catch(final IOException ex) {
             fail("IOException: " + cancelName + " " + ex);
         }
@@ -299,8 +296,8 @@ public class DirectoryWalkerTestCase {
             new TestCancelWalker(cancelName, false).find(javaDir);
             fail("CancelException not thrown for '" + cancelName + "'");
         } catch (final DirectoryWalker.CancelException cancel) {
-            assertEquals(cancelName, cancel.getFile().getName(), "File:  " + cancelName);
-            assertEquals(3, cancel.getDepth(), "Depth: " + cancelName);
+            assertThat(cancel.getFile().getName()).as("File:  " + cancelName).isEqualTo(cancelName);
+            assertThat(cancel.getDepth()).as("Depth: " + cancelName).isEqualTo(3);
         } catch(final IOException ex) {
             fail("IOException: " + cancelName + " " + ex);
         }
@@ -309,7 +306,7 @@ public class DirectoryWalkerTestCase {
         try {
             final List<File> results = new TestCancelWalker(cancelName, true).find(javaDir);
             final File lastFile = results.get(results.size() - 1);
-            assertEquals(cancelName, lastFile.getName(), "Suppress:  " + cancelName);
+            assertThat(lastFile.getName()).as("Suppress:  " + cancelName).isEqualTo(cancelName);
         } catch(final IOException ex) {
             fail("Suppress threw " + ex);
         }
@@ -329,8 +326,8 @@ public class DirectoryWalkerTestCase {
             fail("CancelException not thrown for '" + cancelName + "'");
         } catch (final DirectoryWalker.CancelException cancel) {
             final File last = walker.results.get(walker.results.size() - 1);
-            assertEquals(cancelName, last.getName());
-            assertEquals(5, cancel.getDepth(), "Depth: " + cancelName);
+            assertThat(last.getName()).isEqualTo(cancelName);
+            assertThat(cancel.getDepth()).as("Depth: " + cancelName).isEqualTo(5);
         } catch(final IOException ex) {
             fail("IOException: " + cancelName + " " + ex);
         }
@@ -342,8 +339,8 @@ public class DirectoryWalkerTestCase {
             walker.find(javaDir);
             fail("CancelException not thrown for '" + cancelName + "'");
         } catch (final DirectoryWalker.CancelException cancel) {
-            assertEquals(cancelName, cancel.getFile().getName(), "File:  " + cancelName);
-            assertEquals(3, cancel.getDepth(), "Depth: " + cancelName);
+            assertThat(cancel.getFile().getName()).as("File:  " + cancelName).isEqualTo(cancelName);
+            assertThat(cancel.getDepth()).as("Depth: " + cancelName).isEqualTo(3);
         } catch(final IOException ex) {
             fail("IOException: " + cancelName + " " + ex);
         }
@@ -353,7 +350,7 @@ public class DirectoryWalkerTestCase {
             walker = new TestMultiThreadCancelWalker(cancelName, true);
             final List<File> results = walker.find(javaDir);
             final File lastFile = results.get(results.size() - 1);
-            assertEquals(cancelName, lastFile.getName(), "Suppress:  " + cancelName);
+            assertThat(lastFile.getName()).as("Suppress:  " + cancelName).isEqualTo(cancelName);
         } catch(final IOException ex) {
             fail("Suppress threw " + ex);
         }
@@ -366,7 +363,7 @@ public class DirectoryWalkerTestCase {
     @Test
     public void testFilterString() {
         final List<String> results = new TestFileFinderString(dirsAndFilesFilter, -1).find(javaDir);
-        assertEquals(results.size(), outputFiles.length + ioFiles.length, "Result Size");
+        assertThat(outputFiles.length + ioFiles.length).as("Result Size").isEqualTo(results.size());
         checkContainsString("IO File", ioFiles, results);
         checkContainsString("Output File", outputFiles, results);
     }
@@ -506,7 +503,7 @@ public class DirectoryWalkerTestCase {
         @Override
         protected void handleDirectoryEnd(final File directory, final int depth, final Collection<File> results) throws IOException {
             results.add(directory);
-            assertFalse(cancelled);
+            assertThat(cancelled).isFalse();
             if (cancelFileName.equals(directory.getName())) {
                 cancelled = true;
             }
@@ -516,7 +513,7 @@ public class DirectoryWalkerTestCase {
         @Override
         protected void handleFile(final File file, final int depth, final Collection<File> results) throws IOException {
             results.add(file);
-            assertFalse(cancelled);
+            assertThat(cancelled).isFalse();
             if (cancelFileName.equals(file.getName())) {
                 cancelled = true;
             }

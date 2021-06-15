@@ -16,15 +16,12 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,26 +38,26 @@ public class NullInputStreamTest {
         final int size = 5;
         final InputStream input = new TestNullInputStream(size);
         for (int i = 0; i < size; i++) {
-            assertEquals(size - i, input.available(), "Check Size [" + i + "]");
-            assertEquals(i, input.read(), "Check Value [" + i + "]");
+            assertThat(input.available()).as("Check Size [" + i + "]").isEqualTo(size - i);
+            assertThat(input.read()).as("Check Value [" + i + "]").isEqualTo(i);
         }
-        assertEquals(0, input.available(), "Available after contents all read");
+        assertThat(input.available()).as("Available after contents all read").isEqualTo(0);
 
         // Check available is zero after End of file
-        assertEquals(-1, input.read(), "End of File");
-        assertEquals(0, input.available(), "Available after End of File");
+        assertThat(input.read()).as("End of File").isEqualTo(-1);
+        assertThat(input.available()).as("Available after End of File").isEqualTo(0);
 
         // Test reading after the end of file
         try {
             final int result = input.read();
             fail("Should have thrown an IOException, byte=[" + result + "]");
         } catch (final IOException e) {
-            assertEquals("Read after end of file", e.getMessage());
+            assertThat(e.getMessage()).isEqualTo("Read after end of file");
         }
 
         // Close - should reset
         input.close();
-        assertEquals(size, input.available(), "Available after close");
+        assertThat(input.available()).as("Available after close").isEqualTo(size);
     }
 
     @Test
@@ -70,28 +67,28 @@ public class NullInputStreamTest {
 
         // Read into array
         final int count1 = input.read(bytes);
-        assertEquals(bytes.length, count1, "Read 1");
+        assertThat(count1).as("Read 1").isEqualTo(bytes.length);
         for (int i = 0; i < count1; i++) {
-            assertEquals(i, bytes[i], "Check Bytes 1");
+            assertThat(bytes[i]).as("Check Bytes 1").isEqualTo(i);
         }
 
         // Read into array
         final int count2 = input.read(bytes);
-        assertEquals(5, count2, "Read 2");
+        assertThat(count2).as("Read 2").isEqualTo(5);
         for (int i = 0; i < count2; i++) {
-            assertEquals(count1 + i, bytes[i], "Check Bytes 2");
+            assertThat(bytes[i]).as("Check Bytes 2").isEqualTo(count1 + i);
         }
 
         // End of File
         final int count3 = input.read(bytes);
-        assertEquals(-1, count3, "Read 3 (EOF)");
+        assertThat(count3).as("Read 3 (EOF)").isEqualTo(-1);
 
         // Test reading after the end of file
         try {
             final int count4 = input.read(bytes);
             fail("Should have thrown an IOException, byte=[" + count4 + "]");
         } catch (final IOException e) {
-            assertEquals("Read after end of file", e.getMessage());
+            assertThat(e.getMessage()).isEqualTo("Read after end of file");
         }
 
         // reset by closing
@@ -101,17 +98,17 @@ public class NullInputStreamTest {
         final int offset = 2;
         final int lth    = 4;
         final int count5 = input.read(bytes, offset, lth);
-        assertEquals(lth, count5, "Read 5");
+        assertThat(count5).as("Read 5").isEqualTo(lth);
         for (int i = offset; i < lth; i++) {
-            assertEquals(i, bytes[i], "Check Bytes 2");
+            assertThat(bytes[i]).as("Check Bytes 2").isEqualTo(i);
         }
     }
 
     @Test
     public void testEOFException() throws Exception {
         final InputStream input = new TestNullInputStream(2, false, true);
-        assertEquals(0, input.read(), "Read 1");
-        assertEquals(1, input.read(), "Read 2");
+        assertThat(input.read()).as("Read 1").isEqualTo(0);
+        assertThat(input.read()).as("Read 2").isEqualTo(1);
         try {
             final int result = input.read();
             fail("Should have thrown an EOFException, byte=[" + result + "]");
@@ -128,18 +125,18 @@ public class NullInputStreamTest {
         @SuppressWarnings("resource") // this is actually closed
         final InputStream input = new TestNullInputStream(100, true, false);
 
-        assertTrue(input.markSupported(), "Mark Should be Supported");
+        assertThat(input.markSupported()).as("Mark Should be Supported").isTrue();
 
         // No Mark
         try {
             input.reset();
             fail("Read limit exceeded, expected IOException ");
         } catch (final IOException e) {
-            assertEquals("No position has been marked", e.getMessage(), "No Mark IOException message");
+            assertThat(e.getMessage()).as("No Mark IOException message").isEqualTo("No position has been marked");
         }
 
         for (; position < 3; position++) {
-            assertEquals(position, input.read(), "Read Before Mark [" + position +"]");
+            assertThat(input.read()).as("Read Before Mark [" + position + "]").isEqualTo(position);
         }
 
         // Mark
@@ -147,7 +144,7 @@ public class NullInputStreamTest {
 
         // Read further
         for (int i = 0; i < 3; i++) {
-            assertEquals(position + i, input.read(), "Read After Mark [" + i +"]");
+            assertThat(input.read()).as("Read After Mark [" + i + "]").isEqualTo(position + i);
         }
 
         // Reset
@@ -155,7 +152,7 @@ public class NullInputStreamTest {
 
         // Read From marked position
         for (int i = 0; i < readlimit + 1; i++) {
-            assertEquals(position + i, input.read(), "Read After Reset [" + i +"]");
+            assertThat(input.read()).as("Read After Reset [" + i + "]").isEqualTo(position + i);
         }
 
         // Reset after read limit passed
@@ -163,11 +160,9 @@ public class NullInputStreamTest {
             input.reset();
             fail("Read limit exceeded, expected IOException ");
         } catch (final IOException e) {
-            assertEquals("Marked position [" + position
-                         + "] is no longer valid - passed the read limit ["
-                         + readlimit + "]",
-                         e.getMessage(),
-                         "Read limit IOException message");
+            assertThat(e.getMessage()).as("Read limit IOException message").isEqualTo("Marked position [" + position
+                    + "] is no longer valid - passed the read limit ["
+                    + readlimit + "]");
         }
         input.close();
     }
@@ -175,20 +170,20 @@ public class NullInputStreamTest {
     @Test
     public void testMarkNotSupported() throws Exception {
         final InputStream input = new TestNullInputStream(100, false, true);
-        assertFalse(input.markSupported(), "Mark Should NOT be Supported");
+        assertThat(input.markSupported()).as("Mark Should NOT be Supported").isFalse();
 
         try {
             input.mark(5);
             fail("mark() should throw UnsupportedOperationException");
         } catch (final UnsupportedOperationException e) {
-            assertEquals(MARK_RESET_NOT_SUPPORTED, e.getMessage(), "mark() error message");
+            assertThat(e.getMessage()).as("mark() error message").isEqualTo(MARK_RESET_NOT_SUPPORTED);
         }
 
         try {
             input.reset();
             fail("reset() should throw UnsupportedOperationException");
         } catch (final UnsupportedOperationException e) {
-            assertEquals(MARK_RESET_NOT_SUPPORTED, e.getMessage(), "reset() error message");
+            assertThat(e.getMessage()).as("reset() error message").isEqualTo(MARK_RESET_NOT_SUPPORTED);
         }
         input.close();
     }
@@ -196,17 +191,17 @@ public class NullInputStreamTest {
     @Test
     public void testSkip() throws Exception {
         final InputStream input = new TestNullInputStream(10, true, false);
-        assertEquals(0, input.read(), "Read 1");
-        assertEquals(1, input.read(), "Read 2");
-        assertEquals(5, input.skip(5), "Skip 1");
-        assertEquals(7, input.read(), "Read 3");
-        assertEquals(2, input.skip(5), "Skip 2"); // only 2 left to skip
-        assertEquals(-1, input.skip(5), "Skip 3 (EOF)"); // End of file
+        assertThat(input.read()).as("Read 1").isEqualTo(0);
+        assertThat(input.read()).as("Read 2").isEqualTo(1);
+        assertThat(input.skip(5)).as("Skip 1").isEqualTo(5);
+        assertThat(input.read()).as("Read 3").isEqualTo(7);
+        assertThat(input.skip(5)).as("Skip 2").isEqualTo(2); // only 2 left to skip
+        assertThat(input.skip(5)).as("Skip 3 (EOF)").isEqualTo(-1); // End of file
         try {
             input.skip(5); //
             fail("Expected IOException for skipping after end of file");
         } catch (final IOException e) {
-            assertEquals("Skip after end of file", e.getMessage(), "Skip after EOF IOException message");
+            assertThat(e.getMessage()).as("Skip after EOF IOException message").isEqualTo("Skip after end of file");
         }
         input.close();
     }

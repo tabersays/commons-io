@@ -18,13 +18,12 @@
 package org.apache.commons.io.file;
 
 import static org.apache.commons.io.file.CounterAssertions.assertCounts;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ public class PathUtilsCleanDirectoryTest {
     @AfterEach
     public void afterEach() throws IOException {
         // temp dir should still exist since we are cleaning and not deleting.
-        assertTrue(Files.exists(tempDir));
+        assertThat(Files.exists(tempDir)).isTrue();
         // backstop
         if (Files.exists(tempDir) && PathUtils.isEmptyDirectory(tempDir)) {
             Files.deleteIfExists(tempDir);

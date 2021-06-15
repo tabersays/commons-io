@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -29,7 +29,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.CharBuffer;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.io.test.ThrowOnCloseReader;
 import org.apache.commons.io.test.ThrowOnCloseWriter;
@@ -103,80 +102,80 @@ public class TeeReaderTest  {
 
     @Test
     public void testMarkReset() throws Exception {
-        assertEquals('a', tee.read());
+        assertThat(tee.read()).isEqualTo('a');
         tee.mark(1);
-        assertEquals('b', tee.read());
+        assertThat(tee.read()).isEqualTo('b');
         tee.reset();
-        assertEquals('b', tee.read());
-        assertEquals('c', tee.read());
-        assertEquals(-1, tee.read());
-        assertEquals("abbc", output.toString());
+        assertThat(tee.read()).isEqualTo('b');
+        assertThat(tee.read()).isEqualTo('c');
+        assertThat(tee.read()).isEqualTo(-1);
+        assertThat(output.toString()).isEqualTo("abbc");
     }
 
     @Test
     public void testReadEverything() throws Exception {
-        assertEquals('a', tee.read());
-        assertEquals('b', tee.read());
-        assertEquals('c', tee.read());
-        assertEquals(-1, tee.read());
-        assertEquals("abc", output.toString());
+        assertThat(tee.read()).isEqualTo('a');
+        assertThat(tee.read()).isEqualTo('b');
+        assertThat(tee.read()).isEqualTo('c');
+        assertThat(tee.read()).isEqualTo(-1);
+        assertThat(output.toString()).isEqualTo("abc");
     }
 
     @Test
     public void testReadNothing() {
-        assertEquals("", output.toString());
+        assertThat(output.toString()).isEqualTo("");
     }
 
     @Test
     public void testReadOneChar() throws Exception {
-        assertEquals('a', tee.read());
-        assertEquals("a", output.toString());
+        assertThat(tee.read()).isEqualTo('a');
+        assertThat(output.toString()).isEqualTo("a");
     }
 
     @Test
     public void testReadToArray() throws Exception {
         final char[] buffer = new char[8];
-        assertEquals(3, tee.read(buffer));
-        assertEquals('a', buffer[0]);
-        assertEquals('b', buffer[1]);
-        assertEquals('c', buffer[2]);
-        assertEquals(-1, tee.read(buffer));
-        assertEquals("abc", output.toString());
+        assertThat(tee.read(buffer)).isEqualTo(3);
+        assertThat(buffer[0]).isEqualTo('a');
+        assertThat(buffer[1]).isEqualTo('b');
+        assertThat(buffer[2]).isEqualTo('c');
+        assertThat(tee.read(buffer)).isEqualTo(-1);
+        assertThat(output.toString()).isEqualTo("abc");
     }
 
     @Test
     public void testReadToArrayWithOffset() throws Exception {
         final char[] buffer = new char[8];
-        assertEquals(3, tee.read(buffer, 4, 4));
-        assertEquals('a', buffer[4]);
-        assertEquals('b', buffer[5]);
-        assertEquals('c', buffer[6]);
-        assertEquals(-1, tee.read(buffer, 4, 4));
-        assertEquals("abc", output.toString());
+        assertThat(tee.read(buffer, 4, 4)).isEqualTo(3);
+        assertThat(buffer[4]).isEqualTo('a');
+        assertThat(buffer[5]).isEqualTo('b');
+        assertThat(buffer[6]).isEqualTo('c');
+        assertThat(tee.read(buffer, 4, 4)).isEqualTo(-1);
+        assertThat(output.toString()).isEqualTo("abc");
     }
 
     @Test
     public void testReadToCharBuffer() throws Exception {
         final CharBuffer buffer = CharBuffer.allocate(8);
         buffer.position(1);
-        assertEquals(3, tee.read(buffer));
-        assertEquals(4, buffer.position());
+        assertThat(tee.read(buffer)).isEqualTo(3);
+        assertThat(buffer.position()).isEqualTo(4);
         buffer.flip();
         buffer.position(1);
-        assertEquals('a', buffer.charAt(0));
-        assertEquals('b', buffer.charAt(1));
-        assertEquals('c', buffer.charAt(2));
-        assertEquals(-1, tee.read(buffer));
-        assertEquals("abc", output.toString());
+        assertThat(buffer.charAt(0)).isEqualTo('a');
+        assertThat(buffer.charAt(1)).isEqualTo('b');
+        assertThat(buffer.charAt(2)).isEqualTo('c');
+        assertThat(tee.read(buffer)).isEqualTo(-1);
+        assertThat(output.toString()).isEqualTo("abc");
     }
 
     @Test
     public void testSkip() throws Exception {
-        assertEquals('a', tee.read());
-        assertEquals(1, tee.skip(1));
-        assertEquals('c', tee.read());
-        assertEquals(-1, tee.read());
-        assertEquals("ac", output.toString());
+        assertThat(tee.read()).isEqualTo('a');
+        assertThat(tee.skip(1)).isEqualTo(1);
+        assertThat(tee.read()).isEqualTo('c');
+        assertThat(tee.read()).isEqualTo(-1);
+        assertThat(output.toString()).isEqualTo("ac");
     }
 
 }

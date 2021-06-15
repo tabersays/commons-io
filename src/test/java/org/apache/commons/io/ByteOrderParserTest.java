@@ -16,11 +16,10 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.ByteOrder;
-
 import org.junit.jupiter.api.Test;
 
 public class ByteOrderParserTest {
@@ -31,12 +30,12 @@ public class ByteOrderParserTest {
 
     @Test
     public void testParseBig() {
-        assertEquals(ByteOrder.BIG_ENDIAN, parseByteOrder("BIG_ENDIAN"));
+        assertThat(parseByteOrder("BIG_ENDIAN")).isEqualTo(ByteOrder.BIG_ENDIAN);
     }
 
     @Test
     public void testParseLittle() {
-        assertEquals(ByteOrder.LITTLE_ENDIAN, parseByteOrder("LITTLE_ENDIAN"));
+        assertThat(parseByteOrder("LITTLE_ENDIAN")).isEqualTo(ByteOrder.LITTLE_ENDIAN);
     }
 
     @Test

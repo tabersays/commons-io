@@ -17,12 +17,11 @@
 
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.SortedMap;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,50 +36,50 @@ public class CharsetsTestCase {
         final SortedMap<String, Charset> requiredCharsets = Charsets.requiredCharsets();
         // test for what we expect to be there as of Java 6
         // Make sure the object at the given key is the right one
-        assertEquals(requiredCharsets.get("US-ASCII").name(), "US-ASCII");
-        assertEquals(requiredCharsets.get("ISO-8859-1").name(), "ISO-8859-1");
-        assertEquals(requiredCharsets.get("UTF-8").name(), "UTF-8");
-        assertEquals(requiredCharsets.get("UTF-16").name(), "UTF-16");
-        assertEquals(requiredCharsets.get("UTF-16BE").name(), "UTF-16BE");
-        assertEquals(requiredCharsets.get("UTF-16LE").name(), "UTF-16LE");
+        assertThat("US-ASCII").isEqualTo(requiredCharsets.get("US-ASCII").name());
+        assertThat("ISO-8859-1").isEqualTo(requiredCharsets.get("ISO-8859-1").name());
+        assertThat("UTF-8").isEqualTo(requiredCharsets.get("UTF-8").name());
+        assertThat("UTF-16").isEqualTo(requiredCharsets.get("UTF-16").name());
+        assertThat("UTF-16BE").isEqualTo(requiredCharsets.get("UTF-16BE").name());
+        assertThat("UTF-16LE").isEqualTo(requiredCharsets.get("UTF-16LE").name());
     }
 
     @Test
     public void testIso8859_1() {
-        assertEquals("ISO-8859-1", Charsets.ISO_8859_1.name());
+        assertThat(Charsets.ISO_8859_1.name()).isEqualTo("ISO-8859-1");
     }
 
     @Test
     public void testToCharset() {
-        assertEquals(Charset.defaultCharset(), Charsets.toCharset((String) null));
-        assertEquals(Charset.defaultCharset(), Charsets.toCharset((Charset) null));
-        assertEquals(Charset.defaultCharset(), Charsets.toCharset(Charset.defaultCharset()));
-        assertEquals(StandardCharsets.UTF_8, Charsets.toCharset(StandardCharsets.UTF_8));
+        assertThat(Charsets.toCharset((String) null)).isEqualTo(Charset.defaultCharset());
+        assertThat(Charsets.toCharset((Charset) null)).isEqualTo(Charset.defaultCharset());
+        assertThat(Charsets.toCharset(Charset.defaultCharset())).isEqualTo(Charset.defaultCharset());
+        assertThat(Charsets.toCharset(StandardCharsets.UTF_8)).isEqualTo(StandardCharsets.UTF_8);
     }
 
     @Test
     public void testUsAscii() {
-        assertEquals("US-ASCII", Charsets.US_ASCII.name());
+        assertThat(Charsets.US_ASCII.name()).isEqualTo("US-ASCII");
     }
 
     @Test
     public void testUtf16() {
-        assertEquals("UTF-16", Charsets.UTF_16.name());
+        assertThat(Charsets.UTF_16.name()).isEqualTo("UTF-16");
     }
 
     @Test
     public void testUtf16Be() {
-        assertEquals("UTF-16BE", Charsets.UTF_16BE.name());
+        assertThat(Charsets.UTF_16BE.name()).isEqualTo("UTF-16BE");
     }
 
     @Test
     public void testUtf16Le() {
-        assertEquals("UTF-16LE", Charsets.UTF_16LE.name());
+        assertThat(Charsets.UTF_16LE.name()).isEqualTo("UTF-16LE");
     }
 
     @Test
     public void testUtf8() {
-        assertEquals("UTF-8", Charsets.UTF_8.name());
+        assertThat(Charsets.UTF_8.name()).isEqualTo("UTF-8");
     }
 
 }

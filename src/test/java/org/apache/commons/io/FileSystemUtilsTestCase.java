@@ -16,8 +16,8 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.time.Duration;
 import java.util.Locale;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -64,7 +63,7 @@ public class FileSystemUtilsTestCase {
             boolean kilobyteBlock = true;
             try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))){
                 final String line = r.readLine();
-                assertNotNull("Unexpected null line", line);
+                assertThat("Unexpected null line").as(line).isNotNull();
                 if (line.contains("512")) {
                     kilobyteBlock = false;
                 }
@@ -79,16 +78,16 @@ public class FileSystemUtilsTestCase {
             // kibibytes (1024) instead of SI kilobytes (1000)
             final double acceptableDelta = kb * 0.01d;
             if (kilobyteBlock) {
-                assertEquals(free, kb, acceptableDelta);
+                assertThat(kb).isCloseTo(free, within(acceptableDelta));
             } else {
-                assertEquals(free / 2d, kb, acceptableDelta);
+                assertThat(kb).isCloseTo(free / 2d, within(acceptableDelta));
             }
         } else {
             final long bytes = FileSystemUtils.freeSpace("");
             final long kb = FileSystemUtils.freeSpaceKb("");
             // Assume disk space does not fluctuate more than 1%
             final double acceptableDelta = kb * 0.01d;
-            assertEquals((double) bytes / 1024, kb, acceptableDelta);
+            assertThat(kb).isCloseTo((double) bytes / 1024, within(acceptableDelta));
         }
     }
 
@@ -146,8 +145,8 @@ public class FileSystemUtilsTestCase {
                 return 12345L;
             }
         };
-        assertEquals(12345L, fsu.freeSpaceOS("", 1, false, NEG_1_TIMEOUT));
-        assertEquals(12345L / 1024, fsu.freeSpaceOS("", 1, true, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceOS("", 1, false, NEG_1_TIMEOUT)).isEqualTo(12345L);
+        assertThat(fsu.freeSpaceOS("", 1, true, NEG_1_TIMEOUT)).isEqualTo(12345L / 1024);
     }
 
     @Test
@@ -158,8 +157,8 @@ public class FileSystemUtilsTestCase {
                 return kb ? 12345L : 54321;
             }
         };
-        assertEquals(54321L, fsu.freeSpaceOS("", 2, false, NEG_1_TIMEOUT));
-        assertEquals(12345L, fsu.freeSpaceOS("", 2, true, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceOS("", 2, false, NEG_1_TIMEOUT)).isEqualTo(54321L);
+        assertThat(fsu.freeSpaceOS("", 2, true, NEG_1_TIMEOUT)).isEqualTo(12345L);
     }
 
     //-----------------------------------------------------------------------
@@ -180,7 +179,7 @@ public class FileSystemUtilsTestCase {
                         "               7 File(s)        180,260 bytes\n" +
                         "              10 Dir(s)  41,411,551,232 bytes free";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(41411551232L, fsu.freeSpaceWindows("", NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceWindows("", NEG_1_TIMEOUT)).isEqualTo(41411551232L);
     }
 
     //-----------------------------------------------------------------------
@@ -200,7 +199,7 @@ public class FileSystemUtilsTestCase {
                         "               7 File(s)        180,260 bytes\n" +
                         "              10 Dir(s)  141,411,551,232 bytes free";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(141411551232L, fsu.freeSpaceWindows("", NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceWindows("", NEG_1_TIMEOUT)).isEqualTo(141411551232L);
     }
 
     //-----------------------------------------------------------------------
@@ -220,7 +219,7 @@ public class FileSystemUtilsTestCase {
                         "               7 File(s)        180,260 bytes\n" +
                         "              10 Dir(s)  1,232 bytes free";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(1232L, fsu.freeSpaceWindows("", NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceWindows("", NEG_1_TIMEOUT)).isEqualTo(1232L);
     }
 
     //-----------------------------------------------------------------------
@@ -239,7 +238,7 @@ public class FileSystemUtilsTestCase {
                         "               7 File(s)         180260 bytes\n" +
                         "              10 Dir(s)     41411551232 bytes free";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines, "dir /a /-c ");
-        assertEquals(41411551232L, fsu.freeSpaceWindows("", NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceWindows("", NEG_1_TIMEOUT)).isEqualTo(41411551232L);
     }
 
     @Test
@@ -257,7 +256,7 @@ public class FileSystemUtilsTestCase {
                         "               7 File(s)         180260 bytes\n" +
                         "              10 Dir(s)     41411551232 bytes free";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines, "dir /a /-c \"C:\"");
-        assertEquals(41411551232L, fsu.freeSpaceWindows("C:", NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceWindows("C:", NEG_1_TIMEOUT)).isEqualTo(41411551232L);
     }
 
     @Test
@@ -275,7 +274,7 @@ public class FileSystemUtilsTestCase {
                         "               7 File(s)         180260 bytes\n" +
                         "              10 Dir(s)     41411551232 bytes free";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines, "dir /a /-c \"C:\\somedir\"");
-        assertEquals(41411551232L, fsu.freeSpaceWindows("C:\\somedir", NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceWindows("C:\\somedir", NEG_1_TIMEOUT)).isEqualTo(41411551232L);
     }
 
     @Test
@@ -293,7 +292,7 @@ public class FileSystemUtilsTestCase {
                         "               7 File(s)         180260 bytes\n" +
                         "              10 Dir(s)     41411551232 bytes free";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines, "dir /a /-c \"C:\\somedir\"");
-        assertEquals(41411551232L, fsu.freeSpaceWindows("\"C:\\somedir\"", NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceWindows("\"C:\\somedir\"", NEG_1_TIMEOUT)).isEqualTo(41411551232L);
     }
 
     @Test
@@ -370,7 +369,7 @@ public class FileSystemUtilsTestCase {
                 "Filesystem           1K-blocks      Used Available Use% Mounted on\n" +
                         "/dev/xxx                497944    308528    189416  62% /";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(189416L, fsu.freeSpaceUnix("/", false, false, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceUnix("/", false, false, NEG_1_TIMEOUT)).isEqualTo(189416L);
     }
 
     @Test
@@ -380,7 +379,7 @@ public class FileSystemUtilsTestCase {
                 "Filesystem  1K-blocks      Used    Avail Capacity  Mounted on\n" +
                         "/dev/xxxxxx    128990    102902    15770    87%    /";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(15770L, fsu.freeSpaceUnix("/", false, false, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceUnix("/", false, false, NEG_1_TIMEOUT)).isEqualTo(15770L);
     }
 
     //-----------------------------------------------------------------------
@@ -392,7 +391,7 @@ public class FileSystemUtilsTestCase {
                 "Filesystem           1K-blocks      Used Available Use% Mounted on\n" +
                         "/dev/xxx                497944    308528    189416  62% /";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(189416L, fsu.freeSpaceUnix("/", true, false, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceUnix("/", true, false, NEG_1_TIMEOUT)).isEqualTo(189416L);
     }
 
     @Test
@@ -403,7 +402,7 @@ public class FileSystemUtilsTestCase {
                 "Filesystem  1K-blocks      Used    Avail Capacity  Mounted on\n" +
                         "/dev/xxxxxx    128990    102902    15770    87%    /";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(15770L, fsu.freeSpaceUnix("/", true, false, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceUnix("/", true, false, NEG_1_TIMEOUT)).isEqualTo(15770L);
     }
 
     @Test
@@ -414,7 +413,7 @@ public class FileSystemUtilsTestCase {
                 "Filesystem            kbytes    used   avail capacity  Mounted on\n" +
                         "/dev/dsk/x0x0x0x0    1350955  815754  481163    63%";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(481163L, fsu.freeSpaceUnix("/dev/dsk/x0x0x0x0", true, false, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceUnix("/dev/dsk/x0x0x0x0", true, false, NEG_1_TIMEOUT)).isEqualTo(481163L);
     }
 
     @Test
@@ -424,7 +423,7 @@ public class FileSystemUtilsTestCase {
                         "xxx-yyyyyyy-zzz:/home/users/s\n" +
                         "                      14428928  12956424   1472504  90% /home/users/s";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(1472504L, fsu.freeSpaceUnix("/home/users/s", false, false, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceUnix("/home/users/s", false, false, NEG_1_TIMEOUT)).isEqualTo(1472504L);
     }
 
     @Test
@@ -434,7 +433,7 @@ public class FileSystemUtilsTestCase {
                         "xxx-yyyyyyy-zzz:/home/users/s\n" +
                         "                      14428928  12956424   1472504  90% /home/users/s";
         final FileSystemUtils fsu = new MockFileSystemUtils(0, lines);
-        assertEquals(1472504L, fsu.freeSpaceUnix("/home/users/s", true, false, NEG_1_TIMEOUT));
+        assertThat(fsu.freeSpaceUnix("/home/users/s", true, false, NEG_1_TIMEOUT)).isEqualTo(1472504L);
     }
     @Test
 
@@ -594,7 +593,7 @@ public class FileSystemUtilsTestCase {
         @Override
         Process openProcess(final String[] params) {
             if (cmd != null) {
-                assertEquals(cmd, params[params.length - 1]);
+                assertThat(params[params.length - 1]).isEqualTo(cmd);
             }
             return new Process() {
                 @Override

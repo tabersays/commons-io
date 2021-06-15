@@ -17,9 +17,10 @@
 
 package org.apache.commons.io.file;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.commons.io.file.Counters.Counter;
 import org.apache.commons.io.file.Counters.PathCounters;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class CountersEqualsAndHashCodeTest {
@@ -35,51 +36,51 @@ public class CountersEqualsAndHashCodeTest {
     }
 
     private void testEquals(final Counter counter1, final Counter counter2) {
-        Assertions.assertEquals(counter1, counter2);
+        assertThat(counter2).isEqualTo(counter1);
         counter1.increment();
-        Assertions.assertNotEquals(counter1, counter2);
+        assertThat(counter2).isNotEqualTo(counter1);
         counter2.increment();
-        Assertions.assertEquals(counter1, counter2);
+        assertThat(counter2).isEqualTo(counter1);
     }
 
     private void testEqualsByteCounters(final PathCounters counter1, final PathCounters counter2) {
-        Assertions.assertEquals(counter1, counter2);
+        assertThat(counter2).isEqualTo(counter1);
         counter1.getByteCounter().increment();
-        Assertions.assertNotEquals(counter1, counter2);
+        assertThat(counter2).isNotEqualTo(counter1);
         counter2.getByteCounter().increment();
-        Assertions.assertEquals(counter1, counter2);
+        assertThat(counter2).isEqualTo(counter1);
     }
 
     private void testEqualsDirectoryCounters(final PathCounters counter1, final PathCounters counter2) {
-        Assertions.assertEquals(counter1, counter2);
+        assertThat(counter2).isEqualTo(counter1);
         counter1.getDirectoryCounter().increment();
-        Assertions.assertNotEquals(counter1, counter2);
+        assertThat(counter2).isNotEqualTo(counter1);
         counter2.getDirectoryCounter().increment();
-        Assertions.assertEquals(counter1, counter2);
+        assertThat(counter2).isEqualTo(counter1);
     }
 
     private void testEqualsFileCounters(final PathCounters counter1, final PathCounters counter2) {
-        Assertions.assertEquals(counter1, counter2);
+        assertThat(counter2).isEqualTo(counter1);
         counter1.getFileCounter().increment();
-        Assertions.assertNotEquals(counter1, counter2);
+        assertThat(counter2).isNotEqualTo(counter1);
         counter2.getFileCounter().increment();
-        Assertions.assertEquals(counter1, counter2);
+        assertThat(counter2).isEqualTo(counter1);
     }
 
     private void testHashCodeFileCounters(final PathCounters counter1, final PathCounters counter2) {
-        Assertions.assertEquals(counter1.hashCode(), counter2.hashCode());
+        assertThat(counter2.hashCode()).isEqualTo(counter1.hashCode());
         counter1.getFileCounter().increment();
-        Assertions.assertNotEquals(counter1.hashCode(), counter2.hashCode());
+        assertThat(counter2.hashCode()).isNotEqualTo(counter1.hashCode());
         counter2.getFileCounter().increment();
-        Assertions.assertEquals(counter1.hashCode(), counter2.hashCode());
+        assertThat(counter2.hashCode()).isEqualTo(counter1.hashCode());
     }
 
     private void testHashCodes(final Counter counter1, final Counter counter2) {
-        Assertions.assertEquals(counter1.hashCode(), counter2.hashCode());
+        assertThat(counter2.hashCode()).isEqualTo(counter1.hashCode());
         counter1.increment();
-        Assertions.assertNotEquals(counter1.hashCode(), counter2.hashCode());
+        assertThat(counter2.hashCode()).isNotEqualTo(counter1.hashCode());
         counter2.increment();
-        Assertions.assertEquals(counter1.hashCode(), counter2.hashCode());
+        assertThat(counter2.hashCode()).isEqualTo(counter1.hashCode());
     }
 
     @Test

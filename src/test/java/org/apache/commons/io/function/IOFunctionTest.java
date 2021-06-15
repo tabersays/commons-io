@@ -17,7 +17,7 @@
 
 package org.apache.commons.io.function;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
 import org.junit.jupiter.api.Test;
 
 public class IOFunctionTest {
@@ -46,9 +45,9 @@ public class IOFunctionTest {
 
         final InputStream is = new ByteArrayInputStream(new byte[] {2, 3});
         productFunction.accept(is);
-        assertEquals(4, holder.value);
+        assertThat(holder.value).isEqualTo(4);
         productFunction.accept(is);
-        assertEquals(9, holder.value);
+        assertThat(holder.value).isEqualTo(9);
     }
 
     @Test
@@ -58,8 +57,8 @@ public class IOFunctionTest {
         final IOFunction<InputStream, Integer> productFunction = readByte.andThen(squareInteger);
 
         final InputStream is = new ByteArrayInputStream(new byte[] {2, 3});
-        assertEquals(4, productFunction.apply(is));
-        assertEquals(9, productFunction.apply(is));
+        assertThat(productFunction.apply(is)).isEqualTo(4);
+        assertThat(productFunction.apply(is)).isEqualTo(9);
     }
 
     @Test
@@ -73,9 +72,9 @@ public class IOFunctionTest {
 
         final InputStream is = new ByteArrayInputStream(new byte[] {2, 3});
         productFunction.accept(is);
-        assertEquals(4, holder.value);
+        assertThat(holder.value).isEqualTo(4);
         productFunction.accept(is);
-        assertEquals(9, holder.value);
+        assertThat(holder.value).isEqualTo(9);
     }
 
     @Test
@@ -85,18 +84,18 @@ public class IOFunctionTest {
         final IOFunction<InputStream, Integer> productFunction = readByte.andThen(squareInteger);
 
         final InputStream is = new ByteArrayInputStream(new byte[] {2, 3});
-        assertEquals(4, productFunction.apply(is));
-        assertEquals(9, productFunction.apply(is));
+        assertThat(productFunction.apply(is)).isEqualTo(4);
+        assertThat(productFunction.apply(is)).isEqualTo(9);
     }
 
     @Test
     public void testApply() throws IOException {
         final IOFunction<InputStream, Integer> readByte = InputStream::read;
         final InputStream is = new ByteArrayInputStream(new byte[] { (byte)0xa, (byte)0xb, (byte)0xc});
-        assertEquals(0xa, readByte.apply(is));
-        assertEquals(0xb, readByte.apply(is));
-        assertEquals(0xc, readByte.apply(is));
-        assertEquals(-1, readByte.apply(is));
+        assertThat(readByte.apply(is)).isEqualTo(0xa);
+        assertThat(readByte.apply(is)).isEqualTo(0xb);
+        assertThat(readByte.apply(is)).isEqualTo(0xc);
+        assertThat(readByte.apply(is)).isEqualTo(-1);
     }
 
     @Test
@@ -118,8 +117,8 @@ public class IOFunctionTest {
         final IOFunction<InputStream, Integer> productFunction = squareInteger.compose(alwaysSeven);
 
         final InputStream is = new ByteArrayInputStream(new byte[] {2, 3});
-        assertEquals(49, productFunction.apply(is));
-        assertEquals(49, productFunction.apply(is));
+        assertThat(productFunction.apply(is)).isEqualTo(49);
+        assertThat(productFunction.apply(is)).isEqualTo(49);
     }
 
     @Test
@@ -129,8 +128,8 @@ public class IOFunctionTest {
         final IOFunction<InputStream, Integer> productFunction = squareInteger.compose(readByte);
 
         final InputStream is = new ByteArrayInputStream(new byte[] {2, 3});
-        assertEquals(4, productFunction.apply(is));
-        assertEquals(9, productFunction.apply(is));
+        assertThat(productFunction.apply(is)).isEqualTo(4);
+        assertThat(productFunction.apply(is)).isEqualTo(9);
     }
 
     @Test
@@ -141,8 +140,8 @@ public class IOFunctionTest {
         final IOFunction<Integer, Integer> squareInteger = i -> i * i;
         final IOSupplier<Integer> productFunction = squareInteger.compose(readByte);
 
-        assertEquals(4, productFunction.get());
-        assertEquals(9, productFunction.get());
+        assertThat(productFunction.get()).isEqualTo(4);
+        assertThat(productFunction.get()).isEqualTo(9);
     }
 
     @Test
@@ -151,15 +150,15 @@ public class IOFunctionTest {
         final IOFunction<Integer, Integer> squareInteger = i -> i * i;
         final IOSupplier<Integer> productFunction = squareInteger.compose(alwaysNine);
 
-        assertEquals(81, productFunction.get());
-        assertEquals(81, productFunction.get());
+        assertThat(productFunction.get()).isEqualTo(81);
+        assertThat(productFunction.get()).isEqualTo(81);
     }
 
     @Test
     public void testIdentity() throws IOException {
         final IOFunction<InputStream, InputStream> identityFunction = IOFunction.identity();
         try (final InputStream is = new ByteArrayInputStream(new byte[] { (byte) 0xa, (byte) 0xb, (byte) 0xc })) {
-            assertEquals(is, identityFunction.apply(is));
+            assertThat(identityFunction.apply(is)).isEqualTo(is);
         }
     }
 }

@@ -16,13 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,9 +53,9 @@ public class CloseShieldInputStreamTest {
     @Test
     public void testClose() throws IOException {
         shielded.close();
-        assertFalse(closed, "closed");
-        assertEquals(-1, shielded.read(), "read()");
-        assertEquals(data[0], original.read(), "read()");
+        assertThat(closed).as("closed").isFalse();
+        assertThat(shielded.read()).as("read()").isEqualTo(-1);
+        assertThat(original.read()).as("read()").isEqualTo(data[0]);
     }
 
 }

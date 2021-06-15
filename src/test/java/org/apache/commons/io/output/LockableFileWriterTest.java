@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -60,18 +58,17 @@ public class LockableFileWriterTest {
 
         // open a valid lockable writer
         try (LockableFileWriter lfw1 = new LockableFileWriter(file)) {
-            assertTrue(file.exists());
-            assertTrue(lockFile.exists());
+            assertThat(file.exists()).isTrue();
+            assertThat(lockFile.exists()).isTrue();
 
             // try to open a second writer
             try (LockableFileWriter lfw2 = new LockableFileWriter(file)) {
                 fail("Somehow able to open a locked file. ");
             } catch(final IOException ioe) {
                 final String msg = ioe.getMessage();
-                assertTrue(msg.startsWith("Can't write file, lock "),
-                        "Exception message does not start correctly. ");
-                assertTrue(file.exists());
-                assertTrue(lockFile.exists());
+                assertThat(msg.startsWith("Can't write file, lock ")).as("Exception message does not start correctly. ").isTrue();
+                assertThat(file.exists()).isTrue();
+                assertThat(lockFile.exists()).isTrue();
             }
 
             // try to open a third writer
@@ -79,55 +76,53 @@ public class LockableFileWriterTest {
                 fail("Somehow able to open a locked file. ");
             } catch(final IOException ioe) {
                 final String msg = ioe.getMessage();
-                assertTrue(msg.startsWith("Can't write file, lock "),
-                        "Exception message does not start correctly. ");
-                assertTrue(file.exists());
-                assertTrue(lockFile.exists());
+                assertThat(msg.startsWith("Can't write file, lock ")).as("Exception message does not start correctly. ").isTrue();
+                assertThat(file.exists()).isTrue();
+                assertThat(lockFile.exists()).isTrue();
             }
         }
-        assertTrue(file.exists());
-        assertFalse(lockFile.exists());
+        assertThat(file.exists()).isTrue();
+        assertThat(lockFile.exists()).isFalse();
     }
 
     //-----------------------------------------------------------------------
     @Test public void testAlternateLockDir() throws IOException {
         // open a valid lockable writer
         try (LockableFileWriter lfw1 = new LockableFileWriter(file, "UTF-8" ,true, altLockDir.getAbsolutePath())){
-            assertTrue(file.exists());
-            assertTrue(altLockFile.exists());
+            assertThat(file.exists()).isTrue();
+            assertThat(altLockFile.exists()).isTrue();
 
             // try to open a second writer
             try (LockableFileWriter lfw2 = new LockableFileWriter(file, StandardCharsets.UTF_8, true, altLockDir.getAbsolutePath())){
                 fail("Somehow able to open a locked file. ");
             } catch(final IOException ioe) {
                 final String msg = ioe.getMessage();
-                assertTrue(msg.startsWith("Can't write file, lock "),
-                        "Exception message does not start correctly. ");
-                assertTrue(file.exists());
-                assertTrue(altLockFile.exists());
+                assertThat(msg.startsWith("Can't write file, lock ")).as("Exception message does not start correctly. ").isTrue();
+                assertThat(file.exists()).isTrue();
+                assertThat(altLockFile.exists()).isTrue();
             }
         }
-        assertTrue(file.exists());
-        assertFalse(altLockFile.exists());
+        assertThat(file.exists()).isTrue();
+        assertThat(altLockFile.exists()).isFalse();
     }
 
     //-----------------------------------------------------------------------
     @Test public void testFileNotLocked() throws IOException {
         // open a valid lockable writer
         try (LockableFileWriter lfw1 = new LockableFileWriter(file)) {
-            assertTrue(file.exists());
-            assertTrue(lockFile.exists());
+            assertThat(file.exists()).isTrue();
+            assertThat(lockFile.exists()).isTrue();
         }
-        assertTrue(file.exists());
-        assertFalse(lockFile.exists());
+        assertThat(file.exists()).isTrue();
+        assertThat(lockFile.exists()).isFalse();
 
         // open a second valid writer on the same file
         try (LockableFileWriter lfw2 = new LockableFileWriter(file)) {
-            assertTrue(file.exists());
-            assertTrue(lockFile.exists());
+            assertThat(file.exists()).isTrue();
+            assertThat(lockFile.exists()).isTrue();
         }
-        assertTrue(file.exists());
-        assertFalse(lockFile.exists());
+        assertThat(file.exists()).isTrue();
+        assertThat(lockFile.exists()).isFalse();
     }
 
     //-----------------------------------------------------------------------
@@ -136,11 +131,11 @@ public class LockableFileWriterTest {
             fail();
         } catch (final UnsupportedCharsetException ex) {
             // expected
-            assertFalse(file.exists());
-            assertFalse(lockFile.exists());
+            assertThat(file.exists()).isFalse();
+            assertThat(lockFile.exists()).isFalse();
         }
-        assertFalse(file.exists());
-        assertFalse(lockFile.exists());
+        assertThat(file.exists()).isFalse();
+        assertThat(lockFile.exists()).isFalse();
     }
 
     //-----------------------------------------------------------------------
@@ -149,11 +144,11 @@ public class LockableFileWriterTest {
             fail();
         } catch (final IOException ex) {
             // expected
-            assertFalse(file.exists());
-            assertFalse(lockFile.exists());
+            assertThat(file.exists()).isFalse();
+            assertThat(lockFile.exists()).isFalse();
         }
-        assertFalse(file.exists());
-        assertFalse(lockFile.exists());
+        assertThat(file.exists()).isFalse();
+        assertThat(lockFile.exists()).isFalse();
     }
 
     //-----------------------------------------------------------------------
@@ -162,11 +157,11 @@ public class LockableFileWriterTest {
             fail();
         } catch (final NullPointerException ex) {
             // expected
-            assertFalse(file.exists());
-            assertFalse(lockFile.exists());
+            assertThat(file.exists()).isFalse();
+            assertThat(lockFile.exists()).isFalse();
         }
-        assertFalse(file.exists());
-        assertFalse(lockFile.exists());
+        assertThat(file.exists()).isFalse();
+        assertThat(lockFile.exists()).isFalse();
     }
 
     //-----------------------------------------------------------------------
@@ -175,11 +170,11 @@ public class LockableFileWriterTest {
             fail();
         } catch (final NullPointerException ex) {
             // expected
-            assertFalse(file.exists());
-            assertFalse(lockFile.exists());
+            assertThat(file.exists()).isFalse();
+            assertThat(lockFile.exists()).isFalse();
         }
-        assertFalse(file.exists());
-        assertFalse(lockFile.exists());
+        assertThat(file.exists()).isFalse();
+        assertThat(lockFile.exists()).isFalse();
     }
 
 }

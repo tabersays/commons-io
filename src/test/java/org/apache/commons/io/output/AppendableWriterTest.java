@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ public class AppendableWriterTest {
     public void testWriteInt() throws Exception {
         out.write('F');
 
-        assertEquals("F", out.getAppendable().toString());
+        assertThat(out.getAppendable().toString()).isEqualTo("F");
     }
 
     @Test
@@ -47,7 +47,7 @@ public class AppendableWriterTest {
 
         out.write(testData.toCharArray());
 
-        assertEquals(testData, out.getAppendable().toString());
+        assertThat(out.getAppendable().toString()).isEqualTo(testData);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class AppendableWriterTest {
 
         out.write(testData);
 
-        assertEquals(testData, out.getAppendable().toString());
+        assertThat(out.getAppendable().toString()).isEqualTo(testData);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class AppendableWriterTest {
         out.append(testData);
         out.append(null);
 
-        assertEquals(testData + "null", out.getAppendable().toString());
+        assertThat(out.getAppendable().toString()).isEqualTo(testData + "null");
     }
 
     @Test
@@ -76,13 +76,13 @@ public class AppendableWriterTest {
         out.append(testData, 1, 3);
         out.append(null, 1, 3);
 
-        assertEquals(testData.substring(1, 3) + "ul", out.getAppendable().toString());
+        assertThat(out.getAppendable().toString()).isEqualTo(testData.substring(1, 3) + "ul");
     }
 
     @Test
     public void testAppendChar() throws Exception {
         out.append('F');
 
-        assertEquals("F", out.getAppendable().toString());
+        assertThat(out.getAppendable().toString()).isEqualTo("F");
     }
 }

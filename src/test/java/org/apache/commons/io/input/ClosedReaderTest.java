@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ public class ClosedReaderTest {
     @Test
     public void testRead() throws Exception {
         try (final ClosedReader cr = new ClosedReader()) {
-            assertEquals(-1, cr.read(new char[10], 0, 10), "read(cbuf, off, len)");
+            assertThat(cr.read(new char[10], 0, 10)).as("read(cbuf, off, len)").isEqualTo(-1);
         }
     }
 

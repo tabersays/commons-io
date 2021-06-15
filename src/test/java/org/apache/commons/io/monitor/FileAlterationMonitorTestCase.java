@@ -16,9 +16,7 @@
  */
 package org.apache.commons.io.monitor;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -28,7 +26,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-
 import org.apache.commons.io.test.TestUtils;
 import org.junit.jupiter.api.Test;
 
@@ -51,21 +48,21 @@ public class FileAlterationMonitorTestCase extends AbstractMonitorTestCase {
     @Test
     public void testDefaultConstructor() {
         final FileAlterationMonitor monitor = new FileAlterationMonitor();
-        assertEquals(10000, monitor.getInterval(), "Interval");
+        assertThat(monitor.getInterval()).as("Interval").isEqualTo(10000);
     }
 
     @Test
     public void testCollectionConstructorShouldDoNothingWithNullCollection() {
         final Collection<FileAlterationObserver> observers = null;
         final FileAlterationMonitor monitor = new FileAlterationMonitor(0, observers);
-        assertFalse(monitor.getObservers().iterator().hasNext());
+        assertThat(monitor.getObservers().iterator().hasNext()).isFalse();
     }
 
     @Test
     public void testCollectionConstructorShouldDoNothingWithNullObservers() {
         final Collection<FileAlterationObserver> observers = new ArrayList<>(5);
         final FileAlterationMonitor monitor = new FileAlterationMonitor(0, observers);
-        assertFalse(monitor.getObservers().iterator().hasNext());
+        assertThat(monitor.getObservers().iterator().hasNext()).isFalse();
     }
 
     @Test
@@ -74,7 +71,7 @@ public class FileAlterationMonitorTestCase extends AbstractMonitorTestCase {
         final Collection<FileAlterationObserver> observers = Arrays.asList(observer);
         final FileAlterationMonitor monitor = new FileAlterationMonitor(0, observers);
         final Iterator<FileAlterationObserver> iterator = monitor.getObservers().iterator();
-        assertEquals(observer, iterator.next());
+        assertThat(iterator.next()).isEqualTo(observer);
     }
 
     /**
@@ -86,30 +83,30 @@ public class FileAlterationMonitorTestCase extends AbstractMonitorTestCase {
 
         // Null Observers
         FileAlterationMonitor monitor = new FileAlterationMonitor(123, observers);
-        assertEquals(123, monitor.getInterval(), "Interval");
-        assertFalse(monitor.getObservers().iterator().hasNext(), "Observers[1]");
+        assertThat(monitor.getInterval()).as("Interval").isEqualTo(123);
+        assertThat(monitor.getObservers().iterator().hasNext()).as("Observers[1]").isFalse();
 
         // Null Observer
         observers = new FileAlterationObserver[1]; // observer is null
         monitor = new FileAlterationMonitor(456, observers);
-        assertFalse(monitor.getObservers().iterator().hasNext(), "Observers[2]");
+        assertThat(monitor.getObservers().iterator().hasNext()).as("Observers[2]").isFalse();
 
         // Null Observer
         monitor.addObserver(null);
-        assertFalse(monitor.getObservers().iterator().hasNext(), "Observers[3]");
+        assertThat(monitor.getObservers().iterator().hasNext()).as("Observers[3]").isFalse();
         monitor.removeObserver(null);
 
         // Add Observer
         final FileAlterationObserver observer = new FileAlterationObserver("foo");
         monitor.addObserver(observer);
         final Iterator<FileAlterationObserver> it = monitor.getObservers().iterator();
-        assertTrue(it.hasNext(), "Observers[4]");
-        assertEquals(observer, it.next(), "Added");
-        assertFalse(it.hasNext(), "Observers[5]");
+        assertThat(it.hasNext()).as("Observers[4]").isTrue();
+        assertThat(it.next()).as("Added").isEqualTo(observer);
+        assertThat(it.hasNext()).as("Observers[5]").isFalse();
 
         // Remove Observer
         monitor.removeObserver(observer);
-        assertFalse(monitor.getObservers().iterator().hasNext(), "Observers[6]");
+        assertThat(monitor.getObservers().iterator().hasNext()).as("Observers[6]").isFalse();
     }
 
     /**
@@ -121,7 +118,7 @@ public class FileAlterationMonitorTestCase extends AbstractMonitorTestCase {
         final long interval = 100;
         listener.clear();
         final FileAlterationMonitor monitor = new FileAlterationMonitor(interval, observer);
-        assertEquals(interval, monitor.getInterval(), "Interval");
+        assertThat(monitor.getInterval()).as("Interval").isEqualTo(interval);
         monitor.start();
 
         try {
@@ -170,7 +167,7 @@ public class FileAlterationMonitorTestCase extends AbstractMonitorTestCase {
         listener.clear();
         final FileAlterationMonitor monitor = new FileAlterationMonitor(interval, observer);
         monitor.setThreadFactory(Executors.defaultThreadFactory());
-        assertEquals(interval, monitor.getInterval(), "Interval");
+        assertThat(monitor.getInterval()).as("Interval").isEqualTo(interval);
         monitor.start();
 
         // Create a File
@@ -226,13 +223,13 @@ public class FileAlterationMonitorTestCase extends AbstractMonitorTestCase {
         monitor.setThreadFactory(threadFactory);
 
         monitor.start();
-        assertFalse(createdThreads.isEmpty());
+        assertThat(createdThreads.isEmpty()).isFalse();
 
         Thread.sleep(10); // wait until the watcher thread enters Thread.sleep()
         monitor.stop(100);
 
         for (final Thread thread : createdThreads) {
-            assertFalse(thread.isAlive(), "The FileAlterationMonitor did not stop the threads it created.");
+            assertThat(thread.isAlive()).as("The FileAlterationMonitor did not stop the threads it created.").isFalse();
         }
     }
 }

@@ -16,14 +16,11 @@
  */
 package org.apache.commons.io.filefilter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -61,14 +58,14 @@ public abstract class ConditionalFileFilterAbstractTestCase extends IOFileFilter
         filters.add(new TesterTrueFileFilter());
         filters.add(new TesterTrueFileFilter());
         for (int i = 0; i < filters.size(); i++) {
-            assertEquals(i, fileFilter.getFileFilters().size(), "file filters count: ");
+            assertThat(fileFilter.getFileFilters().size()).as("file filters count: ").isEqualTo(i);
             fileFilter.addFileFilter(filters.get(i));
-            assertEquals(i + 1, fileFilter.getFileFilters().size(), "file filters count: ");
+            assertThat(fileFilter.getFileFilters().size()).as("file filters count: ").isEqualTo(i + 1);
         }
         for (final IOFileFilter filter : fileFilter.getFileFilters()) {
-            assertTrue(filters.contains(filter), "found file filter");
+            assertThat(filters.contains(filter)).as("found file filter").isTrue();
         }
-        assertEquals(filters.size(), fileFilter.getFileFilters().size(), "file filters count");
+        assertThat(fileFilter.getFileFilters().size()).as("file filters count").isEqualTo(filters.size());
     }
 
     @Test
@@ -81,9 +78,9 @@ public abstract class ConditionalFileFilterAbstractTestCase extends IOFileFilter
         filters.add(new TesterTrueFileFilter());
         for (final TesterTrueFileFilter filter : filters) {
             fileFilter.removeFileFilter(filter);
-            assertFalse(fileFilter.getFileFilters().contains(filter), "file filter removed");
+            assertThat(fileFilter.getFileFilters().contains(filter)).as("file filter removed").isFalse();
         }
-        assertEquals(0, fileFilter.getFileFilters().size(), "file filters count");
+        assertThat(fileFilter.getFileFilters().size()).as("file filters count").isEqualTo(0);
     }
 
     @Test

@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -25,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -74,7 +72,7 @@ public class FileUtilsDeleteDirectoryLinuxTestCase extends FileUtilsDeleteDirect
 	@Test
 	public void testThrowsOnCannotDeleteFile() throws Exception {
 		final File nested = new File(top, "nested");
-		assertTrue(nested.mkdirs());
+     assertThat(nested.mkdirs()).isTrue();
 
 		final File file = new File(nested, "restricted");
 		FileUtils.touch(file);
@@ -87,18 +85,18 @@ public class FileUtilsDeleteDirectoryLinuxTestCase extends FileUtilsDeleteDirect
 			fail("expected IOException");
 		} catch (final IOException e) {
 			final IOExceptionList list = (IOExceptionList) e;
-			assertEquals("Cannot delete file: " + file.getAbsolutePath(), list.getCause(0).getMessage());
+      assertThat(list.getCause(0).getMessage()).isEqualTo("Cannot delete file: " + file.getAbsolutePath());
 		} finally {
 			chmod(nested, 755, false);
 			FileUtils.deleteDirectory(nested);
 		}
-		assertEquals(0, top.list().length);
+     assertThat(top.list().length).isEqualTo(0);
 	}
 
 	@Test
 	public void testThrowsOnNullList() throws Exception {
 		final File nested = new File(top, "nested");
-		assertTrue(nested.mkdirs());
+     assertThat(nested.mkdirs()).isTrue();
 
 		// test wont work if we can't restrict permissions on the
 		// directory, so skip it.
@@ -109,12 +107,11 @@ public class FileUtilsDeleteDirectoryLinuxTestCase extends FileUtilsDeleteDirect
 			FileUtils.deleteDirectory(nested);
 			fail("expected IOException");
 		} catch (final IOException e) {
-			assertEquals("Unknown I/O error listing contents of directory: " + nested.getAbsolutePath(),
-					e.getMessage());
+      assertThat(e.getMessage()).isEqualTo("Unknown I/O error listing contents of directory: " + nested.getAbsolutePath());
 		} finally {
 			chmod(nested, 755, false);
 			FileUtils.deleteDirectory(nested);
 		}
-		assertEquals(0, top.list().length);
+     assertThat(top.list().length).isEqualTo(0);
 	}
 }

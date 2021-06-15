@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.OutputStream;
@@ -26,7 +25,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.test.TestUtils;
 import org.apache.commons.io.test.ThrowOnFlushAndCloseOutputStream;
@@ -53,8 +51,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -66,7 +64,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -89,8 +87,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -104,7 +102,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -129,7 +127,7 @@ public class IOUtilsWriteTestCase {
 
         byte[] bytes = baout.toByteArray();
         bytes = new String(bytes, StandardCharsets.UTF_8).getBytes(StandardCharsets.US_ASCII);
-        assertArrayEquals(inData, bytes, "Content differs");
+        assertThat(bytes).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -143,7 +141,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -166,8 +164,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -181,8 +179,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -194,7 +192,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -220,7 +218,7 @@ public class IOUtilsWriteTestCase {
 
         byte[] bytes = baout.toByteArray();
         bytes = new String(bytes, StandardCharsets.UTF_16).getBytes(StandardCharsets.US_ASCII);
-        assertArrayEquals(inData, bytes, "Content differs");
+        assertThat(bytes).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -232,7 +230,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -256,8 +254,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -273,8 +271,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -288,7 +286,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -312,8 +310,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -325,7 +323,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -351,7 +349,7 @@ public class IOUtilsWriteTestCase {
 
         byte[] bytes = baout.toByteArray();
         bytes = new String(bytes, StandardCharsets.UTF_16).getBytes(StandardCharsets.US_ASCII);
-        assertArrayEquals(inData, bytes, "Content differs");
+        assertThat(bytes).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -363,7 +361,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -387,8 +385,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -404,8 +402,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -419,7 +417,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -443,8 +441,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -456,7 +454,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -482,7 +480,7 @@ public class IOUtilsWriteTestCase {
 
         byte[] bytes = baout.toByteArray();
         bytes = new String(bytes, StandardCharsets.UTF_16).getBytes(StandardCharsets.US_ASCII);
-        assertArrayEquals(inData, bytes, "Content differs");
+        assertThat(bytes).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -494,7 +492,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -518,8 +516,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     //-----------------------------------------------------------------------
@@ -536,8 +534,8 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -551,7 +549,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -580,7 +578,7 @@ public class IOUtilsWriteTestCase {
 
         final String expected = "hello*world**this is**some text*";
         final String actual = baout.toString();
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -592,7 +590,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -609,7 +607,7 @@ public class IOUtilsWriteTestCase {
 
         final String expected = "hello" + System.lineSeparator() + "world" + System.lineSeparator();
         final String actual = baout.toString();
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -639,7 +637,7 @@ public class IOUtilsWriteTestCase {
 
         final String expected = "hello\u8364*world**this is**some text*";
         final String actual = baout.toString("UTF-8");
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -651,7 +649,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         out.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -668,7 +666,7 @@ public class IOUtilsWriteTestCase {
 
         final String expected = "hello" + System.lineSeparator() + "world" + System.lineSeparator();
         final String actual = baout.toString();
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -698,7 +696,7 @@ public class IOUtilsWriteTestCase {
 
         final String expected = "hello*world**this is**some text*";
         final String actual = baout.toString();
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -719,7 +717,7 @@ public class IOUtilsWriteTestCase {
 
         final String expected = "hello*world**this is**some text*";
         final String actual = baout.toString();
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -733,7 +731,7 @@ public class IOUtilsWriteTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, baout.size(), "Sizes differ");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -752,7 +750,7 @@ public class IOUtilsWriteTestCase {
 
         final String expected = "hello" + System.lineSeparator() + "world" + System.lineSeparator();
         final String actual = baout.toString();
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

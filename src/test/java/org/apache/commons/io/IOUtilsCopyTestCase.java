@@ -16,9 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
@@ -33,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.input.NullReader;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -74,10 +71,10 @@ public class IOUtilsCopyTestCase {
 
         final int count = IOUtils.copy(in, out);
 
-        assertEquals(0, in.available(), "Not all bytes were read");
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
-        assertEquals(inData.length,count);
+        assertThat(in.available()).as("Not all bytes were read").isEqualTo(0);
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
+        assertThat(count).isEqualTo(inData.length);
     }
 
     /**
@@ -90,13 +87,13 @@ public class IOUtilsCopyTestCase {
         final OutputStream out = NullOutputStream.NULL_OUTPUT_STREAM;
 
         // Test copy() method
-        assertEquals(-1, IOUtils.copy(in, out));
+        assertThat(IOUtils.copy(in, out)).isEqualTo(-1);
 
         // reset the input
         in.close();
 
         // Test copyLarge() method
-        assertEquals(size, IOUtils.copyLarge(in, out), "copyLarge()");
+        assertThat(IOUtils.copyLarge(in, out)).as("copyLarge()").isEqualTo(size);
     }
 
     @Test
@@ -140,10 +137,10 @@ public class IOUtilsCopyTestCase {
 
         final long count = IOUtils.copy(in, out, bufferSize);
 
-        assertEquals(0, in.available(), "Not all bytes were read");
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
-        assertEquals(inData.length,count);
+        assertThat(in.available()).as("Not all bytes were read").isEqualTo(0);
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
+        assertThat(count).isEqualTo(inData.length);
     }
 
     @SuppressWarnings({ "resource", "deprecation" }) // 'in' is deliberately not closed
@@ -160,9 +157,9 @@ public class IOUtilsCopyTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, in.available(), "Not all bytes were read");
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(in.available()).as("Not all bytes were read").isEqualTo(0);
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @SuppressWarnings("resource") // 'in' is deliberately not closed
@@ -179,10 +176,10 @@ public class IOUtilsCopyTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, in.available(), "Not all bytes were read");
+        assertThat(in.available()).as("Not all bytes were read").isEqualTo(0);
         byte[] bytes = baout.toByteArray();
         bytes = new String(bytes, StandardCharsets.UTF_8).getBytes(StandardCharsets.US_ASCII);
-        assertArrayEquals(inData, bytes, "Content differs");
+        assertThat(bytes).as("Content differs").containsExactly(inData);
     }
 
     @SuppressWarnings("resource") // 'in' is deliberately not closed
@@ -199,9 +196,9 @@ public class IOUtilsCopyTestCase {
         out.off();
         writer.flush();
 
-        assertEquals(0, in.available(), "Not all bytes were read");
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(in.available()).as("Not all bytes were read").isEqualTo(0);
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -248,9 +245,9 @@ public class IOUtilsCopyTestCase {
         final long count = IOUtils.copy(reader, (Appendable) writer);
         out.off();
         writer.flush();
-        assertEquals(inData.length, count, "The number of characters returned by copy is wrong");
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(count).as("The number of characters returned by copy is wrong").isEqualTo(inData.length);
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -260,13 +257,13 @@ public class IOUtilsCopyTestCase {
         final NullWriter writer = new NullWriter();
 
         // Test copy() method
-        assertEquals(size, IOUtils.copy(reader, (Appendable) writer));
+        assertThat(IOUtils.copy(reader, (Appendable) writer)).isEqualTo(size);
 
         // reset the input
         reader.close();
 
         // Test copyLarge() method
-        assertEquals(size, IOUtils.copyLarge(reader, writer), "copy()");
+        assertThat(IOUtils.copyLarge(reader, writer)).as("copy()").isEqualTo(size);
 
     }
 
@@ -305,8 +302,8 @@ public class IOUtilsCopyTestCase {
         //  out = fout;
 
         // Note: rely on the method to flush
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @SuppressWarnings("resource") // 'in' is deliberately not closed
@@ -325,7 +322,7 @@ public class IOUtilsCopyTestCase {
 
         byte[] bytes = baout.toByteArray();
         bytes = new String(bytes, StandardCharsets.UTF_16).getBytes(StandardCharsets.US_ASCII);
-        assertArrayEquals(inData, bytes, "Content differs");
+        assertThat(bytes).as("Content differs").containsExactly(inData);
     }
 
     @SuppressWarnings("resource") // 'in' is deliberately not closed
@@ -342,8 +339,8 @@ public class IOUtilsCopyTestCase {
         // note: this method *does* flush.
         // note: we don't flush here; this IOUtils method does it for us
 
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     @Test
@@ -393,9 +390,9 @@ public class IOUtilsCopyTestCase {
         final int count = IOUtils.copy(reader, writer);
         out.off();
         writer.flush();
-        assertEquals(inData.length, count, "The number of characters returned by copy is wrong");
-        assertEquals(inData.length, baout.size(), "Sizes differ");
-        assertArrayEquals(inData, baout.toByteArray(), "Content differs");
+        assertThat(count).as("The number of characters returned by copy is wrong").isEqualTo(inData.length);
+        assertThat(baout.size()).as("Sizes differ").isEqualTo(inData.length);
+        assertThat(baout.toByteArray()).as("Content differs").containsExactly(inData);
     }
 
     /*
@@ -408,13 +405,13 @@ public class IOUtilsCopyTestCase {
         final Writer writer = new NullWriter();
 
         // Test copy() method
-        assertEquals(-1, IOUtils.copy(reader, writer));
+        assertThat(IOUtils.copy(reader, writer)).isEqualTo(-1);
 
         // reset the input
         reader.close();
 
         // Test copyLarge() method
-        assertEquals(size, IOUtils.copyLarge(reader, writer), "copyLarge()");
+        assertThat(IOUtils.copyLarge(reader, writer)).as("copyLarge()").isEqualTo(size);
 
     }
 
@@ -439,13 +436,13 @@ public class IOUtilsCopyTestCase {
     public void testCopy_URLToFile() throws Exception {
         final String name = "/org/apache/commons/io/abitmorethan16k.txt";
         final URL in = getClass().getResource(name);
-        assertNotNull(in, name);
+        assertThat(in).as(name).isNotNull();
 
         final Path path = Files.createTempFile("testCopy_URLToFile", ".txt");
         try {
             IOUtils.copy(in, path.toFile());
 
-            assertArrayEquals(Files.readAllBytes(Paths.get("src/test/resources" + name)), Files.readAllBytes(path));
+            assertThat(Files.readAllBytes(path)).containsExactly(Files.readAllBytes(Paths.get("src/test/resources" + name)));
         } finally {
             Files.delete(path);
         }
@@ -455,12 +452,12 @@ public class IOUtilsCopyTestCase {
     public void testCopy_URLToOutputStream() throws Exception {
         final String name = "/org/apache/commons/io/abitmorethan16k.txt";
         final URL in = getClass().getResource(name);
-        assertNotNull(in, name);
+        assertThat(in).as(name).isNotNull();
 
         final ByteArrayOutputStream baout = new ByteArrayOutputStream();
         IOUtils.copy(in, baout);
 
-        assertArrayEquals(Files.readAllBytes(Paths.get("src/test/resources" + name)), baout.toByteArray());
+        assertThat(baout.toByteArray()).containsExactly(Files.readAllBytes(Paths.get("src/test/resources" + name)));
     }
 
 }

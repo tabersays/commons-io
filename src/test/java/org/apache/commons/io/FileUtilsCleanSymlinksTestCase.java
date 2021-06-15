@@ -16,14 +16,11 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -44,30 +41,30 @@ public class FileUtilsCleanSymlinksTestCase {
         }
 
         final File realOuter = new File(top, "realouter");
-        assertTrue(realOuter.mkdirs());
+        assertThat(realOuter.mkdirs()).isTrue();
 
         final File realInner = new File(realOuter, "realinner");
-        assertTrue(realInner.mkdirs());
+        assertThat(realInner.mkdirs()).isTrue();
 
         final File realFile = new File(realInner, "file1");
         FileUtils.touch(realFile);
-        assertEquals(1, realInner.list().length);
+        assertThat(realInner.list().length).isEqualTo(1);
 
         final File randomFile = new File(top, "randomfile");
         FileUtils.touch(randomFile);
 
         final File symlinkFile = new File(realInner, "fakeinner");
-        assertTrue(setupSymlink(randomFile, symlinkFile));
+        assertThat(setupSymlink(randomFile, symlinkFile)).isTrue();
 
-        assertEquals(2, realInner.list().length);
+        assertThat(realInner.list().length).isEqualTo(2);
 
         // assert contents of the real directory were removed including the symlink
         FileUtils.cleanDirectory(realOuter);
-        assertEquals(0, realOuter.list().length);
+        assertThat(realOuter.list().length).isEqualTo(0);
 
         // ensure that the contents of the symlink were NOT removed.
-        assertTrue(randomFile.exists());
-        assertFalse(symlinkFile.exists());
+        assertThat(randomFile.exists()).isTrue();
+        assertThat(symlinkFile.exists()).isFalse();
     }
 
 
@@ -79,31 +76,31 @@ public class FileUtilsCleanSymlinksTestCase {
         }
 
         final File realOuter = new File(top, "realouter");
-        assertTrue(realOuter.mkdirs());
+        assertThat(realOuter.mkdirs()).isTrue();
 
         final File realInner = new File(realOuter, "realinner");
-        assertTrue(realInner.mkdirs());
+        assertThat(realInner.mkdirs()).isTrue();
 
         FileUtils.touch(new File(realInner, "file1"));
-        assertEquals(1, realInner.list().length);
+        assertThat(realInner.list().length).isEqualTo(1);
 
         final File randomDirectory = new File(top, "randomDir");
-        assertTrue(randomDirectory.mkdirs());
+        assertThat(randomDirectory.mkdirs()).isTrue();
 
         FileUtils.touch(new File(randomDirectory, "randomfile"));
-        assertEquals(1, randomDirectory.list().length);
+        assertThat(randomDirectory.list().length).isEqualTo(1);
 
         final File symlinkDirectory = new File(realOuter, "fakeinner");
-        assertTrue(setupSymlink(randomDirectory, symlinkDirectory));
+        assertThat(setupSymlink(randomDirectory, symlinkDirectory)).isTrue();
 
-        assertEquals(1, symlinkDirectory.list().length);
+        assertThat(symlinkDirectory.list().length).isEqualTo(1);
 
         // assert contents of the real directory were removed including the symlink
         FileUtils.cleanDirectory(realOuter);
-        assertEquals(0, realOuter.list().length);
+        assertThat(realOuter.list().length).isEqualTo(0);
 
         // ensure that the contents of the symlink were NOT removed.
-        assertEquals(1, randomDirectory.list().length, "Contents of sym link should not have been removed");
+        assertThat(randomDirectory.list().length).as("Contents of sym link should not have been removed").isEqualTo(1);
     }
 
     @Test
@@ -114,35 +111,35 @@ public class FileUtilsCleanSymlinksTestCase {
         }
 
         final File realParent = new File(top, "realparent");
-        assertTrue(realParent.mkdirs());
+        assertThat(realParent.mkdirs()).isTrue();
 
         final File realInner = new File(realParent, "realinner");
-        assertTrue(realInner.mkdirs());
+        assertThat(realInner.mkdirs()).isTrue();
 
         FileUtils.touch(new File(realInner, "file1"));
-        assertEquals(1, realInner.list().length);
+        assertThat(realInner.list().length).isEqualTo(1);
 
         final File randomDirectory = new File(top, "randomDir");
-        assertTrue(randomDirectory.mkdirs());
+        assertThat(randomDirectory.mkdirs()).isTrue();
 
         FileUtils.touch(new File(randomDirectory, "randomfile"));
-        assertEquals(1, randomDirectory.list().length);
+        assertThat(randomDirectory.list().length).isEqualTo(1);
 
         final File symlinkDirectory = new File(realParent, "fakeinner");
-        assertTrue(setupSymlink(randomDirectory, symlinkDirectory));
+        assertThat(setupSymlink(randomDirectory, symlinkDirectory)).isTrue();
 
-        assertEquals(1, symlinkDirectory.list().length);
+        assertThat(symlinkDirectory.list().length).isEqualTo(1);
 
         final File symlinkParentDirectory = new File(top, "fakeouter");
-        assertTrue(setupSymlink(realParent, symlinkParentDirectory));
+        assertThat(setupSymlink(realParent, symlinkParentDirectory)).isTrue();
 
         // assert contents of the real directory were removed including the symlink
         FileUtils.cleanDirectory(symlinkParentDirectory);// should clean the contents of this but not recurse into other links
-        assertEquals(0, symlinkParentDirectory.list().length);
-        assertEquals(0, realParent.list().length);
+        assertThat(symlinkParentDirectory.list().length).isEqualTo(0);
+        assertThat(realParent.list().length).isEqualTo(0);
 
         // ensure that the contents of the symlink were NOT removed.
-        assertEquals(1, randomDirectory.list().length, "Contents of sym link should not have been removed");
+        assertThat(randomDirectory.list().length).as("Contents of sym link should not have been removed").isEqualTo(1);
     }
 
     @Test
@@ -153,17 +150,17 @@ public class FileUtilsCleanSymlinksTestCase {
         }
 
         final File randomDirectory = new File(top, "randomDir");
-        assertTrue(randomDirectory.mkdirs());
+        assertThat(randomDirectory.mkdirs()).isTrue();
 
         FileUtils.touch(new File(randomDirectory, "randomfile"));
-        assertEquals(1, randomDirectory.list().length);
+        assertThat(randomDirectory.list().length).isEqualTo(1);
 
         final File symlinkDirectory = new File(top, "fakeDir");
-        assertTrue(setupSymlink(randomDirectory, symlinkDirectory));
+        assertThat(setupSymlink(randomDirectory, symlinkDirectory)).isTrue();
 
         FileUtils.cleanDirectory(symlinkDirectory);
-        assertEquals(0, symlinkDirectory.list().length);
-        assertEquals(0, randomDirectory.list().length);
+        assertThat(symlinkDirectory.list().length).isEqualTo(0);
+        assertThat(randomDirectory.list().length).isEqualTo(0);
     }
 
 
@@ -175,13 +172,13 @@ public class FileUtilsCleanSymlinksTestCase {
         }
 
         final File randomDirectory = new File(top, "randomDir");
-        assertTrue(randomDirectory.mkdirs());
+        assertThat(randomDirectory.mkdirs()).isTrue();
 
         final File symlinkDirectory = new File(top, "fakeDir");
-        assertTrue(setupSymlink(randomDirectory, symlinkDirectory));
+        assertThat(setupSymlink(randomDirectory, symlinkDirectory)).isTrue();
 
-        assertTrue(FileUtils.isSymlink(symlinkDirectory));
-        assertFalse(FileUtils.isSymlink(randomDirectory));
+        assertThat(FileUtils.isSymlink(symlinkDirectory)).isTrue();
+        assertThat(FileUtils.isSymlink(randomDirectory)).isFalse();
     }
 
     @Test
@@ -195,10 +192,10 @@ public class FileUtilsCleanSymlinksTestCase {
         FileUtils.touch(randomFile);
 
         final File symlinkFile = new File(top, "fakeinner");
-        assertTrue(setupSymlink(randomFile, symlinkFile));
+        assertThat(setupSymlink(randomFile, symlinkFile)).isTrue();
 
-        assertTrue(FileUtils.isSymlink(symlinkFile));
-        assertFalse(FileUtils.isSymlink(randomFile));
+        assertThat(FileUtils.isSymlink(symlinkFile)).isTrue();
+        assertThat(FileUtils.isSymlink(randomFile)).isFalse();
     }
 
     @Test
@@ -213,12 +210,12 @@ public class FileUtilsCleanSymlinksTestCase {
         final File badSymlinkInPathFile = new File(symlinkFile, "fakeinner");
         final File noexistParentFile = new File("noexist", "file");
 
-        assertTrue(setupSymlink(noexistFile, symlinkFile));
+        assertThat(setupSymlink(noexistFile, symlinkFile)).isTrue();
 
-        assertTrue(FileUtils.isSymlink(symlinkFile));
-        assertFalse(FileUtils.isSymlink(noexistFile));
-        assertFalse(FileUtils.isSymlink(noexistParentFile));
-        assertFalse(FileUtils.isSymlink(badSymlinkInPathFile));
+        assertThat(FileUtils.isSymlink(symlinkFile)).isTrue();
+        assertThat(FileUtils.isSymlink(noexistFile)).isFalse();
+        assertThat(FileUtils.isSymlink(noexistParentFile)).isFalse();
+        assertThat(FileUtils.isSymlink(badSymlinkInPathFile)).isFalse();
     }
 
     @Test
@@ -229,19 +226,19 @@ public class FileUtilsCleanSymlinksTestCase {
         }
 
         final File realParent = new File(top, "realparent");
-        assertTrue(realParent.mkdirs());
+        assertThat(realParent.mkdirs()).isTrue();
 
         final File symlinkParentDirectory = new File(top, "fakeparent");
-        assertTrue(setupSymlink(realParent, symlinkParentDirectory));
+        assertThat(setupSymlink(realParent, symlinkParentDirectory)).isTrue();
 
         final File realChild = new File(symlinkParentDirectory, "realChild");
-        assertTrue(realChild.mkdirs());
+        assertThat(realChild.mkdirs()).isTrue();
 
         final File symlinkChild = new File(symlinkParentDirectory, "fakeChild");
-        assertTrue(setupSymlink(realChild, symlinkChild));
+        assertThat(setupSymlink(realChild, symlinkChild)).isTrue();
 
-        assertTrue(FileUtils.isSymlink(symlinkChild));
-        assertFalse(FileUtils.isSymlink(realChild));
+        assertThat(FileUtils.isSymlink(symlinkChild)).isTrue();
+        assertThat(FileUtils.isSymlink(realChild)).isFalse();
     }
 
     private boolean setupSymlink(final File res, final File link) throws Exception {

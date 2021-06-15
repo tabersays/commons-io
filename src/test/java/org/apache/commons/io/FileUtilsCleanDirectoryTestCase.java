@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -46,11 +44,11 @@ public class FileUtilsCleanDirectoryTestCase {
     // -----------------------------------------------------------------------
     @Test
     public void testCleanEmpty() throws Exception {
-        assertEquals(0, top.list().length);
+        assertThat(top.list().length).isEqualTo(0);
 
         FileUtils.cleanDirectory(top);
 
-        assertEquals(0, top.list().length);
+        assertThat(top.list().length).isEqualTo(0);
     }
 
     @Test
@@ -58,26 +56,26 @@ public class FileUtilsCleanDirectoryTestCase {
         FileUtils.touch(new File(top, "regular"));
         FileUtils.touch(new File(top, ".hidden"));
 
-        assertEquals(2, top.list().length);
+        assertThat(top.list().length).isEqualTo(2);
 
         FileUtils.cleanDirectory(top);
 
-        assertEquals(0, top.list().length);
+        assertThat(top.list().length).isEqualTo(0);
     }
 
     @Test
     public void testDeletesNested() throws Exception {
         final File nested = new File(top, "nested");
 
-        assertTrue(nested.mkdirs());
+        assertThat(nested.mkdirs()).isTrue();
 
         FileUtils.touch(new File(nested, "file"));
 
-        assertEquals(1, top.list().length);
+        assertThat(top.list().length).isEqualTo(1);
 
         FileUtils.cleanDirectory(top);
 
-        assertEquals(0, top.list().length);
+        assertThat(top.list().length).isEqualTo(0);
     }
 
     @DisabledOnOs(OS.WINDOWS)
@@ -92,7 +90,7 @@ public class FileUtilsCleanDirectoryTestCase {
             FileUtils.cleanDirectory(top);
             fail("expected IOException");
         } catch (final IOException e) {
-            assertEquals("Unknown I/O error listing contents of directory: " + top.getAbsolutePath(), e.getMessage());
+            assertThat(e.getMessage()).isEqualTo("Unknown I/O error listing contents of directory: " + top.getAbsolutePath());
         } finally {
             chmod(top, 755, false);
         }
@@ -112,7 +110,7 @@ public class FileUtilsCleanDirectoryTestCase {
             fail("expected IOException");
         } catch (final IOException e) {
             final IOExceptionList list = (IOExceptionList) e;
-            assertEquals("Cannot delete file: " + file.getAbsolutePath(), list.getCause(0).getMessage());
+            assertThat(list.getCause(0).getMessage()).isEqualTo("Cannot delete file: " + file.getAbsolutePath());
         } finally {
             chmod(top, 755, false);
         }

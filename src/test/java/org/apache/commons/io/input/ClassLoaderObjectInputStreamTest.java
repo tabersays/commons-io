@@ -16,9 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,7 +51,7 @@ public class ClassLoaderObjectInputStreamTest {
                 bais)) {
             final Object result = clois.readObject();
 
-            assertEquals(input, result);
+            assertThat(result).isEqualTo(input);
         }
     }
 
@@ -71,7 +69,7 @@ public class ClassLoaderObjectInputStreamTest {
                 bais)) {
             final Object result = clois.readObject();
 
-            assertEquals(input, result);
+            assertThat(result).isEqualTo(input);
         }
     }
 
@@ -90,7 +88,7 @@ public class ClassLoaderObjectInputStreamTest {
                 bais)) {
             final long result = clois.readLong();
 
-            assertEquals(input, result);
+            assertThat(result).isEqualTo(input);
         }
     }
 
@@ -149,7 +147,7 @@ public class ClassLoaderObjectInputStreamTest {
                 bais)) {
             final Object result = clois.readObject();
 
-            assertEquals(input, result);
+            assertThat(result).isEqualTo(input);
         }
     }
 
@@ -168,7 +166,7 @@ public class ClassLoaderObjectInputStreamTest {
                 bais)) {
             final Object result = clois.readObject();
 
-            assertEquals(input, result);
+            assertThat(result).isEqualTo(input);
         }
     }
 
@@ -184,7 +182,7 @@ public class ClassLoaderObjectInputStreamTest {
                 bais)) {
             final String[] interfaces = { Comparable.class.getName() };
             final Class<?> result = clois.resolveProxyClass(interfaces);
-            assertTrue(Comparable.class.isAssignableFrom(result), "Assignable");
+            assertThat(Comparable.class.isAssignableFrom(result)).as("Assignable").isTrue();
         }
     }
 
@@ -201,10 +199,10 @@ public class ClassLoaderObjectInputStreamTest {
             final String[] interfaces = { Comparable.class.getName(), Serializable.class.getName(),
                     Runnable.class.getName() };
             final Class<?> result = clois.resolveProxyClass(interfaces);
-            assertTrue(Comparable.class.isAssignableFrom(result), "Assignable");
-            assertTrue(Runnable.class.isAssignableFrom(result), "Assignable");
-            assertTrue(Serializable.class.isAssignableFrom(result), "Assignable");
-            assertFalse(Flushable.class.isAssignableFrom(result), "Not Assignable");
+            assertThat(Comparable.class.isAssignableFrom(result)).as("Assignable").isTrue();
+            assertThat(Runnable.class.isAssignableFrom(result)).as("Assignable").isTrue();
+            assertThat(Serializable.class.isAssignableFrom(result)).as("Assignable").isTrue();
+            assertThat(Flushable.class.isAssignableFrom(result)).as("Not Assignable").isFalse();
         }
     }
 }

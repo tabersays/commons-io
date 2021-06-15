@@ -18,12 +18,10 @@
  */
 package org.apache.commons.io.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.regex.Pattern;
-
 import org.junit.jupiter.api.Test;
 
 public class RegexpClassNameMatcherTest {
@@ -31,23 +29,23 @@ public class RegexpClassNameMatcherTest {
     @Test
     public void testSimplePatternFromString() {
         final ClassNameMatcher ca = new RegexpClassNameMatcher("foo.*");
-        assertTrue(ca.matches("foo.should.match"));
-        assertFalse(ca.matches("bar.should.not.match"));
+        assertThat(ca.matches("foo.should.match")).isTrue();
+        assertThat(ca.matches("bar.should.not.match")).isFalse();
     }
 
     @Test
     public void testSimplePatternFromPattern() {
         final ClassNameMatcher ca = new RegexpClassNameMatcher(Pattern.compile("foo.*"));
-        assertTrue(ca.matches("foo.should.match"));
-        assertFalse(ca.matches("bar.should.not.match"));
+        assertThat(ca.matches("foo.should.match")).isTrue();
+        assertThat(ca.matches("bar.should.not.match")).isFalse();
     }
 
     @Test
     public void testOrPattern() {
         final ClassNameMatcher ca = new RegexpClassNameMatcher("foo.*|bar.*");
-        assertTrue(ca.matches("foo.should.match"));
-        assertTrue(ca.matches("bar.should.match"));
-        assertFalse(ca.matches("zoo.should.not.match"));
+        assertThat(ca.matches("foo.should.match")).isTrue();
+        assertThat(ca.matches("bar.should.match")).isTrue();
+        assertThat(ca.matches("zoo.should.not.match")).isFalse();
     }
 
     @Test

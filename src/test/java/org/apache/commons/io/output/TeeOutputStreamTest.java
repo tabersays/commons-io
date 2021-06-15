@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,7 +24,6 @@ import static org.mockito.Mockito.verify;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.apache.commons.io.test.ThrowOnCloseOutputStream;
 import org.junit.jupiter.api.Test;
 
@@ -108,9 +107,9 @@ public class TeeOutputStreamTest {
     }
 
     private void assertByteArrayEquals(final String msg, final byte[] array1, final byte[] array2) {
-        assertEquals(array1.length, array2.length, msg + ": array size mismatch");
+        assertThat(array2.length).as(msg + ": array size mismatch").isEqualTo(array1.length);
         for (int i = 0; i < array1.length; i++) {
-            assertEquals(array1[i], array2[i], msg + ": array[ " + i + "] mismatch");
+            assertThat(array2[i]).as(msg + ": array[ " + i + "] mismatch").isEqualTo(array1[i]);
         }
     }
 

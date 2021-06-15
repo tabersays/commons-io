@@ -16,15 +16,12 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
-
 import org.apache.commons.io.TaggedIOException;
 import org.junit.jupiter.api.Test;
 
@@ -42,10 +39,10 @@ public class TaggedOutputStreamTest  {
                 stream.write(new byte[] { 'c' }, 0, 1);
                 stream.flush();
             }
-            assertEquals(3, buffer.size());
-            assertEquals('a', buffer.toByteArray()[0]);
-            assertEquals('b', buffer.toByteArray()[1]);
-            assertEquals('c', buffer.toByteArray()[2]);
+            assertThat(buffer.size()).isEqualTo(3);
+            assertThat(buffer.toByteArray()[0]).isEqualTo('a');
+            assertThat(buffer.toByteArray()[1]).isEqualTo('b');
+            assertThat(buffer.toByteArray()[2]).isEqualTo('c');
         } catch (final IOException e) {
             fail("Unexpected exception thrown");
         }
@@ -62,12 +59,12 @@ public class TaggedOutputStreamTest  {
             stream.write('x');
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(stream.isCauseOf(e));
+            assertThat(stream.isCauseOf(e)).isTrue();
             try {
                 stream.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
 
@@ -76,12 +73,12 @@ public class TaggedOutputStreamTest  {
             stream.flush();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(stream.isCauseOf(e));
+            assertThat(stream.isCauseOf(e)).isTrue();
             try {
                 stream.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
 
@@ -90,12 +87,12 @@ public class TaggedOutputStreamTest  {
             stream.close();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(stream.isCauseOf(e));
+            assertThat(stream.isCauseOf(e)).isTrue();
             try {
                 stream.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
     }
@@ -105,8 +102,8 @@ public class TaggedOutputStreamTest  {
         final IOException exception = new IOException("test exception");
         try (final TaggedOutputStream stream = new TaggedOutputStream(ClosedOutputStream.CLOSED_OUTPUT_STREAM)) {
 
-            assertFalse(stream.isCauseOf(exception));
-            assertFalse(stream.isCauseOf(new TaggedIOException(exception, UUID.randomUUID())));
+            assertThat(stream.isCauseOf(exception)).isFalse();
+            assertThat(stream.isCauseOf(new TaggedIOException(exception, UUID.randomUUID()))).isFalse();
 
             try {
                 stream.throwIfCauseOf(exception);

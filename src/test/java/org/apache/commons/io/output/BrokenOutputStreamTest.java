@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,21 +45,21 @@ public class BrokenOutputStreamTest {
             stream.write(1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
 
         try {
             stream.write(new byte[1]);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
 
         try {
             stream.write(new byte[1], 0, 1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -70,7 +69,7 @@ public class BrokenOutputStreamTest {
             stream.flush();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -80,7 +79,7 @@ public class BrokenOutputStreamTest {
             stream.close();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 

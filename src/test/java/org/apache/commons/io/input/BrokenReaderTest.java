@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.Reader;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,21 +46,21 @@ public class BrokenReaderTest {
             reader.read();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
 
         try {
             reader.read(new char[1]);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
 
         try {
             reader.read(new char[1], 0, 1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -71,7 +70,7 @@ public class BrokenReaderTest {
             reader.skip(1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -81,7 +80,7 @@ public class BrokenReaderTest {
             reader.ready();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -91,7 +90,7 @@ public class BrokenReaderTest {
             reader.mark(1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -101,7 +100,7 @@ public class BrokenReaderTest {
             reader.reset();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -111,7 +110,7 @@ public class BrokenReaderTest {
             reader.close();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 

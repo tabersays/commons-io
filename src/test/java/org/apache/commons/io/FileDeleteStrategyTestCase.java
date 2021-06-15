@@ -16,19 +16,17 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import org.apache.commons.io.test.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
 /**
  * Test for FileDeleteStrategy.
  *
@@ -44,7 +42,7 @@ public class FileDeleteStrategyTestCase {
     public void testDeleteNormal() throws Exception {
         final File baseDir = temporaryFolder;
         final File subDir = new File(baseDir, "test");
-        assertTrue(subDir.mkdir());
+        assertThat(subDir.mkdir()).isTrue();
         final File subFile = new File(subDir, "a.txt");
         if (!subFile.getParentFile().exists()) {
             throw new IOException("Cannot create file " + subFile
@@ -55,8 +53,8 @@ public class FileDeleteStrategyTestCase {
             TestUtils.generateTestData(output, 16);
         }
 
-        assertTrue(subDir.exists());
-        assertTrue(subFile.exists());
+        assertThat(subDir.exists()).isTrue();
+        assertThat(subFile.exists()).isTrue();
         // delete dir
         try {
             FileDeleteStrategy.NORMAL.delete(subDir);
@@ -64,25 +62,25 @@ public class FileDeleteStrategyTestCase {
         } catch (final IOException ex) {
             // expected
         }
-        assertTrue(subDir.exists());
-        assertTrue(subFile.exists());
+        assertThat(subDir.exists()).isTrue();
+        assertThat(subFile.exists()).isTrue();
         // delete file
         FileDeleteStrategy.NORMAL.delete(subFile);
-        assertTrue(subDir.exists());
-        assertFalse(subFile.exists());
+        assertThat(subDir.exists()).isTrue();
+        assertThat(subFile.exists()).isFalse();
         // delete dir
         FileDeleteStrategy.NORMAL.delete(subDir);
-        assertFalse(subDir.exists());
+        assertThat(subDir.exists()).isFalse();
         // delete dir
         FileDeleteStrategy.NORMAL.delete(subDir);  // no error
-        assertFalse(subDir.exists());
+        assertThat(subDir.exists()).isFalse();
     }
 
     @Test
     public void testDeleteQuietlyNormal() throws Exception {
         final File baseDir = temporaryFolder;
         final File subDir = new File(baseDir, "test");
-        assertTrue(subDir.mkdir());
+        assertThat(subDir.mkdir()).isTrue();
         final File subFile = new File(subDir, "a.txt");
         if (!subFile.getParentFile().exists()) {
             throw new IOException("Cannot create file " + subFile
@@ -93,29 +91,29 @@ public class FileDeleteStrategyTestCase {
             TestUtils.generateTestData(output, 16);
         }
 
-        assertTrue(subDir.exists());
-        assertTrue(subFile.exists());
+        assertThat(subDir.exists()).isTrue();
+        assertThat(subFile.exists()).isTrue();
         // delete dir
-        assertFalse(FileDeleteStrategy.NORMAL.deleteQuietly(subDir));
-        assertTrue(subDir.exists());
-        assertTrue(subFile.exists());
+        assertThat(FileDeleteStrategy.NORMAL.deleteQuietly(subDir)).isFalse();
+        assertThat(subDir.exists()).isTrue();
+        assertThat(subFile.exists()).isTrue();
         // delete file
-        assertTrue(FileDeleteStrategy.NORMAL.deleteQuietly(subFile));
-        assertTrue(subDir.exists());
-        assertFalse(subFile.exists());
+        assertThat(FileDeleteStrategy.NORMAL.deleteQuietly(subFile)).isTrue();
+        assertThat(subDir.exists()).isTrue();
+        assertThat(subFile.exists()).isFalse();
         // delete dir
-        assertTrue(FileDeleteStrategy.NORMAL.deleteQuietly(subDir));
-        assertFalse(subDir.exists());
+        assertThat(FileDeleteStrategy.NORMAL.deleteQuietly(subDir)).isTrue();
+        assertThat(subDir.exists()).isFalse();
         // delete dir
-        assertTrue(FileDeleteStrategy.NORMAL.deleteQuietly(subDir));  // no error
-        assertFalse(subDir.exists());
+        assertThat(FileDeleteStrategy.NORMAL.deleteQuietly(subDir)).isTrue();  // no error
+        assertThat(subDir.exists()).isFalse();
     }
 
     @Test
     public void testDeleteForce() throws Exception {
         final File baseDir = temporaryFolder;
         final File subDir = new File(baseDir, "test");
-        assertTrue(subDir.mkdir());
+        assertThat(subDir.mkdir()).isTrue();
         final File subFile = new File(subDir, "a.txt");
         if (!subFile.getParentFile().exists()) {
             throw new IOException("Cannot create file " + subFile
@@ -126,15 +124,15 @@ public class FileDeleteStrategyTestCase {
             TestUtils.generateTestData(output, 16);
         }
 
-        assertTrue(subDir.exists());
-        assertTrue(subFile.exists());
+        assertThat(subDir.exists()).isTrue();
+        assertThat(subFile.exists()).isTrue();
         // delete dir
         FileDeleteStrategy.FORCE.delete(subDir);
-        assertFalse(subDir.exists());
-        assertFalse(subFile.exists());
+        assertThat(subDir.exists()).isFalse();
+        assertThat(subFile.exists()).isFalse();
         // delete dir
         FileDeleteStrategy.FORCE.delete(subDir);  // no error
-        assertFalse(subDir.exists());
+        assertThat(subDir.exists()).isFalse();
     }
 
     @Test
@@ -145,12 +143,12 @@ public class FileDeleteStrategyTestCase {
         } catch (final NullPointerException ex) {
             // expected
         }
-        assertTrue(FileDeleteStrategy.NORMAL.deleteQuietly(null));
+        assertThat(FileDeleteStrategy.NORMAL.deleteQuietly(null)).isTrue();
     }
 
     @Test
     public void testToString() {
-        assertEquals("FileDeleteStrategy[Normal]", FileDeleteStrategy.NORMAL.toString());
-        assertEquals("FileDeleteStrategy[Force]", FileDeleteStrategy.FORCE.toString());
+        assertThat(FileDeleteStrategy.NORMAL.toString()).isEqualTo("FileDeleteStrategy[Normal]");
+        assertThat(FileDeleteStrategy.FORCE.toString()).isEqualTo("FileDeleteStrategy[Force]");
     }
 }

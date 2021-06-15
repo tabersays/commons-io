@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -27,7 +26,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.apache.commons.io.IOExceptionList;
 import org.apache.commons.io.IOIndexedException;
 import org.junit.jupiter.api.Test;
@@ -49,8 +47,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).append(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -66,8 +64,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).append(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
         }
     }
 
@@ -83,8 +81,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).append(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -100,8 +98,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).append(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
         }
     }
 
@@ -117,8 +115,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).append(data, 0, 0);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -134,8 +132,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).append(data, 0, 0);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
         }
     }
 
@@ -150,8 +148,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).close();
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -166,8 +164,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).close();
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
         }
     }
 
@@ -182,8 +180,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).flush();
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -198,8 +196,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).flush();
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
         }
     }
 
@@ -215,8 +213,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -232,8 +230,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
         }
     }
 
@@ -249,8 +247,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data, 0, 0);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -266,8 +264,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data, 0, 0);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
         }
     }
 
@@ -283,8 +281,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -299,8 +297,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(32);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
 
         }
     }
@@ -317,8 +315,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -334,8 +332,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
 
         }
     }
@@ -352,8 +350,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data, 0, 0);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(0, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(0);
         }
     }
 
@@ -369,8 +367,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).write(data, 0, 0);
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
 
         }
     }
@@ -386,8 +384,8 @@ public class ProxyCollectionWriterTest {
             fail("Expected " + IOException.class.getName());
         } catch (final IOExceptionList e) {
             verify(goodW).close();
-            assertEquals(1, e.getCauseList().size());
-            assertEquals(1, e.getCause(0, IOIndexedException.class).getIndex());
+            assertThat(e.getCauseList().size()).isEqualTo(1);
+            assertThat(e.getCause(0, IOIndexedException.class).getIndex()).isEqualTo(1);
 
         }
     }
@@ -404,7 +402,7 @@ public class ProxyCollectionWriterTest {
             teeWriter.append('a');
             teeWriter.flush();
         }
-        assertTrue(true, "Dummy to show test completed OK");
+        assertThat(true).as("Dummy to show test completed OK").isTrue();
     }
 
     @Test
@@ -418,8 +416,8 @@ public class ProxyCollectionWriterTest {
                 tw.write(i);
                 expected.write(i);
             }
-            assertEquals(expected.toString(), sbw1.toString(), "ProxyCollectionWriter.write(int)");
-            assertEquals(expected.toString(), sbw2.toString(), "ProxyCollectionWriter.write(int)");
+            assertThat(sbw1.toString()).as("ProxyCollectionWriter.write(int)").isEqualTo(expected.toString());
+            assertThat(sbw2.toString()).as("ProxyCollectionWriter.write(int)").isEqualTo(expected.toString());
 
             final char[] array = new char[10];
             for (int i = 20; i < 30; i++) {
@@ -427,39 +425,39 @@ public class ProxyCollectionWriterTest {
             }
             tw.write(array);
             expected.write(array);
-            assertEquals(expected.toString(), sbw1.toString(), "ProxyCollectionWriter.write(char[])");
-            assertEquals(expected.toString(), sbw2.toString(), "ProxyCollectionWriter.write(char[])");
+            assertThat(sbw1.toString()).as("ProxyCollectionWriter.write(char[])").isEqualTo(expected.toString());
+            assertThat(sbw2.toString()).as("ProxyCollectionWriter.write(char[])").isEqualTo(expected.toString());
 
             for (int i = 25; i < 35; i++) {
                 array[i - 25] = (char) i;
             }
             tw.write(array, 5, 5);
             expected.write(array, 5, 5);
-            assertEquals(expected.toString(), sbw1.toString(), "TeeOutputStream.write(byte[], int, int)");
-            assertEquals(expected.toString(), sbw2.toString(), "TeeOutputStream.write(byte[], int, int)");
+            assertThat(sbw1.toString()).as("TeeOutputStream.write(byte[], int, int)").isEqualTo(expected.toString());
+            assertThat(sbw2.toString()).as("TeeOutputStream.write(byte[], int, int)").isEqualTo(expected.toString());
 
             for (int i = 0; i < 20; i++) {
                 tw.append((char) i);
                 expected.append((char) i);
             }
-            assertEquals(expected.toString(), sbw1.toString(), "ProxyCollectionWriter.append(char)");
-            assertEquals(expected.toString(), sbw2.toString(), "ProxyCollectionWriter.append(char)");
+            assertThat(sbw1.toString()).as("ProxyCollectionWriter.append(char)").isEqualTo(expected.toString());
+            assertThat(sbw2.toString()).as("ProxyCollectionWriter.append(char)").isEqualTo(expected.toString());
 
             for (int i = 20; i < 30; i++) {
                 array[i - 20] = (char) i;
             }
             tw.append(new String(array));
             expected.append(new String(array));
-            assertEquals(expected.toString(), sbw1.toString(), "ProxyCollectionWriter.append(CharSequence)");
-            assertEquals(expected.toString(), sbw2.toString(), "ProxyCollectionWriter.write(CharSequence)");
+            assertThat(sbw1.toString()).as("ProxyCollectionWriter.append(CharSequence)").isEqualTo(expected.toString());
+            assertThat(sbw2.toString()).as("ProxyCollectionWriter.write(CharSequence)").isEqualTo(expected.toString());
 
             for (int i = 25; i < 35; i++) {
                 array[i - 25] = (char) i;
             }
             tw.append(new String(array), 5, 5);
             expected.append(new String(array), 5, 5);
-            assertEquals(expected.toString(), sbw1.toString(), "ProxyCollectionWriter.append(CharSequence, int, int)");
-            assertEquals(expected.toString(), sbw2.toString(), "ProxyCollectionWriter.append(CharSequence, int, int)");
+            assertThat(sbw1.toString()).as("ProxyCollectionWriter.append(CharSequence, int, int)").isEqualTo(expected.toString());
+            assertThat(sbw2.toString()).as("ProxyCollectionWriter.append(CharSequence, int, int)").isEqualTo(expected.toString());
 
             expected.flush();
             expected.close();

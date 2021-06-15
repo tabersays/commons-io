@@ -16,11 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
@@ -42,7 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.TestResources;
@@ -153,7 +148,7 @@ public class TailerTest {
            final long testDelayMillis = delay * 10;
            TestUtils.sleep(testDelayMillis);
            final List<String> tailerlines = listener.getLines();
-           assertEquals(lines.size(), tailerlines.size(), "line count");
+            assertThat(tailerlines.size()).as("line count").isEqualTo(lines.size());
            for(int i = 0,len = lines.size();i<len;i++){
                final String expected = lines.get(i);
                final String actual = tailerlines.get(i);
@@ -182,14 +177,14 @@ public class TailerTest {
 
         TestUtils.sleep(delay * 2);
         List<String> lines = listener.getLines();
-        assertEquals(0, lines.size(), "1 line count");
+        assertThat(lines.size()).as("1 line count").isEqualTo(0);
 
         writeString(file, " one\n");
         TestUtils.sleep(delay * 2);
         lines = listener.getLines();
 
-        assertEquals(1, lines.size(), "1 line count");
-        assertEquals("Line one", lines.get(0), "1 line 1");
+        assertThat(lines.size()).as("1 line count").isEqualTo(1);
+        assertThat(lines.get(0)).as("1 line 1").isEqualTo("Line one");
 
         listener.clear();
     }
@@ -213,51 +208,51 @@ public class TailerTest {
         final long testDelayMillis = delayMillis * 10;
         TestUtils.sleep(testDelayMillis);
         List<String> lines = listener.getLines();
-        assertEquals(2, lines.size(), "1 line count");
-        assertEquals("Line one", lines.get(0), "1 line 1");
-        assertEquals("Line two", lines.get(1), "1 line 2");
+        assertThat(lines.size()).as("1 line count").isEqualTo(2);
+        assertThat(lines.get(0)).as("1 line 1").isEqualTo("Line one");
+        assertThat(lines.get(1)).as("1 line 2").isEqualTo("Line two");
         listener.clear();
 
         // Write another line to the file
         write(file, "Line three");
         TestUtils.sleep(testDelayMillis);
         lines = listener.getLines();
-        assertEquals(1, lines.size(), "2 line count");
-        assertEquals("Line three", lines.get(0), "2 line 3");
+        assertThat(lines.size()).as("2 line count").isEqualTo(1);
+        assertThat(lines.get(0)).as("2 line 3").isEqualTo("Line three");
         listener.clear();
 
         // Check file does actually have all the lines
         lines = FileUtils.readLines(file, "UTF-8");
-        assertEquals(3, lines.size(), "3 line count");
-        assertEquals("Line one", lines.get(0), "3 line 1");
-        assertEquals("Line two", lines.get(1), "3 line 2");
-        assertEquals("Line three", lines.get(2), "3 line 3");
+        assertThat(lines.size()).as("3 line count").isEqualTo(3);
+        assertThat(lines.get(0)).as("3 line 1").isEqualTo("Line one");
+        assertThat(lines.get(1)).as("3 line 2").isEqualTo("Line two");
+        assertThat(lines.get(2)).as("3 line 3").isEqualTo("Line three");
 
         // Delete & re-create
         file.delete();
-        assertFalse(file.exists(), "File should not exist");
+        assertThat(file.exists()).as("File should not exist").isFalse();
         createFile(file, 0);
-        assertTrue(file.exists(), "File should now exist");
+        assertThat(file.exists()).as("File should now exist").isTrue();
         TestUtils.sleep(testDelayMillis);
 
         // Write another line
         write(file, "Line four");
         TestUtils.sleep(testDelayMillis);
         lines = listener.getLines();
-        assertEquals(1, lines.size(), "4 line count");
-        assertEquals("Line four", lines.get(0), "4 line 3");
+        assertThat(lines.size()).as("4 line count").isEqualTo(1);
+        assertThat(lines.get(0)).as("4 line 3").isEqualTo("Line four");
         listener.clear();
 
         // Stop
         thread.interrupt();
         TestUtils.sleep(testDelayMillis * 4);
         write(file, "Line five");
-        assertEquals(0, listener.getLines().size(), "4 line count");
-        assertNotNull(listener.exception, "Missing InterruptedException");
-        assertTrue(listener.exception instanceof InterruptedException, "Unexpected Exception: " + listener.exception);
-        assertEquals(1 , listener.initialized, "Expected init to be called");
+        assertThat(listener.getLines().size()).as("4 line count").isEqualTo(0);
+        assertThat(listener.exception).as("Missing InterruptedException").isNotNull();
+        assertThat(listener.exception instanceof InterruptedException).as("Unexpected Exception: " + listener.exception).isTrue();
+        assertThat(listener.initialized).as("Expected init to be called").isEqualTo(1);
         // assertEquals(0 , listener.notFound, "fileNotFound should not be called"); // there is a window when it might be called
-        assertEquals(1 , listener.rotated, "fileRotated should be be called");
+        assertThat(listener.rotated).as("fileRotated should be be called").isEqualTo(1);
     }
 
     @Test
@@ -287,7 +282,7 @@ public class TailerTest {
         TestUtils.sleep(testDelayMillis);
 
         // May be > 3 times due to underlying OS behavior wrt streams
-        assertTrue(listener.reachedEndOfFile >= 3, "end of file reached at least 3 times");
+        assertThat(listener.reachedEndOfFile >= 3).as("end of file reached at least 3 times").isTrue();
     }
 
     protected void createFile(final File file, final long size)
@@ -346,7 +341,7 @@ public class TailerTest {
     @Test
     public void testStopWithNoFile() throws Exception {
         final File file = new File(temporaryFolder,"nosuchfile");
-        assertFalse(file.exists(), "nosuchfile should not exist");
+        assertThat(file.exists()).as("nosuchfile should not exist").isFalse();
         final TestTailerListener listener = new TestTailerListener();
         final int delay = 100;
         final int idle = 50; // allow time for thread to work
@@ -354,11 +349,11 @@ public class TailerTest {
         TestUtils.sleep(idle);
         tailer.stop();
         TestUtils.sleep(delay+idle);
-        assertNull(listener.exception, "Should not generate Exception");
-        assertEquals(1 , listener.initialized, "Expected init to be called");
-        assertTrue(listener.notFound > 0, "fileNotFound should be called");
-        assertEquals(0 , listener.rotated, "fileRotated should be not be called");
-        assertEquals(0, listener.reachedEndOfFile, "end of file never reached");
+        assertThat(listener.exception).as("Should not generate Exception").isNull();
+        assertThat(listener.initialized).as("Expected init to be called").isEqualTo(1);
+        assertThat(listener.notFound > 0).as("fileNotFound should be called").isTrue();
+        assertThat(listener.rotated).as("fileRotated should be not be called").isEqualTo(0);
+        assertThat(listener.reachedEndOfFile).as("end of file never reached").isEqualTo(0);
     }
 
     /*
@@ -367,7 +362,7 @@ public class TailerTest {
     @Test
     public void testInterrupt() throws Exception {
         final File file = new File(temporaryFolder, "nosuchfile");
-        assertFalse(file.exists(), "nosuchfile should not exist");
+        assertThat(file.exists()).as("nosuchfile should not exist").isFalse();
         final TestTailerListener listener = new TestTailerListener();
         // Use a long delay to try to make sure the test thread calls interrupt() while the tailer thread is sleeping.
         final int delay = 1000;
@@ -379,18 +374,18 @@ public class TailerTest {
         TestUtils.sleep(idle);
         thread.interrupt();
         TestUtils.sleep(delay + idle);
-        assertNotNull(listener.exception, "Missing InterruptedException");
-        assertTrue(listener.exception instanceof InterruptedException, "Unexpected Exception: " + listener.exception);
-        assertEquals(1, listener.initialized, "Expected init to be called");
-        assertTrue(listener.notFound > 0, "fileNotFound should be called");
-        assertEquals(0, listener.rotated, "fileRotated should be not be called");
-        assertEquals(0, listener.reachedEndOfFile, "end of file never reached");
+        assertThat(listener.exception).as("Missing InterruptedException").isNotNull();
+        assertThat(listener.exception instanceof InterruptedException).as("Unexpected Exception: " + listener.exception).isTrue();
+        assertThat(listener.initialized).as("Expected init to be called").isEqualTo(1);
+        assertThat(listener.notFound > 0).as("fileNotFound should be called").isTrue();
+        assertThat(listener.rotated).as("fileRotated should be not be called").isEqualTo(0);
+        assertThat(listener.reachedEndOfFile).as("end of file never reached").isEqualTo(0);
     }
 
     @Test
     public void testStopWithNoFileUsingExecutor() throws Exception {
         final File file = new File(temporaryFolder,"nosuchfile");
-        assertFalse(file.exists(), "nosuchfile should not exist");
+        assertThat(file.exists()).as("nosuchfile should not exist").isFalse();
         final TestTailerListener listener = new TestTailerListener();
         final int delay = 100;
         final int idle = 50; // allow time for thread to work
@@ -400,11 +395,11 @@ public class TailerTest {
         TestUtils.sleep(idle);
         tailer.stop();
         TestUtils.sleep(delay+idle);
-        assertNull(listener.exception, "Should not generate Exception");
-        assertEquals(1 , listener.initialized, "Expected init to be called");
-        assertTrue(listener.notFound > 0, "fileNotFound should be called");
-        assertEquals(0 , listener.rotated, "fileRotated should be not be called");
-        assertEquals(0, listener.reachedEndOfFile, "end of file never reached");
+        assertThat(listener.exception).as("Should not generate Exception").isNull();
+        assertThat(listener.initialized).as("Expected init to be called").isEqualTo(1);
+        assertThat(listener.notFound > 0).as("fileNotFound should be called").isTrue();
+        assertThat(listener.rotated).as("fileRotated should be not be called").isEqualTo(0);
+        assertThat(listener.reachedEndOfFile).as("end of file never reached").isEqualTo(0);
     }
 
     @Test
@@ -423,11 +418,11 @@ public class TailerTest {
         final long testDelayMillis = delayMillis * 10;
         TestUtils.sleep(testDelayMillis);
         final List<String> lines = listener.getLines();
-        assertEquals(4, lines.size(), "line count");
-        assertEquals("CRLF", lines.get(0), "line 1");
-        assertEquals("LF", lines.get(1), "line 2");
-        assertEquals("CR", lines.get(2), "line 3");
-        assertEquals("CRCR\r", lines.get(3), "line 4");
+        assertThat(lines.size()).as("line count").isEqualTo(4);
+        assertThat(lines.get(0)).as("line 1").isEqualTo("CRLF");
+        assertThat(lines.get(1)).as("line 2").isEqualTo("LF");
+        assertThat(lines.get(2)).as("line 3").isEqualTo("CR");
+        assertThat(lines.get(3)).as("line 4").isEqualTo("CRCR\r");
     }
 
     /**

@@ -17,14 +17,12 @@
 package org.apache.commons.io.monitor;
 
 import static org.apache.commons.io.test.TestUtils.sleepQuietly;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
@@ -115,12 +113,12 @@ public abstract class AbstractMonitorTestCase {
                         " " + listener.getCreatedFiles().size() +
                         " " + listener.getChangedFiles().size() +
                         " " + listener.getDeletedFiles().size() + "]";
-        assertEquals(dirCreate, listener.getCreatedDirectories().size(), label + ": No. of directories created");
-        assertEquals(dirChange, listener.getChangedDirectories().size(), label + ": No. of directories changed");
-        assertEquals(dirDelete, listener.getDeletedDirectories().size(), label + ": No. of directories deleted");
-        assertEquals(fileCreate, listener.getCreatedFiles().size(), label + ": No. of files created");
-        assertEquals(fileChange, listener.getChangedFiles().size(), label + ": No. of files changed");
-        assertEquals(fileDelete, listener.getDeletedFiles().size(), label + ": No. of files deleted");
+        assertThat(listener.getCreatedDirectories().size()).as(label + ": No. of directories created").isEqualTo(dirCreate);
+        assertThat(listener.getChangedDirectories().size()).as(label + ": No. of directories changed").isEqualTo(dirChange);
+        assertThat(listener.getDeletedDirectories().size()).as(label + ": No. of directories deleted").isEqualTo(dirDelete);
+        assertThat(listener.getCreatedFiles().size()).as(label + ": No. of files created").isEqualTo(fileCreate);
+        assertThat(listener.getChangedFiles().size()).as(label + ": No. of files changed").isEqualTo(fileChange);
+        assertThat(listener.getDeletedFiles().size()).as(label + ": No. of files deleted").isEqualTo(fileDelete);
     }
 
     /**
@@ -135,7 +133,7 @@ public abstract class AbstractMonitorTestCase {
         final long lastModified = file.exists() ? FileUtils.lastModified(file) : 0;
         try {
             FileUtils.touch(file);
-            assertTrue(file.exists());
+            assertThat(file.exists()).isTrue();
             file = new File(file.getParent(), file.getName());
             while (lastModified == FileUtils.lastModified(file)) {
                 sleepQuietly(pauseTime);

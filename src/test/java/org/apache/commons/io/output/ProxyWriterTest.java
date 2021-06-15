@@ -16,14 +16,13 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,7 +36,7 @@ public class ProxyWriterTest {
         try (final StringBuilderWriter writer = new StringBuilderWriter();
                 final ProxyWriter proxy = new ProxyWriter(writer)) {
             proxy.append("ABC");
-            assertEquals("ABC", writer.toString());
+            assertThat(writer.toString()).isEqualTo("ABC");
         }
     }
 
@@ -47,7 +46,7 @@ public class ProxyWriterTest {
                 final ProxyWriter proxy = new ProxyWriter(writer)) {
             proxy.append("ABC", 1, 3);
             proxy.flush();
-            assertEquals("BC", writer.toString());
+            assertThat(writer.toString()).isEqualTo("BC");
         }
     }
 
@@ -56,7 +55,7 @@ public class ProxyWriterTest {
         try (final StringBuilderWriter writer = new StringBuilderWriter();
                 final ProxyWriter proxy = new ProxyWriter(writer)) {
             proxy.append('c');
-            assertEquals("c", writer.toString());
+            assertThat(writer.toString()).isEqualTo("c");
         }
     }
 
@@ -65,7 +64,7 @@ public class ProxyWriterTest {
         try (final StringBuilderWriter writer = new StringBuilderWriter();
                 final ProxyWriter proxy = new ProxyWriter(writer)) {
             proxy.write("ABC");
-            assertEquals("ABC", writer.toString());
+            assertThat(writer.toString()).isEqualTo("ABC");
         }
     }
 
@@ -74,7 +73,7 @@ public class ProxyWriterTest {
         try (final StringBuilderWriter writer = new StringBuilderWriter();
                 final ProxyWriter proxy = new ProxyWriter(writer)) {
             proxy.write("ABC", 1, 2);
-            assertEquals("BC", writer.toString());
+            assertThat(writer.toString()).isEqualTo("BC");
         }
     }
 
@@ -83,7 +82,7 @@ public class ProxyWriterTest {
         try (final StringBuilderWriter writer = new StringBuilderWriter();
                 final ProxyWriter proxy = new ProxyWriter(writer)) {
             proxy.write(new char[] { 'A', 'B', 'C' });
-            assertEquals("ABC", writer.toString());
+            assertThat(writer.toString()).isEqualTo("ABC");
         }
     }
 
@@ -92,7 +91,7 @@ public class ProxyWriterTest {
         try (final StringBuilderWriter writer = new StringBuilderWriter();
                 final ProxyWriter proxy = new ProxyWriter(writer)) {
             proxy.write(65);
-            assertEquals("A", writer.toString());
+            assertThat(writer.toString()).isEqualTo("A");
         }
     }
 
@@ -101,7 +100,7 @@ public class ProxyWriterTest {
         try (final StringBuilderWriter writer = new StringBuilderWriter();
                 final ProxyWriter proxy = new ProxyWriter(writer)) {
             proxy.write(new char[] { 'A', 'B', 'C' }, 1, 2);
-            assertEquals("BC", writer.toString());
+            assertThat(writer.toString()).isEqualTo("BC");
         }
     }
 

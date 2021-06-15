@@ -17,16 +17,14 @@
 package org.apache.commons.io.input;
 
 import static org.apache.commons.io.input.ReversedLinesFileReaderTestParamBlockSize.assertEqualsAndNoLineBreaks;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.TestResources;
 import org.junit.jupiter.api.Test;
@@ -51,12 +49,12 @@ public class ReversedLinesFileReaderTestSimple {
         try (ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(testFile20Bytes, blockSize,
             "ISO-8859-1")) {
             assertThrows(IllegalArgumentException.class, () -> reversedLinesFileReader.readLines(-1));
-            assertTrue(reversedLinesFileReader.readLines(0).isEmpty());
+            assertThat(reversedLinesFileReader.readLines(0).isEmpty()).isTrue();
             final List<String> lines = reversedLinesFileReader.readLines(2);
             assertEqualsAndNoLineBreaks("987654321", lines.get(0));
             assertEqualsAndNoLineBreaks("123456789", lines.get(1));
-            assertTrue(reversedLinesFileReader.readLines(0).isEmpty());
-            assertTrue(reversedLinesFileReader.readLines(10000).isEmpty());
+            assertThat(reversedLinesFileReader.readLines(0).isEmpty()).isTrue();
+            assertThat(reversedLinesFileReader.readLines(10000).isEmpty()).isTrue();
         }
     }
 
@@ -67,11 +65,11 @@ public class ReversedLinesFileReaderTestSimple {
         try (ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(testFile20Bytes, blockSize,
             "ISO-8859-1")) {
             assertThrows(IllegalArgumentException.class, () -> reversedLinesFileReader.toString(-1));
-            assertTrue(reversedLinesFileReader.readLines(0).isEmpty());
+            assertThat(reversedLinesFileReader.readLines(0).isEmpty()).isTrue();
             final String lines = reversedLinesFileReader.toString(2);
-            assertEquals("123456789" + System.lineSeparator() + "987654321" + System.lineSeparator(), lines);
-            assertTrue(reversedLinesFileReader.toString(0).isEmpty());
-            assertTrue(reversedLinesFileReader.toString(10000).isEmpty());
+            assertThat(lines).isEqualTo("123456789" + System.lineSeparator() + "987654321" + System.lineSeparator());
+            assertThat(reversedLinesFileReader.toString(0).isEmpty()).isTrue();
+            assertThat(reversedLinesFileReader.toString(10000).isEmpty()).isTrue();
         }
     }
 

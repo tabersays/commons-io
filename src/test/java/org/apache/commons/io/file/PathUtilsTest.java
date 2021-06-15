@@ -17,9 +17,7 @@
 
 package org.apache.commons.io.file;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,7 +30,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -77,12 +74,12 @@ public class PathUtilsTest extends TestArguments {
                 // relative jar -> absolute dir
                 Path sourceDir = archive.getPath("dir1");
                 PathUtils.copyDirectory(sourceDir, tempDir);
-                assertTrue(Files.exists(tempDir.resolve("f1")));
+                assertThat(Files.exists(tempDir.resolve("f1"))).isTrue();
 
                 // absolute jar -> absolute dir
                 sourceDir = archive.getPath("/next");
                 PathUtils.copyDirectory(sourceDir, tempDir);
-                assertTrue(Files.exists(tempDir.resolve("dir")));
+                assertThat(Files.exists(tempDir.resolve("dir"))).isTrue();
             }
         } finally {
             PathUtils.deleteDirectory(tempDir);
@@ -100,12 +97,12 @@ public class PathUtilsTest extends TestArguments {
                 final Path sourceDir = Paths.get("src/test/resources/org/apache/commons/io/dirs-2-file-size-2")
                         .toAbsolutePath();
                 PathUtils.copyDirectory(sourceDir, targetDir);
-                assertTrue(Files.exists(targetDir.resolve("dirs-a-file-size-1")));
+                assertThat(Files.exists(targetDir.resolve("dirs-a-file-size-1"))).isTrue();
 
                 // absolute dir -> absolute jar
                 targetDir = archive.getPath("/");
                 PathUtils.copyDirectory(sourceDir, targetDir);
-                assertTrue(Files.exists(targetDir.resolve("dirs-a-file-size-1")));
+                assertThat(Files.exists(targetDir.resolve("dirs-a-file-size-1"))).isTrue();
             }
         } finally {
             PathUtils.deleteDirectory(tempDir);
@@ -124,12 +121,12 @@ public class PathUtilsTest extends TestArguments {
                 // relative jar -> relative dir
                 Path sourceDir = archive.getPath("next");
                 PathUtils.copyDirectory(sourceDir, targetDir);
-                assertTrue(Files.exists(targetDir.resolve("dir")));
+                assertThat(Files.exists(targetDir.resolve("dir"))).isTrue();
 
                 // absolute jar -> relative dir
                 sourceDir = archive.getPath("/dir1");
                 PathUtils.copyDirectory(sourceDir, targetDir);
-                assertTrue(Files.exists(targetDir.resolve("f1")));
+                assertThat(Files.exists(targetDir.resolve("f1"))).isTrue();
             }
         } finally {
             PathUtils.deleteDirectory(tempDir);
@@ -146,12 +143,12 @@ public class PathUtilsTest extends TestArguments {
                 Files.createDirectory(targetDir);
                 final Path sourceDir = Paths.get("src/test/resources/org/apache/commons/io/dirs-2-file-size-2");
                 PathUtils.copyDirectory(sourceDir, targetDir);
-                assertTrue(Files.exists(targetDir.resolve("dirs-a-file-size-1")));
+                assertThat(Files.exists(targetDir.resolve("dirs-a-file-size-1"))).isTrue();
 
                 // relative dir -> absolute jar
                 targetDir = archive.getPath("/");
                 PathUtils.copyDirectory(sourceDir, targetDir);
-                assertTrue(Files.exists(targetDir.resolve("dirs-a-file-size-1")));
+                assertThat(Files.exists(targetDir.resolve("dirs-a-file-size-1"))).isTrue();
             }
         } finally {
             PathUtils.deleteDirectory(tempDir);
@@ -165,8 +162,8 @@ public class PathUtilsTest extends TestArguments {
             final Path sourceFile = Paths
                 .get("src/test/resources/org/apache/commons/io/dirs-1-file-size-1/file-size-1.bin");
             final Path targetFile = PathUtils.copyFileToDirectory(sourceFile, tempDir);
-            assertTrue(Files.exists(targetFile));
-            assertEquals(Files.size(sourceFile), Files.size(targetFile));
+            assertThat(Files.exists(targetFile)).isTrue();
+            assertThat(Files.size(targetFile)).isEqualTo(Files.size(sourceFile));
         } finally {
             PathUtils.deleteDirectory(tempDir);
         }
@@ -174,37 +171,37 @@ public class PathUtilsTest extends TestArguments {
 
     @Test
     public void testCreateDirectoriesAlreadyExists() throws IOException {
-        assertEquals(tempDir.getParent(), PathUtils.createParentDirectories(tempDir));
+        assertThat(PathUtils.createParentDirectories(tempDir)).isEqualTo(tempDir.getParent());
     }
 
     @Test
     public void testCreateDirectoriesNew() throws IOException {
-        assertEquals(tempDir, PathUtils.createParentDirectories(tempDir.resolve("child")));
+        assertThat(PathUtils.createParentDirectories(tempDir.resolve("child"))).isEqualTo(tempDir);
     }
 
     @Test
     public void testIsDirectory() throws IOException {
-        assertFalse(PathUtils.isDirectory(null));
+        assertThat(PathUtils.isDirectory(null)).isFalse();
 
-        assertTrue(PathUtils.isDirectory(tempDir));
+        assertThat(PathUtils.isDirectory(tempDir)).isTrue();
         final Path testFile1 = Files.createTempFile(tempDir, "prefix", null);
-        assertFalse(PathUtils.isDirectory(testFile1));
+        assertThat(PathUtils.isDirectory(testFile1)).isFalse();
 
         final Path tempDir = Files.createTempDirectory(getClass().getCanonicalName());
         Files.delete(tempDir);
-        assertFalse(PathUtils.isDirectory(tempDir));
+        assertThat(PathUtils.isDirectory(tempDir)).isFalse();
     }
 
     @Test
     public void testIsRegularFile() throws IOException {
-        assertFalse(PathUtils.isRegularFile(null));
+        assertThat(PathUtils.isRegularFile(null)).isFalse();
 
-        assertFalse(PathUtils.isRegularFile(tempDir));
+        assertThat(PathUtils.isRegularFile(tempDir)).isFalse();
         final Path testFile1 = Files.createTempFile(tempDir, "prefix", null);
-        assertTrue(PathUtils.isRegularFile(testFile1));
+        assertThat(PathUtils.isRegularFile(testFile1)).isTrue();
 
         Files.delete(testFile1);
-        assertFalse(PathUtils.isRegularFile(testFile1));
+        assertThat(PathUtils.isRegularFile(testFile1)).isFalse();
     }
 
     @Test
@@ -213,8 +210,8 @@ public class PathUtilsTest extends TestArguments {
         try (final DirectoryStream<Path> stream = PathUtils.newDirectoryStream(PathUtils.current(), pathFilter)) {
             final Iterator<Path> iterator = stream.iterator();
             final Path path = iterator.next();
-            assertEquals(PATH_FIXTURE, path.getFileName().toString());
-            assertFalse(iterator.hasNext());
+            assertThat(path.getFileName().toString()).isEqualTo(PATH_FIXTURE);
+            assertThat(iterator.hasNext()).isFalse();
         }
     }
 

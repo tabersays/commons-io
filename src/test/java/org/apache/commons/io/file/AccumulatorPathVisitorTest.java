@@ -18,8 +18,7 @@
 package org.apache.commons.io.file;
 
 import static org.apache.commons.io.file.CounterAssertions.assertCounts;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.EmptyFileFilter;
@@ -66,8 +64,8 @@ public class AccumulatorPathVisitorTest {
         Files.walkFileTree(tempDir,
             new AndFileFilter(countingFileFilter, DirectoryFileFilter.INSTANCE, EmptyFileFilter.EMPTY));
         assertCounts(1, 0, 0, accPathVisitor.getPathCounters());
-        assertEquals(1, accPathVisitor.getDirList().size());
-        assertTrue(accPathVisitor.getFileList().isEmpty());
+        assertThat(accPathVisitor.getDirList().size()).isEqualTo(1);
+        assertThat(accPathVisitor.getFileList().isEmpty()).isTrue();
     }
 
     /**
@@ -81,8 +79,8 @@ public class AccumulatorPathVisitorTest {
         Files.walkFileTree(Paths.get("src/test/resources/org/apache/commons/io/dirs-1-file-size-0"),
             countingFileFilter);
         assertCounts(1, 1, 0, accPathVisitor.getPathCounters());
-        assertEquals(1, accPathVisitor.getDirList().size());
-        assertEquals(1, accPathVisitor.getFileList().size());
+        assertThat(accPathVisitor.getDirList().size()).isEqualTo(1);
+        assertThat(accPathVisitor.getFileList().size()).isEqualTo(1);
     }
 
     /**
@@ -96,8 +94,8 @@ public class AccumulatorPathVisitorTest {
         Files.walkFileTree(Paths.get("src/test/resources/org/apache/commons/io/dirs-1-file-size-1"),
             countingFileFilter);
         assertCounts(1, 1, 1, accPathVisitor.getPathCounters());
-        assertEquals(1, accPathVisitor.getDirList().size());
-        assertEquals(1, accPathVisitor.getFileList().size());
+        assertThat(accPathVisitor.getDirList().size()).isEqualTo(1);
+        assertThat(accPathVisitor.getFileList().size()).isEqualTo(1);
     }
 
     /**
@@ -111,8 +109,8 @@ public class AccumulatorPathVisitorTest {
         Files.walkFileTree(Paths.get("src/test/resources/org/apache/commons/io/dirs-2-file-size-2"),
             countingFileFilter);
         assertCounts(3, 2, 2, accPathVisitor.getPathCounters());
-        assertEquals(3, accPathVisitor.getDirList().size());
-        assertEquals(2, accPathVisitor.getFileList().size());
+        assertThat(accPathVisitor.getDirList().size()).isEqualTo(3);
+        assertThat(accPathVisitor.getFileList().size()).isEqualTo(2);
     }
 
 }

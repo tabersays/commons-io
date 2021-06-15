@@ -17,15 +17,12 @@
 
 package org.apache.commons.io.file;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
-
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.junit.jupiter.api.Test;
 
@@ -40,12 +37,12 @@ public class DirectoryStreamFilterTest {
     public void testFilterByName() throws Exception {
         final PathFilter pathFilter = new NameFileFilter(PATH_FIXTURE);
         final DirectoryStreamFilter streamFilter = new DirectoryStreamFilter(pathFilter);
-        assertEquals(pathFilter, streamFilter.getPathFilter());
+        assertThat(streamFilter.getPathFilter()).isEqualTo(pathFilter);
         try (final DirectoryStream<Path> stream = Files.newDirectoryStream(PathUtils.current(), streamFilter)) {
             final Iterator<Path> iterator = stream.iterator();
             final Path path = iterator.next();
-            assertEquals(PATH_FIXTURE, path.getFileName().toString());
-            assertFalse(iterator.hasNext());
+            assertThat(path.getFileName().toString()).isEqualTo(PATH_FIXTURE);
+            assertThat(iterator.hasNext()).isFalse();
         }
     }
 
@@ -53,10 +50,10 @@ public class DirectoryStreamFilterTest {
     public void testFilterByNameNot() throws Exception {
         final PathFilter pathFilter = new NameFileFilter(PATH_FIXTURE).negate();
         final DirectoryStreamFilter streamFilter = new DirectoryStreamFilter(pathFilter);
-        assertEquals(pathFilter, streamFilter.getPathFilter());
+        assertThat(streamFilter.getPathFilter()).isEqualTo(pathFilter);
         try (final DirectoryStream<Path> stream = Files.newDirectoryStream(PathUtils.current(), streamFilter)) {
             for (final Path path : stream) {
-                assertNotEquals(PATH_FIXTURE, path.getFileName().toString());
+                assertThat(path.getFileName().toString()).isNotEqualTo(PATH_FIXTURE);
             }
         }
     }

@@ -16,14 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -67,7 +64,7 @@ public class XmlStreamReaderUtilitiesTest {
     }
 
     private void checkContentTypeEncoding(final String expected, final String httpContentType) {
-        assertEquals(expected, XmlStreamReader.getContentTypeEncoding(httpContentType), "ContentTypeEncoding=[" + httpContentType + "]");
+        assertThat(XmlStreamReader.getContentTypeEncoding(httpContentType)).as("ContentTypeEncoding=[" + httpContentType + "]").isEqualTo(expected);
     }
 
     @Test
@@ -81,7 +78,7 @@ public class XmlStreamReaderUtilitiesTest {
     }
 
     private void checkContentTypeMime(final String expected, final String httpContentType) {
-        assertEquals(expected, XmlStreamReader.getContentTypeMime(httpContentType), "ContentTypeMime=[" + httpContentType + "]");
+        assertThat(XmlStreamReader.getContentTypeMime(httpContentType)).as("ContentTypeMime=[" + httpContentType + "]").isEqualTo(expected);
     }
 
     @Test
@@ -102,7 +99,7 @@ public class XmlStreamReaderUtilitiesTest {
 
     @SuppressWarnings("boxing")
     private void checkAppXml(final boolean expected, final String mime) {
-        assertEquals(expected, XmlStreamReader.isAppXml(mime), "Mime=[" + mime + "]");
+        assertThat(XmlStreamReader.isAppXml(mime)).as("Mime=[" + mime + "]").isEqualTo(expected);
     }
 
     @Test
@@ -120,7 +117,7 @@ public class XmlStreamReaderUtilitiesTest {
 
     @SuppressWarnings("boxing")
     private void checkTextXml(final boolean expected, final String mime) {
-        assertEquals(expected, XmlStreamReader.isTextXml(mime), "Mime=[" + mime + "]");
+        assertThat(XmlStreamReader.isTextXml(mime)).as("Mime=[" + mime + "]").isEqualTo(expected);
     }
 
     @Test
@@ -209,7 +206,7 @@ public class XmlStreamReaderUtilitiesTest {
         builder.append("xmlEnc=[").append(xmlEnc).append("], ");
         builder.append("defaultEncoding=[").append(defaultEncoding).append("],");
         final String encoding = calculateRawEncoding(bomEnc,xmlGuessEnc,xmlEnc, defaultEncoding);
-        assertEquals(expected, encoding, builder.toString());
+        assertThat(encoding).withFailMessage(builder.toString()).isEqualTo(expected);
     }
 
     protected String calculateRawEncoding(final String bomEnc, final String xmlGuessEnc, final String xmlEnc,
@@ -226,13 +223,13 @@ public class XmlStreamReaderUtilitiesTest {
             checkRawEncoding("XmlStreamReaderException", bomEnc, xmlGuessEnc, xmlEnc, defaultEncoding);
             fail("Expected XmlStreamReaderException");
         } catch (final XmlStreamReaderException e) {
-            assertTrue(e.getMessage().startsWith("Invalid encoding"), "Msg Start: " + e.getMessage());
-            assertTrue(e.getMessage().endsWith(msgSuffix), "Msg End: "   + e.getMessage());
-            assertEquals(bomEnc, e.getBomEncoding(), "bomEnc");
-            assertEquals(xmlGuessEnc, e.getXmlGuessEncoding(), "xmlGuessEnc");
-            assertEquals(xmlEnc, e.getXmlEncoding(), "xmlEnc");
-            assertNull(e.getContentTypeEncoding(), "ContentTypeEncoding");
-            assertNull(e.getContentTypeMime(), "ContentTypeMime");
+            assertThat(e.getMessage().startsWith("Invalid encoding")).as("Msg Start: " + e.getMessage()).isTrue();
+            assertThat(e.getMessage().endsWith(msgSuffix)).as("Msg End: "   + e.getMessage()).isTrue();
+            assertThat(e.getBomEncoding()).as("bomEnc").isEqualTo(bomEnc);
+            assertThat(e.getXmlGuessEncoding()).as("xmlGuessEnc").isEqualTo(xmlGuessEnc);
+            assertThat(e.getXmlEncoding()).as("xmlEnc").isEqualTo(xmlEnc);
+            assertThat(e.getContentTypeEncoding()).as("ContentTypeEncoding").isNull();
+            assertThat(e.getContentTypeMime()).as("ContentTypeMime").isNull();
         } catch (final Exception e) {
             fail("Expected XmlStreamReaderException, but threw " + e);
         }
@@ -291,7 +288,7 @@ public class XmlStreamReaderUtilitiesTest {
         builder.append("xmlEnc=[").append(xmlEnc).append("], ");
         builder.append("defaultEncoding=[").append(defaultEncoding).append("],");
         final String encoding = calculateHttpEncoding(httpContentType, bomEnc, xmlGuessEnc, xmlEnc, lenient, defaultEncoding);
-        assertEquals(expected, encoding, builder.toString());
+        assertThat(encoding).withFailMessage(builder.toString()).isEqualTo(expected);
     }
 
     protected String calculateHttpEncoding(final String httpContentType, final String bomEnc, final String xmlGuessEnc,
@@ -308,14 +305,13 @@ public class XmlStreamReaderUtilitiesTest {
             checkHttpEncoding("XmlStreamReaderException", lenient, httpContentType, bomEnc, xmlGuessEnc, xmlEnc, defaultEncoding);
             fail("Expected XmlStreamReaderException");
         } catch (final XmlStreamReaderException e) {
-            assertTrue(e.getMessage().startsWith("Invalid encoding"), "Msg Start: " + e.getMessage());
-            assertTrue(e.getMessage().endsWith(msgSuffix), "Msg End: " + e.getMessage());
-            assertEquals(bomEnc, e.getBomEncoding(), "bomEnc");
-            assertEquals(xmlGuessEnc, e.getXmlGuessEncoding(), "xmlGuessEnc");
-            assertEquals(xmlEnc, e.getXmlEncoding(), "xmlEnc");
-            assertEquals(XmlStreamReader.getContentTypeEncoding(httpContentType), e.getContentTypeEncoding(),
-                    "ContentTypeEncoding");
-            assertEquals(XmlStreamReader.getContentTypeMime(httpContentType), e.getContentTypeMime(), "ContentTypeMime");
+            assertThat(e.getMessage().startsWith("Invalid encoding")).as("Msg Start: " + e.getMessage()).isTrue();
+            assertThat(e.getMessage().endsWith(msgSuffix)).as("Msg End: " + e.getMessage()).isTrue();
+            assertThat(e.getBomEncoding()).as("bomEnc").isEqualTo(bomEnc);
+            assertThat(e.getXmlGuessEncoding()).as("xmlGuessEnc").isEqualTo(xmlGuessEnc);
+            assertThat(e.getXmlEncoding()).as("xmlEnc").isEqualTo(xmlEnc);
+            assertThat(e.getContentTypeEncoding()).as("ContentTypeEncoding").isEqualTo(XmlStreamReader.getContentTypeEncoding(httpContentType));
+            assertThat(e.getContentTypeMime()).as("ContentTypeMime").isEqualTo(XmlStreamReader.getContentTypeMime(httpContentType));
         } catch (final Exception e) {
             fail("Expected XmlStreamReaderException, but threw " + e);
         }

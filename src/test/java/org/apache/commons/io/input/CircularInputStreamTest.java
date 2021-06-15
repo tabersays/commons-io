@@ -16,14 +16,12 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -38,8 +36,8 @@ public class CircularInputStreamTest {
         try (InputStream infStream = createInputStream(toCycle, -1)) {
             final int actualReadBytes = infStream.read(actual);
 
-            assertArrayEquals(expected, actual);
-            assertEquals(expected.length, actualReadBytes);
+            assertThat(actual).containsExactly(expected);
+            assertThat(actualReadBytes).isEqualTo(expected.length);
         }
     }
 
@@ -55,7 +53,7 @@ public class CircularInputStreamTest {
     @Test
     public void testCount0() throws IOException {
         try (InputStream in = createInputStream(new byte[] { 1, 2 }, 0)) {
-            assertEquals(IOUtils.EOF, in.read());
+            assertThat(in.read()).isEqualTo(IOUtils.EOF);
         }
     }
 
@@ -67,15 +65,15 @@ public class CircularInputStreamTest {
     @Test
     public void testCount0InputSize1() throws IOException {
         try (InputStream in = createInputStream(new byte[] { 1 }, 0)) {
-            assertEquals(IOUtils.EOF, in.read());
+            assertThat(in.read()).isEqualTo(IOUtils.EOF);
         }
     }
 
     @Test
     public void testCount1InputSize1() throws IOException {
         try (InputStream in = createInputStream(new byte[] { 1 }, 1)) {
-            assertEquals(1, in.read());
-            assertEquals(IOUtils.EOF, in.read());
+            assertThat(in.read()).isEqualTo(1);
+            assertThat(in.read()).isEqualTo(IOUtils.EOF);
         }
     }
 

@@ -18,7 +18,7 @@
  */
 package org.apache.commons.io.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,7 +28,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +51,7 @@ public class MoreComplexObjectTest extends AbstractCloseableListTest {
 
     private void assertSerialization(final ObjectInputStream ois) throws ClassNotFoundException, IOException {
         final MoreComplexObject copy = (MoreComplexObject) (ois.readObject());
-        assertEquals(original.toString(), copy.toString(), "Expecting same data after deserializing");
+        assertThat(copy.toString()).as("Expecting same data after deserializing").isEqualTo(original.toString());
     }
 
     /** Trusting java.lang.* and the array variants of that means we have

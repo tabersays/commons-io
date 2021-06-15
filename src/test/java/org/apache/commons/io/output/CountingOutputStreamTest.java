@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,7 @@ public class CountingOutputStreamTest {
                 cos.write(i);
             }
             assertByteArrayEquals("CountingOutputStream.write(int)", baos.toByteArray(), 0, 20);
-            assertEquals(cos.getCount(), 20, "CountingOutputStream.getCount()");
+            assertThat(20).as("CountingOutputStream.getCount()").isEqualTo(cos.getCount());
 
             final byte[] array = new byte[10];
             for (int i = 20; i < 30; i++) {
@@ -48,23 +47,23 @@ public class CountingOutputStreamTest {
             }
             cos.write(array);
             assertByteArrayEquals("CountingOutputStream.write(byte[])", baos.toByteArray(), 0, 30);
-            assertEquals(cos.getCount(), 30, "CountingOutputStream.getCount()");
+            assertThat(30).as("CountingOutputStream.getCount()").isEqualTo(cos.getCount());
 
             for (int i = 25; i < 35; i++) {
                 array[i - 25] = (byte) i;
             }
             cos.write(array, 5, 5);
             assertByteArrayEquals("CountingOutputStream.write(byte[], int, int)", baos.toByteArray(), 0, 35);
-            assertEquals(cos.getCount(), 35, "CountingOutputStream.getCount()");
+            assertThat(35).as("CountingOutputStream.getCount()").isEqualTo(cos.getCount());
 
             final int count = cos.resetCount();
-            assertEquals(count, 35, "CountingOutputStream.resetCount()");
+            assertThat(35).as("CountingOutputStream.resetCount()").isEqualTo(count);
 
             for (int i = 0; i < 10; i++) {
                 cos.write(i);
             }
             assertByteArrayEquals("CountingOutputStream.write(int)", baos.toByteArray(), 35, 45);
-            assertEquals(cos.getCount(), 10, "CountingOutputStream.getCount()");
+            assertThat(10).as("CountingOutputStream.getCount()").isEqualTo(cos.getCount());
         }
     }
 
@@ -97,13 +96,13 @@ public class CountingOutputStreamTest {
 
         // Test long methods
         IOUtils.copyLarge(mock, cos);
-        assertEquals(size, cos.getByteCount(), "getByteCount()");
-        assertEquals(size, cos.resetByteCount(), "resetByteCount()");
+        assertThat(cos.getByteCount()).as("getByteCount()").isEqualTo(size);
+        assertThat(cos.resetByteCount()).as("resetByteCount()").isEqualTo(size);
     }
 
     private void assertByteArrayEquals(final String msg, final byte[] array, final int start, final int end) {
         for (int i = start; i < end; i++) {
-            assertEquals(array[i], i-start, msg+": array[" + i + "] mismatch");
+            assertThat(i - start).as(msg + ": array[" + i + "] mismatch").isEqualTo(array[i]);
         }
     }
 

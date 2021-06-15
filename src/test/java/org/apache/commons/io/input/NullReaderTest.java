@@ -16,15 +16,12 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.Reader;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,23 +38,23 @@ public class NullReaderTest {
         final int size = 5;
         final TestNullReader reader = new TestNullReader(size);
         for (int i = 0; i < size; i++) {
-            assertEquals(i, reader.read(), "Check Value [" + i + "]");
+            assertThat(reader.read()).as("Check Value [" + i + "]").isEqualTo(i);
         }
 
         // Check End of File
-        assertEquals(-1, reader.read(), "End of File");
+        assertThat(reader.read()).as("End of File").isEqualTo(-1);
 
         // Test reading after the end of file
         try {
             final int result = reader.read();
             fail("Should have thrown an IOException, value=[" + result + "]");
         } catch (final IOException e) {
-            assertEquals("Read after end of file", e.getMessage());
+            assertThat(e.getMessage()).isEqualTo("Read after end of file");
         }
 
         // Close - should reset
         reader.close();
-        assertEquals(0, reader.getPosition(), "Available after close");
+        assertThat(reader.getPosition()).as("Available after close").isEqualTo(0);
     }
 
     @Test
@@ -67,28 +64,28 @@ public class NullReaderTest {
 
         // Read into array
         final int count1 = reader.read(chars);
-        assertEquals(chars.length, count1, "Read 1");
+        assertThat(count1).as("Read 1").isEqualTo(chars.length);
         for (int i = 0; i < count1; i++) {
-            assertEquals(i, chars[i], "Check Chars 1");
+            assertThat(chars[i]).as("Check Chars 1").isEqualTo(i);
         }
 
         // Read into array
         final int count2 = reader.read(chars);
-        assertEquals(5, count2, "Read 2");
+        assertThat(count2).as("Read 2").isEqualTo(5);
         for (int i = 0; i < count2; i++) {
-            assertEquals(count1 + i, chars[i], "Check Chars 2");
+            assertThat(chars[i]).as("Check Chars 2").isEqualTo(count1 + i);
         }
 
         // End of File
         final int count3 = reader.read(chars);
-        assertEquals(-1, count3, "Read 3 (EOF)");
+        assertThat(count3).as("Read 3 (EOF)").isEqualTo(-1);
 
         // Test reading after the end of file
         try {
             final int count4 = reader.read(chars);
             fail("Should have thrown an IOException, value=[" + count4 + "]");
         } catch (final IOException e) {
-            assertEquals("Read after end of file", e.getMessage());
+            assertThat(e.getMessage()).isEqualTo("Read after end of file");
         }
 
         // reset by closing
@@ -98,17 +95,17 @@ public class NullReaderTest {
         final int offset = 2;
         final int lth    = 4;
         final int count5 = reader.read(chars, offset, lth);
-        assertEquals(lth, count5, "Read 5");
+        assertThat(count5).as("Read 5").isEqualTo(lth);
         for (int i = offset; i < lth; i++) {
-            assertEquals(i, chars[i], "Check Chars 3");
+            assertThat(chars[i]).as("Check Chars 3").isEqualTo(i);
         }
     }
 
     @Test
     public void testEOFException() throws Exception {
         final Reader reader = new TestNullReader(2, false, true);
-        assertEquals(0, reader.read(), "Read 1");
-        assertEquals(1, reader.read(), "Read 2");
+        assertThat(reader.read()).as("Read 1").isEqualTo(0);
+        assertThat(reader.read()).as("Read 2").isEqualTo(1);
         try {
             final int result = reader.read();
             fail("Should have thrown an EOFException, value=[" + result + "]");
@@ -125,18 +122,18 @@ public class NullReaderTest {
         @SuppressWarnings("resource") // this is actually closed
         final Reader reader = new TestNullReader(100, true, false);
 
-        assertTrue(reader.markSupported(), "Mark Should be Supported");
+        assertThat(reader.markSupported()).as("Mark Should be Supported").isTrue();
 
         // No Mark
         try {
             reader.reset();
             fail("Read limit exceeded, expected IOException ");
         } catch (final IOException e) {
-            assertEquals("No position has been marked", e.getMessage(), "No Mark IOException message");
+            assertThat(e.getMessage()).as("No Mark IOException message").isEqualTo("No position has been marked");
         }
 
         for (; position < 3; position++) {
-            assertEquals(position, reader.read(), "Read Before Mark [" + position +"]");
+            assertThat(reader.read()).as("Read Before Mark [" + position + "]").isEqualTo(position);
         }
 
         // Mark
@@ -144,7 +141,7 @@ public class NullReaderTest {
 
         // Read further
         for (int i = 0; i < 3; i++) {
-            assertEquals(position + i, reader.read(), "Read After Mark [" + i +"]");
+            assertThat(reader.read()).as("Read After Mark [" + i + "]").isEqualTo(position + i);
         }
 
         // Reset
@@ -152,7 +149,7 @@ public class NullReaderTest {
 
         // Read From marked position
         for (int i = 0; i < readlimit + 1; i++) {
-            assertEquals(position + i, reader.read(), "Read After Reset [" + i +"]");
+            assertThat(reader.read()).as("Read After Reset [" + i + "]").isEqualTo(position + i);
         }
 
         // Reset after read limit passed
@@ -160,11 +157,9 @@ public class NullReaderTest {
             reader.reset();
             fail("Read limit exceeded, expected IOException ");
         } catch (final IOException e) {
-            assertEquals("Marked position [" + position
-                         + "] is no longer valid - passed the read limit ["
-                         + readlimit + "]",
-                         e.getMessage(),
-                         "Read limit IOException message");
+            assertThat(e.getMessage()).as("Read limit IOException message").isEqualTo("Marked position [" + position
+                    + "] is no longer valid - passed the read limit ["
+                    + readlimit + "]");
         }
         reader.close();
     }
@@ -172,20 +167,20 @@ public class NullReaderTest {
     @Test
     public void testMarkNotSupported() throws Exception {
         final Reader reader = new TestNullReader(100, false, true);
-        assertFalse(reader.markSupported(), "Mark Should NOT be Supported");
+        assertThat(reader.markSupported()).as("Mark Should NOT be Supported").isFalse();
 
         try {
             reader.mark(5);
             fail("mark() should throw UnsupportedOperationException");
         } catch (final UnsupportedOperationException e) {
-            assertEquals(MARK_RESET_NOT_SUPPORTED, e.getMessage(), "mark() error message");
+            assertThat(e.getMessage()).as("mark() error message").isEqualTo(MARK_RESET_NOT_SUPPORTED);
         }
 
         try {
             reader.reset();
             fail("reset() should throw UnsupportedOperationException");
         } catch (final UnsupportedOperationException e) {
-            assertEquals(MARK_RESET_NOT_SUPPORTED, e.getMessage(), "reset() error message");
+            assertThat(e.getMessage()).as("reset() error message").isEqualTo(MARK_RESET_NOT_SUPPORTED);
         }
         reader.close();
     }
@@ -193,18 +188,17 @@ public class NullReaderTest {
     @Test
     public void testSkip() throws Exception {
         final Reader reader = new TestNullReader(10, true, false);
-        assertEquals(0, reader.read(), "Read 1");
-        assertEquals(1, reader.read(), "Read 2");
-        assertEquals(5, reader.skip(5), "Skip 1");
-        assertEquals(7, reader.read(), "Read 3");
-        assertEquals(2, reader.skip(5), "Skip 2"); // only 2 left to skip
-        assertEquals(-1, reader.skip(5), "Skip 3 (EOF)"); // End of file
+        assertThat(reader.read()).as("Read 1").isEqualTo(0);
+        assertThat(reader.read()).as("Read 2").isEqualTo(1);
+        assertThat(reader.skip(5)).as("Skip 1").isEqualTo(5);
+        assertThat(reader.read()).as("Read 3").isEqualTo(7);
+        assertThat(reader.skip(5)).as("Skip 2").isEqualTo(2); // only 2 left to skip
+        assertThat(reader.skip(5)).as("Skip 3 (EOF)").isEqualTo(-1); // End of file
         try {
             reader.skip(5); //
             fail("Expected IOException for skipping after end of file");
         } catch (final IOException e) {
-            assertEquals("Skip after end of file", e.getMessage(),
-                    "Skip after EOF IOException message");
+            assertThat(e.getMessage()).as("Skip after EOF IOException message").isEqualTo("Skip after end of file");
         }
         reader.close();
     }

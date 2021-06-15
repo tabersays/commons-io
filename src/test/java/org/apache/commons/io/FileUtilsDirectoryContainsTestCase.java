@@ -16,13 +16,11 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -73,50 +71,50 @@ public class FileUtilsDirectoryContainsTestCase {
 
     @Test
     public void testCanonicalPath() throws IOException {
-        assertTrue(FileUtils.directoryContains(directory1, file1ByRelativeDirectory2));
-        assertTrue(FileUtils.directoryContains(directory2, file2ByRelativeDirectory1));
+        assertThat(FileUtils.directoryContains(directory1, file1ByRelativeDirectory2)).isTrue();
+        assertThat(FileUtils.directoryContains(directory2, file2ByRelativeDirectory1)).isTrue();
 
-        assertFalse(FileUtils.directoryContains(directory1, file2ByRelativeDirectory1));
-        assertFalse(FileUtils.directoryContains(directory2, file1ByRelativeDirectory2));
+        assertThat(FileUtils.directoryContains(directory1, file2ByRelativeDirectory1)).isFalse();
+        assertThat(FileUtils.directoryContains(directory2, file1ByRelativeDirectory2)).isFalse();
     }
 
     @Test
     public void testDirectoryContainsDirectory() throws IOException {
-        assertTrue(FileUtils.directoryContains(top, directory1));
-        assertTrue(FileUtils.directoryContains(top, directory2));
-        assertTrue(FileUtils.directoryContains(top, directory3));
-        assertTrue(FileUtils.directoryContains(directory2, directory3));
+        assertThat(FileUtils.directoryContains(top, directory1)).isTrue();
+        assertThat(FileUtils.directoryContains(top, directory2)).isTrue();
+        assertThat(FileUtils.directoryContains(top, directory3)).isTrue();
+        assertThat(FileUtils.directoryContains(directory2, directory3)).isTrue();
     }
 
     @Test
     public void testDirectoryContainsFile() throws IOException {
-        assertTrue(FileUtils.directoryContains(directory1, file1));
-        assertTrue(FileUtils.directoryContains(directory2, file2));
+        assertThat(FileUtils.directoryContains(directory1, file1)).isTrue();
+        assertThat(FileUtils.directoryContains(directory2, file2)).isTrue();
     }
 
     @Test
     public void testDirectoryDoesNotContainFile() throws IOException {
-        assertFalse(FileUtils.directoryContains(directory1, file2));
-        assertFalse(FileUtils.directoryContains(directory2, file1));
+        assertThat(FileUtils.directoryContains(directory1, file2)).isFalse();
+        assertThat(FileUtils.directoryContains(directory2, file1)).isFalse();
 
-        assertFalse(FileUtils.directoryContains(directory1, file3));
-        assertFalse(FileUtils.directoryContains(directory2, file3));
+        assertThat(FileUtils.directoryContains(directory1, file3)).isFalse();
+        assertThat(FileUtils.directoryContains(directory2, file3)).isFalse();
     }
 
     @Test
     public void testDirectoryDoesNotContainsDirectory() throws IOException {
-        assertFalse(FileUtils.directoryContains(directory1, top));
-        assertFalse(FileUtils.directoryContains(directory2, top));
-        assertFalse(FileUtils.directoryContains(directory3, top));
-        assertFalse(FileUtils.directoryContains(directory3, directory2));
+        assertThat(FileUtils.directoryContains(directory1, top)).isFalse();
+        assertThat(FileUtils.directoryContains(directory2, top)).isFalse();
+        assertThat(FileUtils.directoryContains(directory3, top)).isFalse();
+        assertThat(FileUtils.directoryContains(directory3, directory2)).isFalse();
     }
 
     @Test
     public void testDirectoryDoesNotExist() throws IOException {
         final File dir = new File("DOESNOTEXIST");
-        assertFalse(dir.exists());
+        assertThat(dir.exists()).isFalse();
         try {
-            assertFalse(FileUtils.directoryContains(dir, file1));
+            assertThat(FileUtils.directoryContains(dir, file1)).isFalse();
             fail("Expected " + IllegalArgumentException.class.getName());
         } catch (final IllegalArgumentException e) {
             // expected
@@ -126,7 +124,7 @@ public class FileUtilsDirectoryContainsTestCase {
     @Test
     public void testSameFile() throws IOException {
         try {
-            assertTrue(FileUtils.directoryContains(file1, file1));
+            assertThat(FileUtils.directoryContains(file1, file1)).isTrue();
             fail("Expected " + IllegalArgumentException.class.getName());
         } catch (final IllegalArgumentException e) {
             // expected
@@ -136,15 +134,15 @@ public class FileUtilsDirectoryContainsTestCase {
     @Test
     public void testIO466() throws IOException {
             final File fooFile = new File(directory1.getParent(), "directory1.txt");
-            assertFalse(FileUtils.directoryContains(directory1, fooFile));
+        assertThat(FileUtils.directoryContains(directory1, fooFile)).isFalse();
     }
 
     @Test
     public void testFileDoesNotExist() throws IOException {
-        assertFalse(FileUtils.directoryContains(top, null));
+        assertThat(FileUtils.directoryContains(top, null)).isFalse();
         final File file = new File("DOESNOTEXIST");
-        assertFalse(file.exists());
-        assertFalse(FileUtils.directoryContains(top, file));
+        assertThat(file.exists()).isFalse();
+        assertThat(FileUtils.directoryContains(top, file)).isFalse();
     }
 
     /**
@@ -154,19 +152,19 @@ public class FileUtilsDirectoryContainsTestCase {
     @Test
     public void testFileDoesNotExistBug() throws IOException {
         final File file = new File(top, "DOESNOTEXIST");
-        assertTrue(top.exists(), "Check directory exists");
-        assertFalse(file.exists(), "Check file does not exist");
-        assertFalse(FileUtils.directoryContains(top, file), "Directory does not contain unrealized file");
+        assertThat(top.exists()).as("Check directory exists").isTrue();
+        assertThat(file.exists()).as("Check file does not exist").isFalse();
+        assertThat(FileUtils.directoryContains(top, file)).as("Directory does not contain unrealized file").isFalse();
     }
 
     @Test
     public void testUnrealizedContainment() throws IOException {
         final File dir = new File("DOESNOTEXIST");
         final File file = new File(dir, "DOESNOTEXIST2");
-        assertFalse(dir.exists());
-        assertFalse(file.exists());
+        assertThat(dir.exists()).isFalse();
+        assertThat(file.exists()).isFalse();
         try {
-            assertTrue(FileUtils.directoryContains(dir, file));
+            assertThat(FileUtils.directoryContains(dir, file)).isTrue();
         } catch (final IllegalArgumentException e) {
             // expected
         }

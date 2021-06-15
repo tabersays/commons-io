@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,13 +40,13 @@ public class AppendableOutputStreamTest {
 
         out.write(testData.getBytes());
 
-        assertEquals(testData, out.getAppendable().toString());
+        assertThat(out.getAppendable().toString()).isEqualTo(testData);
     }
 
     @Test
     public void testWriteInt() throws Exception {
         out.write('F');
 
-        assertEquals("F", out.getAppendable().toString());
+        assertThat(out.getAppendable().toString()).isEqualTo("F");
     }
 }

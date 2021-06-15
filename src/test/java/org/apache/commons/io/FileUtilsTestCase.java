@@ -16,15 +16,8 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
@@ -60,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
-
 import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.io.file.PathUtilsIsEmptyTest;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -68,7 +60,6 @@ import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.io.test.TestUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -170,9 +161,9 @@ public class FileUtilsTestCase {
     private void backDateFile10Minutes(final File testFile) throws IOException {
         final long mins10 = 1000 * 60 * 10;
         final long lastModified1 = getLastModifiedMillis(testFile);
-        assertTrue(setLastModifiedMillis(testFile, lastModified1 - mins10));
+        assertThat(setLastModifiedMillis(testFile, lastModified1 - mins10)).isTrue();
         // ensure it was changed
-        assertNotEquals(getLastModifiedMillis(testFile), lastModified1, "Should have changed source date");
+        assertThat(lastModified1).as("Should have changed source date").isNotEqualTo(getLastModifiedMillis(testFile));
     }
 
     private void consumeRemaining(final Iterator<File> iterator) {
@@ -235,10 +226,9 @@ public class FileUtilsTestCase {
                 filesCount++;
                 final File file = iterator.next();
                 actualFiles.add(file);
-                assertTrue(expectedFilesAndDirs.contains(file),
-                    () -> "Unexpected directory/file " + file + ", expected one of " + expectedFilesAndDirs);
+                assertThat(expectedFilesAndDirs.contains(file)).withFailMessage(() -> "Unexpected directory/file " + file + ", expected one of " + expectedFilesAndDirs).isTrue();
             }
-            assertEquals(expectedFilesAndDirs.size(), filesCount, () -> actualFiles.toString());
+            assertThat(filesCount).withFailMessage(() -> actualFiles.toString()).isEqualTo(expectedFilesAndDirs.size());
         } finally {
             // MUST consume until the end in order to close the underlying stream.
             consumeRemaining(iterator);
@@ -248,7 +238,7 @@ public class FileUtilsTestCase {
     //-----------------------------------------------------------------------
     void openOutputStream_noParent(final boolean createFile) throws Exception {
         final File file = new File("test.txt");
-        assertNull(file.getParentFile());
+        assertThat(file.getParentFile()).isNull();
         try {
             if (createFile) {
                 TestUtils.createLineBasedFile(file, new String[]{"Hello"});
@@ -256,7 +246,7 @@ public class FileUtilsTestCase {
             try (FileOutputStream out = FileUtils.openOutputStream(file)) {
                 out.write(0);
             }
-            assertTrue(file.exists());
+            assertThat(file.exists()).isTrue();
         } finally {
             if (!file.delete()) {
                 file.deleteOnExit();
@@ -323,7 +313,7 @@ public class FileUtilsTestCase {
         final File file = new File(temporaryFolder, "test.txt");
         TestUtils.createLineBasedFile(file, new String[]{"Hello"});
         try (FileInputStream in = FileUtils.openInputStream(file)) {
-            assertEquals('H', in.read());
+            assertThat(in.read()).isEqualTo('H');
         }
     }
 
@@ -351,7 +341,7 @@ public class FileUtilsTestCase {
         try (FileOutputStream out = FileUtils.openOutputStream(file)) {
             out.write(0);
         }
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
     @Test
@@ -377,7 +367,7 @@ public class FileUtilsTestCase {
         try (FileOutputStream out = FileUtils.openOutputStream(file)) {
             out.write(0);
         }
-        assertTrue(file.exists());
+        assertThat(file.exists()).isTrue();
     }
 
     @Test
@@ -411,53 +401,53 @@ public class FileUtilsTestCase {
         final BigInteger TB1 = GB1.multiply(KB1);
         final BigInteger PB1 = TB1.multiply(KB1);
         final BigInteger EB1 = PB1.multiply(KB1);
-        assertEquals("0 bytes", FileUtils.byteCountToDisplaySize(BigInteger.ZERO));
-        assertEquals("1 bytes", FileUtils.byteCountToDisplaySize(BigInteger.ONE));
-        assertEquals("1023 bytes", FileUtils.byteCountToDisplaySize(b1023));
-        assertEquals("1 KB", FileUtils.byteCountToDisplaySize(KB1));
-        assertEquals("1 KB", FileUtils.byteCountToDisplaySize(b1025));
-        assertEquals("1023 KB", FileUtils.byteCountToDisplaySize(MB1.subtract(BigInteger.ONE)));
-        assertEquals("1 MB", FileUtils.byteCountToDisplaySize(MB1));
-        assertEquals("1 MB", FileUtils.byteCountToDisplaySize(MB1.add(BigInteger.ONE)));
-        assertEquals("1023 MB", FileUtils.byteCountToDisplaySize(GB1.subtract(BigInteger.ONE)));
-        assertEquals("1 GB", FileUtils.byteCountToDisplaySize(GB1));
-        assertEquals("1 GB", FileUtils.byteCountToDisplaySize(GB1.add(BigInteger.ONE)));
-        assertEquals("2 GB", FileUtils.byteCountToDisplaySize(GB2));
-        assertEquals("1 GB", FileUtils.byteCountToDisplaySize(GB2.subtract(BigInteger.ONE)));
-        assertEquals("1 TB", FileUtils.byteCountToDisplaySize(TB1));
-        assertEquals("1 PB", FileUtils.byteCountToDisplaySize(PB1));
-        assertEquals("1 EB", FileUtils.byteCountToDisplaySize(EB1));
-        assertEquals("7 EB", FileUtils.byteCountToDisplaySize(Long.MAX_VALUE));
+        assertThat(FileUtils.byteCountToDisplaySize(BigInteger.ZERO)).isEqualTo("0 bytes");
+        assertThat(FileUtils.byteCountToDisplaySize(BigInteger.ONE)).isEqualTo("1 bytes");
+        assertThat(FileUtils.byteCountToDisplaySize(b1023)).isEqualTo("1023 bytes");
+        assertThat(FileUtils.byteCountToDisplaySize(KB1)).isEqualTo("1 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(b1025)).isEqualTo("1 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(MB1.subtract(BigInteger.ONE))).isEqualTo("1023 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(MB1)).isEqualTo("1 MB");
+        assertThat(FileUtils.byteCountToDisplaySize(MB1.add(BigInteger.ONE))).isEqualTo("1 MB");
+        assertThat(FileUtils.byteCountToDisplaySize(GB1.subtract(BigInteger.ONE))).isEqualTo("1023 MB");
+        assertThat(FileUtils.byteCountToDisplaySize(GB1)).isEqualTo("1 GB");
+        assertThat(FileUtils.byteCountToDisplaySize(GB1.add(BigInteger.ONE))).isEqualTo("1 GB");
+        assertThat(FileUtils.byteCountToDisplaySize(GB2)).isEqualTo("2 GB");
+        assertThat(FileUtils.byteCountToDisplaySize(GB2.subtract(BigInteger.ONE))).isEqualTo("1 GB");
+        assertThat(FileUtils.byteCountToDisplaySize(TB1)).isEqualTo("1 TB");
+        assertThat(FileUtils.byteCountToDisplaySize(PB1)).isEqualTo("1 PB");
+        assertThat(FileUtils.byteCountToDisplaySize(EB1)).isEqualTo("1 EB");
+        assertThat(FileUtils.byteCountToDisplaySize(Long.MAX_VALUE)).isEqualTo("7 EB");
         // Other MAX_VALUEs
-        assertEquals("63 KB", FileUtils.byteCountToDisplaySize(BigInteger.valueOf(Character.MAX_VALUE)));
-        assertEquals("31 KB", FileUtils.byteCountToDisplaySize(BigInteger.valueOf(Short.MAX_VALUE)));
-        assertEquals("1 GB", FileUtils.byteCountToDisplaySize(BigInteger.valueOf(Integer.MAX_VALUE)));
+        assertThat(FileUtils.byteCountToDisplaySize(BigInteger.valueOf(Character.MAX_VALUE))).isEqualTo("63 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(BigInteger.valueOf(Short.MAX_VALUE))).isEqualTo("31 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(BigInteger.valueOf(Integer.MAX_VALUE))).isEqualTo("1 GB");
     }
 
     @SuppressWarnings("NumericOverflow")
     @Test
     public void testByteCountToDisplaySizeLong() {
-        assertEquals("0 bytes", FileUtils.byteCountToDisplaySize(0));
-        assertEquals("1 bytes", FileUtils.byteCountToDisplaySize(1));
-        assertEquals("1023 bytes", FileUtils.byteCountToDisplaySize(1023));
-        assertEquals("1 KB", FileUtils.byteCountToDisplaySize(1024));
-        assertEquals("1 KB", FileUtils.byteCountToDisplaySize(1025));
-        assertEquals("1023 KB", FileUtils.byteCountToDisplaySize(1024 * 1023));
-        assertEquals("1 MB", FileUtils.byteCountToDisplaySize(1024 * 1024));
-        assertEquals("1 MB", FileUtils.byteCountToDisplaySize(1024 * 1025));
-        assertEquals("1023 MB", FileUtils.byteCountToDisplaySize(1024 * 1024 * 1023));
-        assertEquals("1 GB", FileUtils.byteCountToDisplaySize(1024 * 1024 * 1024));
-        assertEquals("1 GB", FileUtils.byteCountToDisplaySize(1024 * 1024 * 1025));
-        assertEquals("2 GB", FileUtils.byteCountToDisplaySize(1024L * 1024 * 1024 * 2));
-        assertEquals("1 GB", FileUtils.byteCountToDisplaySize(1024 * 1024 * 1024 * 2 - 1));
-        assertEquals("1 TB", FileUtils.byteCountToDisplaySize(1024L * 1024 * 1024 * 1024));
-        assertEquals("1 PB", FileUtils.byteCountToDisplaySize(1024L * 1024 * 1024 * 1024 * 1024));
-        assertEquals("1 EB", FileUtils.byteCountToDisplaySize(1024L * 1024 * 1024 * 1024 * 1024 * 1024));
-        assertEquals("7 EB", FileUtils.byteCountToDisplaySize(Long.MAX_VALUE));
+        assertThat(FileUtils.byteCountToDisplaySize(0)).isEqualTo("0 bytes");
+        assertThat(FileUtils.byteCountToDisplaySize(1)).isEqualTo("1 bytes");
+        assertThat(FileUtils.byteCountToDisplaySize(1023)).isEqualTo("1023 bytes");
+        assertThat(FileUtils.byteCountToDisplaySize(1024)).isEqualTo("1 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(1025)).isEqualTo("1 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024 * 1023)).isEqualTo("1023 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024 * 1024)).isEqualTo("1 MB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024 * 1025)).isEqualTo("1 MB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024 * 1024 * 1023)).isEqualTo("1023 MB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024 * 1024 * 1024)).isEqualTo("1 GB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024 * 1024 * 1025)).isEqualTo("1 GB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024L * 1024 * 1024 * 2)).isEqualTo("2 GB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024 * 1024 * 1024 * 2 - 1)).isEqualTo("1 GB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024L * 1024 * 1024 * 1024)).isEqualTo("1 TB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024L * 1024 * 1024 * 1024 * 1024)).isEqualTo("1 PB");
+        assertThat(FileUtils.byteCountToDisplaySize(1024L * 1024 * 1024 * 1024 * 1024 * 1024)).isEqualTo("1 EB");
+        assertThat(FileUtils.byteCountToDisplaySize(Long.MAX_VALUE)).isEqualTo("7 EB");
         // Other MAX_VALUEs
-        assertEquals("63 KB", FileUtils.byteCountToDisplaySize(Character.MAX_VALUE));
-        assertEquals("31 KB", FileUtils.byteCountToDisplaySize(Short.MAX_VALUE));
-        assertEquals("1 GB", FileUtils.byteCountToDisplaySize(Integer.MAX_VALUE));
+        assertThat(FileUtils.byteCountToDisplaySize(Character.MAX_VALUE)).isEqualTo("63 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(Short.MAX_VALUE)).isEqualTo("31 KB");
+        assertThat(FileUtils.byteCountToDisplaySize(Integer.MAX_VALUE)).isEqualTo("1 GB");
     }
 
     @Test
@@ -477,8 +467,8 @@ public class FileUtilsTestCase {
         final Checksum resultChecksum = FileUtils.checksum(file, testChecksum);
         final long resultValue = resultChecksum.getValue();
 
-        assertSame(testChecksum, resultChecksum);
-        assertEquals(expectedValue, resultValue);
+        assertThat(resultChecksum).isSameAs(testChecksum);
+        assertThat(resultValue).isEqualTo(expectedValue);
     }
 
     //-----------------------------------------------------------------------
@@ -497,7 +487,7 @@ public class FileUtilsTestCase {
         // compute the checksum of the file
         final long resultValue = FileUtils.checksumCRC32(file);
 
-        assertEquals(expectedValue, resultValue);
+        assertThat(resultValue).isEqualTo(expectedValue);
     }
 
     @Test
@@ -524,7 +514,7 @@ public class FileUtilsTestCase {
         FileUtils.checksum(file2, testChecksum);
         final long resultValue = testChecksum.getValue();
 
-        assertEquals(expectedValue, resultValue);
+        assertThat(resultValue).isEqualTo(expectedValue);
     }
 
     @Test
@@ -568,8 +558,8 @@ public class FileUtilsTestCase {
         final long sizeLong1 = FileUtils.sizeOf(start);
         final BigInteger sizeBig = FileUtils.sizeOfAsBigInteger(start);
         final long sizeLong2 = FileUtils.sizeOf(start);
-        assertEquals(sizeLong1, sizeLong2, "Size should not change");
-        assertEquals(sizeLong1, sizeBig.longValue(), "longSize should equal BigSize");
+        assertThat(sizeLong2).as("Size should not change").isEqualTo(sizeLong1);
+        assertThat(sizeBig.longValue()).as("longSize should equal BigSize").isEqualTo(sizeLong1);
     }
 
     @Test
@@ -577,14 +567,14 @@ public class FileUtilsTestCase {
         // Non-existent files
         final File file = new File(temporaryFolder, getName());
         final File file2 = new File(temporaryFolder, getName() + "2");
-        assertTrue(FileUtils.contentEquals(null, null));
-        assertFalse(FileUtils.contentEquals(null, file));
-        assertFalse(FileUtils.contentEquals(file, null));
+        assertThat(FileUtils.contentEquals(null, null)).isTrue();
+        assertThat(FileUtils.contentEquals(null, file)).isFalse();
+        assertThat(FileUtils.contentEquals(file, null)).isFalse();
         // both don't  exist
-        assertTrue(FileUtils.contentEquals(file, file));
-        assertTrue(FileUtils.contentEquals(file, file2));
-        assertTrue(FileUtils.contentEquals(file2, file2));
-        assertTrue(FileUtils.contentEquals(file2, file));
+        assertThat(FileUtils.contentEquals(file, file)).isTrue();
+        assertThat(FileUtils.contentEquals(file, file2)).isTrue();
+        assertThat(FileUtils.contentEquals(file2, file2)).isTrue();
+        assertThat(FileUtils.contentEquals(file2, file)).isTrue();
 
         // Directories
         assertThrows(IllegalArgumentException.class, () -> FileUtils.contentEquals(temporaryFolder, temporaryFolder));
@@ -611,19 +601,19 @@ public class FileUtilsTestCase {
                 getClass().getResource("/java/util/Collection.class"),
                 objFile2);
 
-        assertFalse(FileUtils.contentEquals(objFile1, objFile2));
-        assertFalse(FileUtils.contentEquals(objFile1b, objFile2));
-        assertTrue(FileUtils.contentEquals(objFile1, objFile1b));
+        assertThat(FileUtils.contentEquals(objFile1, objFile2)).isFalse();
+        assertThat(FileUtils.contentEquals(objFile1b, objFile2)).isFalse();
+        assertThat(FileUtils.contentEquals(objFile1, objFile1b)).isTrue();
 
-        assertTrue(FileUtils.contentEquals(objFile1, objFile1));
-        assertTrue(FileUtils.contentEquals(objFile1b, objFile1b));
-        assertTrue(FileUtils.contentEquals(objFile2, objFile2));
+        assertThat(FileUtils.contentEquals(objFile1, objFile1)).isTrue();
+        assertThat(FileUtils.contentEquals(objFile1b, objFile1b)).isTrue();
+        assertThat(FileUtils.contentEquals(objFile2, objFile2)).isTrue();
 
         // Equal files
         file.createNewFile();
         file2.createNewFile();
-        assertTrue(FileUtils.contentEquals(file, file));
-        assertTrue(FileUtils.contentEquals(file, file2));
+        assertThat(FileUtils.contentEquals(file, file)).isTrue();
+        assertThat(FileUtils.contentEquals(file, file2)).isTrue();
     }
 
     // toFiles
@@ -633,14 +623,14 @@ public class FileUtilsTestCase {
         // Non-existent files
         final File file1 = new File(temporaryFolder, getName());
         final File file2 = new File(temporaryFolder, getName() + "2");
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(null, null, null));
-        assertFalse(FileUtils.contentEqualsIgnoreEOL(null, file1, null));
-        assertFalse(FileUtils.contentEqualsIgnoreEOL(file1, null, null));
+        assertThat(FileUtils.contentEqualsIgnoreEOL(null, null, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(null, file1, null)).isFalse();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(file1, null, null)).isFalse();
         // both don't  exist
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(file1, file1, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(file1, file2, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(file2, file2, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(file2, file1, null));
+        assertThat(FileUtils.contentEqualsIgnoreEOL(file1, file1, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(file1, file2, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(file2, file2, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(file2, file1, null)).isTrue();
 
         // Directories
         assertThrows(IllegalArgumentException.class,
@@ -659,51 +649,51 @@ public class FileUtilsTestCase {
         tfile3.deleteOnExit();
         FileUtils.write(tfile3, "123\r\n2");
 
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(tfile1, tfile1, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(tfile2, tfile2, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(tfile3, tfile3, null));
+        assertThat(FileUtils.contentEqualsIgnoreEOL(tfile1, tfile1, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(tfile2, tfile2, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(tfile3, tfile3, null)).isTrue();
 
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(tfile1, tfile2, null));
-        assertFalse(FileUtils.contentEqualsIgnoreEOL(tfile1, tfile3, null));
-        assertFalse(FileUtils.contentEqualsIgnoreEOL(tfile2, tfile3, null));
+        assertThat(FileUtils.contentEqualsIgnoreEOL(tfile1, tfile2, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(tfile1, tfile3, null)).isFalse();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(tfile2, tfile3, null)).isFalse();
 
         final URL urlCR = getClass().getResource("FileUtilsTestDataCR.dat");
-        assertNotNull(urlCR);
+        assertThat(urlCR).isNotNull();
         final File cr = new File(urlCR.toURI());
-        assertTrue(cr.exists());
+        assertThat(cr.exists()).isTrue();
 
         final URL urlCRLF = getClass().getResource("FileUtilsTestDataCRLF.dat");
-        assertNotNull(urlCRLF);
+        assertThat(urlCRLF).isNotNull();
         final File crlf = new File(urlCRLF.toURI());
-        assertTrue(crlf.exists());
+        assertThat(crlf.exists()).isTrue();
 
         final URL urlLF = getClass().getResource("FileUtilsTestDataLF.dat");
-        assertNotNull(urlLF);
+        assertThat(urlLF).isNotNull();
         final File lf = new File(urlLF.toURI());
-        assertTrue(lf.exists());
+        assertThat(lf.exists()).isTrue();
 
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(cr, cr, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(crlf, crlf, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(lf, lf, null));
+        assertThat(FileUtils.contentEqualsIgnoreEOL(cr, cr, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(crlf, crlf, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(lf, lf, null)).isTrue();
 
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(cr, crlf, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(cr, lf, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(crlf, lf, null));
+        assertThat(FileUtils.contentEqualsIgnoreEOL(cr, crlf, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(cr, lf, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(crlf, lf, null)).isTrue();
 
         // Check the files behave OK when EOL is not ignored
-        assertTrue(FileUtils.contentEquals(cr, cr));
-        assertTrue(FileUtils.contentEquals(crlf, crlf));
-        assertTrue(FileUtils.contentEquals(lf, lf));
+        assertThat(FileUtils.contentEquals(cr, cr)).isTrue();
+        assertThat(FileUtils.contentEquals(crlf, crlf)).isTrue();
+        assertThat(FileUtils.contentEquals(lf, lf)).isTrue();
 
-        assertFalse(FileUtils.contentEquals(cr, crlf));
-        assertFalse(FileUtils.contentEquals(cr, lf));
-        assertFalse(FileUtils.contentEquals(crlf, lf));
+        assertThat(FileUtils.contentEquals(cr, crlf)).isFalse();
+        assertThat(FileUtils.contentEquals(cr, lf)).isFalse();
+        assertThat(FileUtils.contentEquals(crlf, lf)).isFalse();
 
         // Equal files
         file1.createNewFile();
         file2.createNewFile();
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(file1, file1, null));
-        assertTrue(FileUtils.contentEqualsIgnoreEOL(file1, file2, null));
+        assertThat(FileUtils.contentEqualsIgnoreEOL(file1, file1, null)).isTrue();
+        assertThat(FileUtils.contentEqualsIgnoreEOL(file1, file2, null)).isTrue();
     }
 
     @Test
@@ -737,10 +727,10 @@ public class FileUtilsTestCase {
 
         FileUtils.copyDirectory(grandParentDir, destDir, filter);
         final List<File> files = LIST_WALKER.list(destDir);
-        assertEquals(3, files.size());
-        assertEquals("parent", files.get(0).getName());
-        assertEquals("child", files.get(1).getName());
-        assertEquals("file3.txt", files.get(2).getName());
+        assertThat(files.size()).isEqualTo(3);
+        assertThat(files.get(0).getName()).isEqualTo("parent");
+        assertThat(files.get(1).getName()).isEqualTo("child");
+        assertThat(files.get(2).getName()).isEqualTo("file3.txt");
     }
 
     @Test
@@ -756,9 +746,9 @@ public class FileUtilsTestCase {
         // Set dates in reverse order to avoid overwriting previous values
         // Also, use full seconds (arguments are in ms) close to today
         // but still highly unlikely to occur in the real world
-        assertTrue(setLastModifiedMillis(sourceFile, DATE3));
-        assertTrue(setLastModifiedMillis(sourceDirectory, DATE2));
-        assertTrue(setLastModifiedMillis(source, DATE1));
+        assertThat(setLastModifiedMillis(sourceFile, DATE3)).isTrue();
+        assertThat(setLastModifiedMillis(sourceDirectory, DATE2)).isTrue();
+        assertThat(setLastModifiedMillis(source, DATE1)).isTrue();
 
         final File target = new File(temporaryFolder, "target");
         final File targetDirectory = new File(target, "directory");
@@ -767,34 +757,34 @@ public class FileUtilsTestCase {
         // Test with preserveFileDate disabled
         // On Windows, the last modified time is copied by default.
         FileUtils.copyDirectory(source, target, false);
-        assertNotEquals(DATE1, getLastModifiedMillis(target));
-        assertNotEquals(DATE2, getLastModifiedMillis(targetDirectory));
+        assertThat(getLastModifiedMillis(target)).isNotEqualTo(DATE1);
+        assertThat(getLastModifiedMillis(targetDirectory)).isNotEqualTo(DATE2);
         if (!SystemUtils.IS_OS_WINDOWS) {
-            assertNotEquals(DATE3, getLastModifiedMillis(targetFile));
+            assertThat(getLastModifiedMillis(targetFile)).isNotEqualTo(DATE3);
         }
         FileUtils.deleteDirectory(target);
 
         // Test with preserveFileDate enabled
         FileUtils.copyDirectory(source, target, true);
-        assertEquals(DATE1, getLastModifiedMillis(target));
-        assertEquals(DATE2, getLastModifiedMillis(targetDirectory));
-        assertEquals(DATE3, getLastModifiedMillis(targetFile));
+        assertThat(getLastModifiedMillis(target)).isEqualTo(DATE1);
+        assertThat(getLastModifiedMillis(targetDirectory)).isEqualTo(DATE2);
+        assertThat(getLastModifiedMillis(targetFile)).isEqualTo(DATE3);
         FileUtils.deleteDirectory(target);
 
         // also if the target directory already exists (IO-190)
         target.mkdirs();
         FileUtils.copyDirectory(source, target, true);
-        assertEquals(DATE1, getLastModifiedMillis(target));
-        assertEquals(DATE2, getLastModifiedMillis(targetDirectory));
-        assertEquals(DATE3, getLastModifiedMillis(targetFile));
+        assertThat(getLastModifiedMillis(target)).isEqualTo(DATE1);
+        assertThat(getLastModifiedMillis(targetDirectory)).isEqualTo(DATE2);
+        assertThat(getLastModifiedMillis(targetFile)).isEqualTo(DATE3);
         FileUtils.deleteDirectory(target);
 
         // also if the target subdirectory already exists (IO-190)
         targetDirectory.mkdirs();
         FileUtils.copyDirectory(source, target, true);
-        assertEquals(DATE1, getLastModifiedMillis(target));
-        assertEquals(DATE2, getLastModifiedMillis(targetDirectory));
-        assertEquals(DATE3, getLastModifiedMillis(targetFile));
+        assertThat(getLastModifiedMillis(target)).isEqualTo(DATE1);
+        assertThat(getLastModifiedMillis(targetDirectory)).isEqualTo(DATE2);
+        assertThat(getLastModifiedMillis(targetFile)).isEqualTo(DATE3);
         FileUtils.deleteDirectory(target);
     }
 
@@ -811,10 +801,10 @@ public class FileUtilsTestCase {
         final long expectedSize = FileUtils.sizeOfDirectory(grandParentDir) +
                 FileUtils.sizeOfDirectory(parentDir);
         FileUtils.copyDirectory(parentDir, childDir);
-        assertEquals(expectedCount, LIST_WALKER.list(grandParentDir).size());
-        assertEquals(expectedSize, FileUtils.sizeOfDirectory(grandParentDir));
-        assertTrue(expectedCount > 0, "Count > 0");
-        assertTrue(expectedSize > 0, "Size > 0");
+        assertThat(LIST_WALKER.list(grandParentDir).size()).isEqualTo(expectedCount);
+        assertThat(FileUtils.sizeOfDirectory(grandParentDir)).isEqualTo(expectedSize);
+        assertThat(expectedCount > 0).as("Count > 0").isTrue();
+        assertThat(expectedSize > 0).as("Size > 0").isTrue();
     }
 
     // toURLs
@@ -854,12 +844,12 @@ public class FileUtilsTestCase {
 
         FileUtils.copyDirectoryToDirectory(srcDir, destDir);
 
-        assertTrue(destDir.exists(), "Check exists");
-        assertTrue(actualDestDir.exists(), "Check exists");
+        assertThat(destDir.exists()).as("Check exists").isTrue();
+        assertThat(actualDestDir.exists()).as("Check exists").isTrue();
         final long srcSize = FileUtils.sizeOfDirectory(srcDir);
-        assertTrue(srcSize > 0, "Size > 0");
-        assertEquals(srcSize, FileUtils.sizeOfDirectory(actualDestDir), "Check size");
-        assertTrue(new File(actualDestDir, "sub/A.txt").exists());
+        assertThat(srcSize > 0).as("Size > 0").isTrue();
+        assertThat(FileUtils.sizeOfDirectory(actualDestDir)).as("Check size").isEqualTo(srcSize);
+        assertThat(new File(actualDestDir, "sub/A.txt").exists()).isTrue();
         FileUtils.deleteDirectory(destDir);
     }
 
@@ -919,9 +909,9 @@ public class FileUtilsTestCase {
         FileUtils.copyDirectory(srcDir, destDir);
 
         final long srcSize = FileUtils.sizeOfDirectory(srcDir);
-        assertTrue(srcSize > 0, "Size > 0");
-        assertEquals(srcSize, FileUtils.sizeOfDirectory(destDir));
-        assertTrue(new File(destDir, "sub/A.txt").exists());
+        assertThat(srcSize > 0).as("Size > 0").isTrue();
+        assertThat(FileUtils.sizeOfDirectory(destDir)).isEqualTo(srcSize);
+        assertThat(new File(destDir, "sub/A.txt").exists()).isTrue();
     }
 
     // contentEquals
@@ -937,9 +927,9 @@ public class FileUtilsTestCase {
         final long expectedCount = LIST_WALKER.list(grandParentDir).size() * 2;
         final long expectedSize = FileUtils.sizeOfDirectory(grandParentDir) * 2;
         FileUtils.copyDirectory(grandParentDir, childDir);
-        assertEquals(expectedCount, LIST_WALKER.list(grandParentDir).size());
-        assertEquals(expectedSize, FileUtils.sizeOfDirectory(grandParentDir));
-        assertTrue(expectedSize > 0, "Size > 0");
+        assertThat(LIST_WALKER.list(grandParentDir).size()).isEqualTo(expectedCount);
+        assertThat(FileUtils.sizeOfDirectory(grandParentDir)).isEqualTo(expectedSize);
+        assertThat(expectedSize > 0).as("Size > 0").isTrue();
     }
 
     /* Test for IO-217 FileUtils.copyDirectoryToDirectory makes infinite loops */
@@ -948,7 +938,7 @@ public class FileUtilsTestCase {
         final File dir = new File(temporaryFolder, "itself");
         dir.mkdirs();
         FileUtils.copyDirectoryToDirectory(dir, dir);
-        assertEquals(1, LIST_WALKER.list(dir).size());
+        assertThat(LIST_WALKER.list(dir).size()).isEqualTo(1);
     }
 
     // copyURLToFile
@@ -987,11 +977,11 @@ public class FileUtilsTestCase {
 
         FileUtils.copyDirectory(srcDir, destDir);
 
-        assertTrue(destDir.exists(), "Check exists");
+        assertThat(destDir.exists()).as("Check exists").isTrue();
         final long sizeOfSrcDirectory = FileUtils.sizeOfDirectory(srcDir);
-        assertTrue(sizeOfSrcDirectory > 0, "Size > 0");
-        assertEquals(sizeOfSrcDirectory, FileUtils.sizeOfDirectory(destDir), "Check size");
-        assertTrue(new File(destDir, "sub/A.txt").exists());
+        assertThat(sizeOfSrcDirectory > 0).as("Size > 0").isTrue();
+        assertThat(FileUtils.sizeOfDirectory(destDir)).as("Check size").isEqualTo(sizeOfSrcDirectory);
+        assertThat(new File(destDir, "sub/A.txt").exists()).isTrue();
         FileUtils.deleteDirectory(destDir);
     }
 
@@ -1002,9 +992,9 @@ public class FileUtilsTestCase {
         backDateFile10Minutes(testFile1); // set test file back 10 minutes
 
         FileUtils.copyFile(testFile1, destination);
-        assertTrue(destination.exists(), "Check Exist");
-        assertEquals(testFile1Size, destination.length(), "Check Full copy");
-        assertEquals(getLastModifiedMillis(testFile1), getLastModifiedMillis(destination), "Check last modified date preserved");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(destination.length()).as("Check Full copy").isEqualTo(testFile1Size);
+        assertThat(getLastModifiedMillis(destination)).as("Check last modified date preserved").isEqualTo(getLastModifiedMillis(testFile1));
     }
 
     // forceMkdir
@@ -1020,9 +1010,9 @@ public class FileUtilsTestCase {
         backDateFile10Minutes(testFile1);
 
         FileUtils.copyFileToDirectory(testFile1, directory);
-        assertTrue(destination.exists(), "Check Exist");
-        assertEquals(testFile1Size, destination.length(), "Check Full copy");
-        assertEquals(FileUtils.lastModified(testFile1), FileUtils.lastModified(destination), "Check last modified date preserved");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(destination.length()).as("Check Full copy").isEqualTo(testFile1Size);
+        assertThat(FileUtils.lastModified(destination)).as("Check last modified date preserved").isEqualTo(FileUtils.lastModified(testFile1));
 
         assertThrows(IllegalArgumentException.class, () -> FileUtils.copyFileToDirectory(destination, directory),
             "Should not be able to copy a file into the same directory as itself");
@@ -1035,9 +1025,9 @@ public class FileUtilsTestCase {
         backDateFile10Minutes(testFile1); // set test file back 10 minutes
 
         FileUtils.copyFile(testFile1, destination);
-        assertTrue(destination.exists(), "Check Exist");
-        assertEquals(testFile2Size, destination.length(), "Check Full copy");
-        assertEquals(getLastModifiedMillis(testFile1) , getLastModifiedMillis(destination), "Check last modified date preserved");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(destination.length()).as("Check Full copy").isEqualTo(testFile2Size);
+        assertThat(getLastModifiedMillis(destination)).as("Check last modified date preserved").isEqualTo(getLastModifiedMillis(testFile1));
     }
 
     // sizeOfDirectory
@@ -1053,9 +1043,9 @@ public class FileUtilsTestCase {
         backDateFile10Minutes(testFile1);
 
         FileUtils.copyFileToDirectory(testFile1, directory);
-        assertTrue(destination.exists(), "Check Exist");
-        assertEquals(testFile2Size, destination.length(), "Check Full copy");
-        assertEquals(FileUtils.lastModified(testFile1), FileUtils.lastModified(destination), "Check last modified date preserved");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(destination.length()).as("Check Full copy").isEqualTo(testFile2Size);
+        assertThat(FileUtils.lastModified(destination)).as("Check last modified date preserved").isEqualTo(FileUtils.lastModified(testFile1));
     }
 
     @Test
@@ -1068,16 +1058,14 @@ public class FileUtilsTestCase {
         final long nowMillis = System.currentTimeMillis() - 1000L;
         // On Windows, the last modified time is copied by default.
         FileUtils.copyFile(testFile1, destFile, false);
-        assertTrue(destFile.exists(), "Check Exist");
-        assertEquals(testFile1Size, destFile.length(), "Check Full copy");
+        assertThat(destFile.exists()).as("Check Exist").isTrue();
+        assertThat(destFile.length()).as("Check Full copy").isEqualTo(testFile1Size);
         final long destLastModMillis = getLastModifiedMillis(destFile);
         final long unexpectedMillis = getLastModifiedMillis(testFile1);
         if (!SystemUtils.IS_OS_WINDOWS) {
             final long deltaMillis = destLastModMillis - unexpectedMillis;
-            assertNotEquals(unexpectedMillis, destLastModMillis,
-                "Check last modified date not same as input, delta " + deltaMillis);
-            assertTrue(destLastModMillis > nowMillis,
-                destLastModMillis + " > " + nowMillis + " (delta " + deltaMillis + ")");
+            assertThat(destLastModMillis).as("Check last modified date not same as input, delta " + deltaMillis).isNotEqualTo(unexpectedMillis);
+            assertThat(destLastModMillis > nowMillis).as(destLastModMillis + " > " + nowMillis + " (delta " + deltaMillis + ")").isTrue();
         }
     }
 
@@ -1104,17 +1092,17 @@ public class FileUtilsTestCase {
         FileUtils.copyFile(largeFile, destination);
         System.out.println("COPIED:  " + new java.util.Date());
 
-        assertTrue(destination.exists(), "Check Exist");
-        assertEquals(largeFile.length(), destination.length(), "Check Full copy");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(destination.length()).as("Check Full copy").isEqualTo(largeFile.length());
     }
 
     @Test
     public void testCopyFileToOutputStream() throws Exception {
         final ByteArrayOutputStream destination = new ByteArrayOutputStream();
         FileUtils.copyFile(testFile1, destination);
-        assertEquals(testFile1Size, destination.size(), "Check Full copy size");
+        assertThat(destination.size()).as("Check Full copy size").isEqualTo(testFile1Size);
         final byte[] expected = FileUtils.readFileToByteArray(testFile1);
-        assertArrayEquals(expected, destination.toByteArray(), "Check Full copy");
+        assertThat(destination.toByteArray()).as("Check Full copy").containsExactly(expected);
     }
 
     @Test
@@ -1138,14 +1126,14 @@ public class FileUtilsTestCase {
         FileUtils.copyToDirectory(inputDirectory, destDirectory);
 
         // Check the directory was created
-        assertTrue(outputDirDestination.exists(), "Check Exists");
-        assertTrue(outputDirDestination.isDirectory(), "Check Directory");
+        assertThat(outputDirDestination.exists()).as("Check Exists").isTrue();
+        assertThat(outputDirDestination.isDirectory()).as("Check Directory").isTrue();
 
         // Check each file
-        assertTrue(destFile1.exists(), "Check Exists");
-        assertEquals(testFile1Size, destFile1.length(), "Check Full Copy");
-        assertTrue(destFile2.exists(), "Check Exists");
-        assertEquals(testFile2Size, destFile2.length(), "Check Full Copy");
+        assertThat(destFile1.exists()).as("Check Exists").isTrue();
+        assertThat(destFile1.length()).as("Check Full Copy").isEqualTo(testFile1Size);
+        assertThat(destFile2.exists()).as("Check Exists").isTrue();
+        assertThat(destFile2.length()).as("Check Full Copy").isEqualTo(testFile2Size);
     }
 
     @Test
@@ -1157,8 +1145,8 @@ public class FileUtilsTestCase {
         final File destination = new File(directory, testFile1.getName());
 
         FileUtils.copyToDirectory(testFile1, directory);
-        assertTrue(destination.exists(), "Check Exists");
-        assertEquals(testFile1Size, destination.length(), "Check Full Copy");
+        assertThat(destination.exists()).as("Check Exists").isTrue();
+        assertThat(destination.length()).as("Check Full Copy").isEqualTo(testFile1Size);
     }
 
     @Test
@@ -1190,10 +1178,10 @@ public class FileUtilsTestCase {
 
         FileUtils.copyToDirectory(input, directory);
         // Check each file
-        assertTrue(destFile1.exists(), "Check Exists");
-        assertEquals(testFile1Size, destFile1.length(), "Check Full Copy");
-        assertTrue(destFile2.exists(), "Check Exists");
-        assertEquals(testFile2Size, destFile2.length(), "Check Full Copy");
+        assertThat(destFile1.exists()).as("Check Exists").isTrue();
+        assertThat(destFile1.length()).as("Check Full Copy").isEqualTo(testFile1Size);
+        assertThat(destFile2.exists()).as("Check Exists").isTrue();
+        assertThat(destFile2.length()).as("Check Full Copy").isEqualTo(testFile2Size);
     }
 
     @Test
@@ -1228,8 +1216,7 @@ public class FileUtilsTestCase {
 
         // Tests that resuorce was copied correctly
         try (FileInputStream fis = new FileInputStream(file)) {
-            assertTrue(IOUtils.contentEquals(getClass().getResourceAsStream(resourceName), fis),
-                    "Content is not equal.");
+            assertThat(IOUtils.contentEquals(getClass().getResourceAsStream(resourceName), fis)).as("Content is not equal.").isTrue();
         }
         //TODO Maybe test copy to itself like for copyFile()
     }
@@ -1246,46 +1233,45 @@ public class FileUtilsTestCase {
 
         // Tests that resuorce was copied correctly
         try (FileInputStream fis = new FileInputStream(file)) {
-            assertTrue(IOUtils.contentEquals(getClass().getResourceAsStream(resourceName), fis),
-                    "Content is not equal.");
+            assertThat(IOUtils.contentEquals(getClass().getResourceAsStream(resourceName), fis)).as("Content is not equal.").isTrue();
         }
         //TODO Maybe test copy to itself like for copyFile()
     }
 
     @Test
     public void testDecodeUrl() {
-        assertEquals("", FileUtils.decodeUrl(""));
-        assertEquals("foo", FileUtils.decodeUrl("foo"));
-        assertEquals("+", FileUtils.decodeUrl("+"));
-        assertEquals("% ", FileUtils.decodeUrl("%25%20"));
-        assertEquals("%20", FileUtils.decodeUrl("%2520"));
-        assertEquals("jar:file:/C:/dir/sub dir/1.0/foo-1.0.jar!/org/Bar.class", FileUtils
-                .decodeUrl("jar:file:/C:/dir/sub%20dir/1.0/foo-1.0.jar!/org/Bar.class"));
+        assertThat(FileUtils.decodeUrl("")).isEqualTo("");
+        assertThat(FileUtils.decodeUrl("foo")).isEqualTo("foo");
+        assertThat(FileUtils.decodeUrl("+")).isEqualTo("+");
+        assertThat(FileUtils.decodeUrl("%25%20")).isEqualTo("% ");
+        assertThat(FileUtils.decodeUrl("%2520")).isEqualTo("%20");
+        assertThat(FileUtils
+                .decodeUrl("jar:file:/C:/dir/sub%20dir/1.0/foo-1.0.jar!/org/Bar.class")).isEqualTo("jar:file:/C:/dir/sub dir/1.0/foo-1.0.jar!/org/Bar.class");
     }
 
     @Test
     public void testDecodeUrlEncodingUtf8() {
-        assertEquals("\u00E4\u00F6\u00FC\u00DF", FileUtils.decodeUrl("%C3%A4%C3%B6%C3%BC%C3%9F"));
+        assertThat(FileUtils.decodeUrl("%C3%A4%C3%B6%C3%BC%C3%9F")).isEqualTo("\u00E4\u00F6\u00FC\u00DF");
     }
 
     @Test
     public void testDecodeUrlLenient() {
-        assertEquals(" ", FileUtils.decodeUrl(" "));
-        assertEquals("\u00E4\u00F6\u00FC\u00DF", FileUtils.decodeUrl("\u00E4\u00F6\u00FC\u00DF"));
-        assertEquals("%", FileUtils.decodeUrl("%"));
-        assertEquals("% ", FileUtils.decodeUrl("%%20"));
-        assertEquals("%2", FileUtils.decodeUrl("%2"));
-        assertEquals("%2G", FileUtils.decodeUrl("%2G"));
+        assertThat(FileUtils.decodeUrl(" ")).isEqualTo(" ");
+        assertThat(FileUtils.decodeUrl("\u00E4\u00F6\u00FC\u00DF")).isEqualTo("\u00E4\u00F6\u00FC\u00DF");
+        assertThat(FileUtils.decodeUrl("%")).isEqualTo("%");
+        assertThat(FileUtils.decodeUrl("%%20")).isEqualTo("% ");
+        assertThat(FileUtils.decodeUrl("%2")).isEqualTo("%2");
+        assertThat(FileUtils.decodeUrl("%2G")).isEqualTo("%2G");
     }
 
     @Test
     public void testDecodeUrlNullSafe() {
-        assertNull(FileUtils.decodeUrl(null));
+        assertThat(FileUtils.decodeUrl(null)).isNull();
     }
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(testFile1, FileUtils.delete(testFile1));
+        assertThat(FileUtils.delete(testFile1)).isEqualTo(testFile1);
         assertThrows(IOException.class, () -> FileUtils.delete(new File("does not exist.nope")));
     }
 
@@ -1316,11 +1302,11 @@ public class FileUtilsTestCase {
             IOUtils.closeQuietly(output);
         }
 
-        assertTrue(testDirectory.exists());
-        assertTrue(testFile.exists());
+        assertThat(testDirectory.exists()).isTrue();
+        assertThat(testFile.exists()).isTrue();
         FileUtils.deleteQuietly(testDirectory);
-        assertFalse(testDirectory.exists(), "Check No Exist");
-        assertFalse(testFile.exists(), "Check No Exist");
+        assertThat(testDirectory.exists()).as("Check No Exist").isFalse();
+        assertThat(testFile.exists()).as("Check No Exist").isFalse();
     }
 
     @Test
@@ -1338,9 +1324,9 @@ public class FileUtilsTestCase {
             IOUtils.closeQuietly(output);
         }
 
-        assertTrue(testFile.exists());
+        assertThat(testFile.exists()).isTrue();
         FileUtils.deleteQuietly(testFile);
-        assertFalse(testFile.exists(), "Check No Exist");
+        assertThat(testFile.exists()).as("Check No Exist").isFalse();
     }
 
     @Test
@@ -1355,7 +1341,7 @@ public class FileUtilsTestCase {
     @Test
     public void testDeleteQuietlyNonExistent() {
         final File testFile = new File("testDeleteQuietlyNonExistent");
-        assertFalse(testFile.exists());
+        assertThat(testFile.exists()).isFalse();
 
         try {
             FileUtils.deleteQuietly(testFile);
@@ -1381,16 +1367,16 @@ public class FileUtilsTestCase {
         final File file2 = new File(temporaryFolder, "test2.txt");
 
         FileUtils.writeStringToFile(file2, filename, "UTF-8");
-        assertTrue(file2.exists());
-        assertTrue(file2.length() > 0);
+        assertThat(file2.exists()).isTrue();
+        assertThat(file2.length() > 0).isTrue();
 
         final String file2contents = FileUtils.readFileToString(file2, "UTF-8");
-        assertEquals(filename, file2contents, "Second file's contents correct");
+        assertThat(file2contents).as("Second file's contents correct").isEqualTo(filename);
 
-        assertTrue(file2.delete());
+        assertThat(file2.delete()).isTrue();
 
         final String contents = FileUtils.readFileToString(new File(filename), "UTF-8");
-        assertEquals("This is a test", contents, "FileUtils.fileRead()");
+        assertThat(contents).as("FileUtils.fileRead()").isEqualTo("This is a test");
 
     }
 
@@ -1400,24 +1386,24 @@ public class FileUtilsTestCase {
     public void testForceDeleteAFile1() throws Exception {
         final File destination = new File(temporaryFolder, "copy1.txt");
         destination.createNewFile();
-        assertTrue(destination.exists(), "Copy1.txt doesn't exist to delete");
+        assertThat(destination.exists()).as("Copy1.txt doesn't exist to delete").isTrue();
         FileUtils.forceDelete(destination);
-        assertFalse(destination.exists(), "Check No Exist");
+        assertThat(destination.exists()).as("Check No Exist").isFalse();
     }
 
     @Test
     public void testForceDeleteAFile2() throws Exception {
         final File destination = new File(temporaryFolder, "copy2.txt");
         destination.createNewFile();
-        assertTrue(destination.exists(), "Copy2.txt doesn't exist to delete");
+        assertThat(destination.exists()).as("Copy2.txt doesn't exist to delete").isTrue();
         FileUtils.forceDelete(destination);
-        assertFalse(destination.exists(), "Check No Exist");
+        assertThat(destination.exists()).as("Check No Exist").isFalse();
     }
 
     @Test
     public void testForceDeleteAFile3() throws Exception {
         final File destination = new File(temporaryFolder, "no_such_file");
-        assertFalse(destination.exists(), "Check No Exist");
+        assertThat(destination.exists()).as("Check No Exist").isFalse();
         try {
             FileUtils.forceDelete(destination);
             fail("Should generate FileNotFoundException");
@@ -1428,27 +1414,27 @@ public class FileUtilsTestCase {
     @Test
     public void testForceDeleteDir() throws Exception {
         final File testDirectory = temporaryFolder;
-        assertTrue(testDirectory.exists(), "TestDirectory must exist");
+        assertThat(testDirectory.exists()).as("TestDirectory must exist").isTrue();
         FileUtils.forceDelete(testDirectory);
-        assertFalse(testDirectory.exists(), "TestDirectory must not exist");
+        assertThat(testDirectory.exists()).as("TestDirectory must not exist").isFalse();
     }
 
     @Test
     public void testForceDeleteReadOnlyFile() throws Exception {
         File destination = File.createTempFile("test-", ".txt");
-        assertTrue(destination.setReadOnly());
-        assertTrue(destination.canRead());
-        assertFalse(destination.canWrite());
+        assertThat(destination.setReadOnly()).isTrue();
+        assertThat(destination.canRead()).isTrue();
+        assertThat(destination.canWrite()).isFalse();
         // sanity check that File.delete() in deletes read-only files.
-        assertTrue(destination.delete());
+        assertThat(destination.delete()).isTrue();
         destination = File.createTempFile("test-", ".txt");
         // real test
-        assertTrue(destination.setReadOnly());
-        assertTrue(destination.canRead());
-        assertFalse(destination.canWrite());
-        assertTrue(destination.exists(), "File doesn't exist to delete");
+        assertThat(destination.setReadOnly()).isTrue();
+        assertThat(destination.canRead()).isTrue();
+        assertThat(destination.canWrite()).isFalse();
+        assertThat(destination.exists()).as("File doesn't exist to delete").isTrue();
         FileUtils.forceDelete(destination);
-        assertFalse(destination.exists(), "Check deletion");
+        assertThat(destination.exists()).as("Check deletion").isFalse();
     }
 
     @Test
@@ -1460,7 +1446,7 @@ public class FileUtilsTestCase {
         final File testFile = new File(temporaryFolder, getName());
         testFile.deleteOnExit();
         testFile.createNewFile();
-        assertTrue(testFile.exists(), "Test file does not exist.");
+        assertThat(testFile.exists()).as("Test file does not exist.").isTrue();
 
         // Tests with existing file
         assertThrows(IOException.class, () -> FileUtils.forceMkdir(testFile));
@@ -1469,27 +1455,27 @@ public class FileUtilsTestCase {
 
         // Tests with non-existent directory
         FileUtils.forceMkdir(testFile);
-        assertTrue(testFile.exists(), "Directory was not created.");
+        assertThat(testFile.exists()).as("Directory was not created.").isTrue();
     }
 
     @Test
     public void testForceMkdirParent() throws Exception {
         // Tests with existing directory
-        assertTrue(temporaryFolder.exists());
+        assertThat(temporaryFolder.exists()).isTrue();
         final File testParentDir = new File(temporaryFolder, "testForceMkdirParent");
         testParentDir.delete();
-        assertFalse(testParentDir.exists());
+        assertThat(testParentDir.exists()).isFalse();
         final File testFile = new File(testParentDir, "test.txt");
-        assertFalse(testParentDir.exists());
-        assertFalse(testFile.exists());
+        assertThat(testParentDir.exists()).isFalse();
+        assertThat(testFile.exists()).isFalse();
         // Create
         FileUtils.forceMkdirParent(testFile);
-        assertTrue(testParentDir.exists());
-        assertFalse(testFile.exists());
+        assertThat(testParentDir.exists()).isTrue();
+        assertThat(testFile.exists()).isFalse();
         // Again
         FileUtils.forceMkdirParent(testFile);
-        assertTrue(testParentDir.exists());
-        assertFalse(testFile.exists());
+        assertThat(testParentDir.exists()).isTrue();
+        assertThat(testFile.exists()).isFalse();
     }
 
     //-----------------------------------------------------------------------
@@ -1498,9 +1484,9 @@ public class FileUtilsTestCase {
         final File expected_A = new File("src");
         final File expected_B = new File(expected_A, "main");
         final File expected_C = new File(expected_B, "java");
-        assertEquals(expected_A, FileUtils.getFile("src"), "A");
-        assertEquals(expected_B, FileUtils.getFile("src", "main"), "B");
-        assertEquals(expected_C, FileUtils.getFile("src", "main", "java"), "C");
+        assertThat(FileUtils.getFile("src")).as("A").isEqualTo(expected_A);
+        assertThat(FileUtils.getFile("src", "main")).as("B").isEqualTo(expected_B);
+        assertThat(FileUtils.getFile("src", "main", "java")).as("C").isEqualTo(expected_C);
         try {
             FileUtils.getFile((String[]) null);
             fail("Expected NullPointerException");
@@ -1517,9 +1503,9 @@ public class FileUtilsTestCase {
         final File expected_A = new File(parent, "src");
         final File expected_B = new File(expected_A, "main");
         final File expected_C = new File(expected_B, "java");
-        assertEquals(expected_A, FileUtils.getFile(parent, "src"), "A");
-        assertEquals(expected_B, FileUtils.getFile(parent, "src", "main"), "B");
-        assertEquals(expected_C, FileUtils.getFile(parent, "src", "main", "java"), "C");
+        assertThat(FileUtils.getFile(parent, "src")).as("A").isEqualTo(expected_A);
+        assertThat(FileUtils.getFile(parent, "src", "main")).as("B").isEqualTo(expected_B);
+        assertThat(FileUtils.getFile(parent, "src", "main", "java")).as("C").isEqualTo(expected_C);
         try {
             FileUtils.getFile(parent, (String[]) null);
             fail("Expected NullPointerException");
@@ -1537,13 +1523,12 @@ public class FileUtilsTestCase {
     @Test
     public void testGetTempDirectory() {
         final File tempDirectory = new File(System.getProperty("java.io.tmpdir"));
-        assertEquals(tempDirectory, FileUtils.getTempDirectory());
+        assertThat(FileUtils.getTempDirectory()).isEqualTo(tempDirectory);
     }
 
     @Test
     public void testGetTempDirectoryPath() {
-        assertEquals(System.getProperty("java.io.tmpdir"),
-                FileUtils.getTempDirectoryPath());
+        assertThat(FileUtils.getTempDirectoryPath()).isEqualTo(System.getProperty("java.io.tmpdir"));
     }
 
     // copyFileToDirectory
@@ -1551,13 +1536,12 @@ public class FileUtilsTestCase {
     @Test
     public void testGetUserDirectory() {
         final File userDirectory = new File(System.getProperty("user.home"));
-        assertEquals(userDirectory, FileUtils.getUserDirectory());
+        assertThat(FileUtils.getUserDirectory()).isEqualTo(userDirectory);
     }
 
     @Test
     public void testGetUserDirectoryPath() {
-        assertEquals(System.getProperty("user.home"),
-                FileUtils.getUserDirectoryPath());
+        assertThat(FileUtils.getUserDirectoryPath()).isEqualTo(System.getProperty("user.home"));
     }
 
     // forceDelete
@@ -1572,7 +1556,7 @@ public class FileUtilsTestCase {
             fail("Expected IOException");
         } catch (final Exception e) {
             final String msg = e.toString();
-            assertTrue(msg.contains("Failed to copy full contents"), msg);
+            assertThat(msg.contains("Failed to copy full contents")).as(msg).isTrue();
         } finally {
             outFile.delete(); // tidy up
         }
@@ -1581,9 +1565,9 @@ public class FileUtilsTestCase {
     @Test
     public void testIO276() throws Exception {
         final File dir = new File("target", "IO276");
-        assertTrue(dir.mkdirs(), dir + " should not be present");
+        assertThat(dir.mkdirs()).as(dir + " should not be present").isTrue();
         final File file = new File(dir, "IO276.txt");
-        assertTrue(file.createNewFile(), file + " should not be present");
+        assertThat(file.createNewFile()).as(file + " should not be present").isTrue();
         FileUtils.forceDeleteOnExit(dir);
         // If this does not work, test will fail next time (assuming target is not cleaned)
     }
@@ -1593,15 +1577,15 @@ public class FileUtilsTestCase {
         final File testDirectory = temporaryFolder;
         final File src = new File(testDirectory, "dir1");
         final File dest = new File(src, "dir2");
-        assertTrue(dest.mkdirs());
-        assertTrue(src.exists());
+        assertThat(dest.mkdirs()).isTrue();
+        assertThat(src.exists()).isTrue();
         try {
             FileUtils.moveDirectoryToDirectory(src, dest, false);
             fail("expected IOException");
         } catch (final IOException ioe) {
             // expected
         }
-        assertTrue(src.exists());
+        assertThat(src.exists()).isTrue();
     }
 
     @Test
@@ -1609,11 +1593,11 @@ public class FileUtilsTestCase {
         final Path tempDir = Files.createTempDirectory(getClass().getCanonicalName());
         final File tempDirAsFile = tempDir.toFile();
         try {
-            Assertions.assertTrue(FileUtils.isEmptyDirectory(tempDirAsFile));
+            assertThat(FileUtils.isEmptyDirectory(tempDirAsFile)).isTrue();
         } finally {
             Files.delete(tempDir);
         }
-        Assertions.assertFalse(FileUtils.isEmptyDirectory(PathUtilsIsEmptyTest.DIR_SIZE_1.toFile()));
+        assertThat(FileUtils.isEmptyDirectory(PathUtilsIsEmptyTest.DIR_SIZE_1.toFile())).isFalse();
     }
 
     // isFileNewer / isFileOlder
@@ -1685,72 +1669,72 @@ public class FileUtilsTestCase {
         } while (getLastModifiedMillis(reference) == getLastModifiedMillis(newFile));
 
         // Test isFileNewer()
-        assertFalse(FileUtils.isFileNewer(oldFile, reference), "Old File - Newer - File");
-        assertFalse(FileUtils.isFileNewer(oldFile, date), "Old File - Newer - Date");
-        assertFalse(FileUtils.isFileNewer(oldFile, now), "Old File - Newer - Mili");
-        assertFalse(FileUtils.isFileNewer(oldFile, instant), "Old File - Newer - Instant");
-        assertFalse(FileUtils.isFileNewer(oldFile, zonedDateTime), "Old File - Newer - ZonedDateTime");
-        assertFalse(FileUtils.isFileNewer(oldFile, localDateTime), "Old File - Newer - LocalDateTime");
-        assertFalse(FileUtils.isFileNewer(oldFile, localDateTime, ZoneId.systemDefault()), "Old File - Newer - LocalDateTime,ZoneId");
-        assertFalse(FileUtils.isFileNewer(oldFile, localDate), "Old File - Newer - LocalDate");
-        assertTrue(FileUtils.isFileNewer(oldFile, localDate, localTime), "Old File - Newer - LocalDate,ZoneId");
-        assertFalse(FileUtils.isFileNewer(oldFile, localDatePlusDay), "Old File - Newer - LocalDate plus one day");
-        assertFalse(FileUtils.isFileNewer(oldFile, localDatePlusDay, localTime), "Old File - Newer - LocalDate plus one day,ZoneId");
+        assertThat(FileUtils.isFileNewer(oldFile, reference)).as("Old File - Newer - File").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, date)).as("Old File - Newer - Date").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, now)).as("Old File - Newer - Mili").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, instant)).as("Old File - Newer - Instant").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, zonedDateTime)).as("Old File - Newer - ZonedDateTime").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, localDateTime)).as("Old File - Newer - LocalDateTime").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, localDateTime, ZoneId.systemDefault())).as("Old File - Newer - LocalDateTime,ZoneId").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, localDate)).as("Old File - Newer - LocalDate").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, localDate, localTime)).as("Old File - Newer - LocalDate,ZoneId").isTrue();
+        assertThat(FileUtils.isFileNewer(oldFile, localDatePlusDay)).as("Old File - Newer - LocalDate plus one day").isFalse();
+        assertThat(FileUtils.isFileNewer(oldFile, localDatePlusDay, localTime)).as("Old File - Newer - LocalDate plus one day,ZoneId").isFalse();
 
-        assertTrue(FileUtils.isFileNewer(newFile, reference), "New File - Newer - File");
-        assertTrue(FileUtils.isFileNewer(newFile, date), "New File - Newer - Date");
-        assertTrue(FileUtils.isFileNewer(newFile, now), "New File - Newer - Mili");
-        assertTrue(FileUtils.isFileNewer(newFile, instant), "New File - Newer - Instant");
-        assertTrue(FileUtils.isFileNewer(newFile, zonedDateTime), "New File - Newer - ZonedDateTime");
-        assertTrue(FileUtils.isFileNewer(newFile, localDateTime), "New File - Newer - LocalDateTime");
-        assertTrue(FileUtils.isFileNewer(newFile, localDateTime, ZoneId.systemDefault()), "New File - Newer - LocalDateTime,ZoneId");
-        assertFalse(FileUtils.isFileNewer(newFile, localDate), "New File - Newer - LocalDate");
-        assertTrue(FileUtils.isFileNewer(newFile, localDate, localTime), "New File - Newer - LocalDate,ZoneId");
-        assertFalse(FileUtils.isFileNewer(newFile, localDatePlusDay), "New File - Newer - LocalDate plus one day");
-        assertFalse(FileUtils.isFileNewer(newFile, localDatePlusDay, localTime), "New File - Newer - LocalDate plus one day,ZoneId");
-        assertFalse(FileUtils.isFileNewer(invalidFile, reference), "Invalid - Newer - File");
+        assertThat(FileUtils.isFileNewer(newFile, reference)).as("New File - Newer - File").isTrue();
+        assertThat(FileUtils.isFileNewer(newFile, date)).as("New File - Newer - Date").isTrue();
+        assertThat(FileUtils.isFileNewer(newFile, now)).as("New File - Newer - Mili").isTrue();
+        assertThat(FileUtils.isFileNewer(newFile, instant)).as("New File - Newer - Instant").isTrue();
+        assertThat(FileUtils.isFileNewer(newFile, zonedDateTime)).as("New File - Newer - ZonedDateTime").isTrue();
+        assertThat(FileUtils.isFileNewer(newFile, localDateTime)).as("New File - Newer - LocalDateTime").isTrue();
+        assertThat(FileUtils.isFileNewer(newFile, localDateTime, ZoneId.systemDefault())).as("New File - Newer - LocalDateTime,ZoneId").isTrue();
+        assertThat(FileUtils.isFileNewer(newFile, localDate)).as("New File - Newer - LocalDate").isFalse();
+        assertThat(FileUtils.isFileNewer(newFile, localDate, localTime)).as("New File - Newer - LocalDate,ZoneId").isTrue();
+        assertThat(FileUtils.isFileNewer(newFile, localDatePlusDay)).as("New File - Newer - LocalDate plus one day").isFalse();
+        assertThat(FileUtils.isFileNewer(newFile, localDatePlusDay, localTime)).as("New File - Newer - LocalDate plus one day,ZoneId").isFalse();
+        assertThat(FileUtils.isFileNewer(invalidFile, reference)).as("Invalid - Newer - File").isFalse();
         final String invalidFileName = invalidFile.getName();
         try {
             FileUtils.isFileNewer(newFile, invalidFile);
             fail("Should have cause IllegalArgumentException");
         } catch (final IllegalArgumentException iae) {
             final String message = iae.getMessage();
-            assertTrue(message.contains(invalidFileName), "Message should contain: " + invalidFileName + " but was: " + message);
+            assertThat(message.contains(invalidFileName)).as("Message should contain: " + invalidFileName + " but was: " + message).isTrue();
         }
 
         // Test isFileOlder()
-        assertTrue(FileUtils.isFileOlder(oldFile, reference), "Old File - Older - File");
-        assertTrue(FileUtils.isFileOlder(oldFile, date), "Old File - Older - Date");
-        assertTrue(FileUtils.isFileOlder(oldFile, now), "Old File - Older - Mili");
-        assertTrue(FileUtils.isFileOlder(oldFile, instant), "Old File - Older - Instant");
-        assertTrue(FileUtils.isFileOlder(oldFile, zonedDateTime), "Old File - Older - ZonedDateTime");
-        assertTrue(FileUtils.isFileOlder(oldFile, localDateTime), "Old File - Older - LocalDateTime");
-        assertTrue(FileUtils.isFileOlder(oldFile, localDateTime, ZoneId.systemDefault()), "Old File - Older - LocalDateTime,LocalTime");
-        assertTrue(FileUtils.isFileOlder(oldFile, localDate), "Old File - Older - LocalDate");
-        assertFalse(FileUtils.isFileOlder(oldFile, localDate, localTime), "Old File - Older - LocalDate,ZoneId");
-        assertTrue(FileUtils.isFileOlder(oldFile, localDatePlusDay), "Old File - Older - LocalDate plus one day");
-        assertTrue(FileUtils.isFileOlder(oldFile, localDatePlusDay, localTime), "Old File - Older - LocalDate plus one day,LocalTime");
+        assertThat(FileUtils.isFileOlder(oldFile, reference)).as("Old File - Older - File").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, date)).as("Old File - Older - Date").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, now)).as("Old File - Older - Mili").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, instant)).as("Old File - Older - Instant").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, zonedDateTime)).as("Old File - Older - ZonedDateTime").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, localDateTime)).as("Old File - Older - LocalDateTime").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, localDateTime, ZoneId.systemDefault())).as("Old File - Older - LocalDateTime,LocalTime").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, localDate)).as("Old File - Older - LocalDate").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, localDate, localTime)).as("Old File - Older - LocalDate,ZoneId").isFalse();
+        assertThat(FileUtils.isFileOlder(oldFile, localDatePlusDay)).as("Old File - Older - LocalDate plus one day").isTrue();
+        assertThat(FileUtils.isFileOlder(oldFile, localDatePlusDay, localTime)).as("Old File - Older - LocalDate plus one day,LocalTime").isTrue();
 
-        assertFalse(FileUtils.isFileOlder(newFile, reference), "New File - Older - File");
-        assertFalse(FileUtils.isFileOlder(newFile, date), "New File - Older - Date");
-        assertFalse(FileUtils.isFileOlder(newFile, now), "New File - Older - Mili");
-        assertFalse(FileUtils.isFileOlder(newFile, instant), "New File - Older - Instant");
-        assertFalse(FileUtils.isFileOlder(newFile, zonedDateTime), "New File - Older - ZonedDateTime");
-        assertFalse(FileUtils.isFileOlder(newFile, localDateTime), "New File - Older - LocalDateTime");
-        assertFalse(FileUtils.isFileOlder(newFile, localDateTime, ZoneId.systemDefault()), "New File - Older - LocalDateTime,ZoneId");
-        assertTrue(FileUtils.isFileOlder(newFile, localDate), "New File - Older - LocalDate");
-        assertFalse(FileUtils.isFileOlder(newFile, localDate, localTime), "New File - Older - LocalDate,LocalTime");
-        assertTrue(FileUtils.isFileOlder(newFile, localDatePlusDay), "New File - Older - LocalDate plus one day");
-        assertTrue(FileUtils.isFileOlder(newFile, localDatePlusDay, localTime), "New File - Older - LocalDate plus one day,LocalTime");
+        assertThat(FileUtils.isFileOlder(newFile, reference)).as("New File - Older - File").isFalse();
+        assertThat(FileUtils.isFileOlder(newFile, date)).as("New File - Older - Date").isFalse();
+        assertThat(FileUtils.isFileOlder(newFile, now)).as("New File - Older - Mili").isFalse();
+        assertThat(FileUtils.isFileOlder(newFile, instant)).as("New File - Older - Instant").isFalse();
+        assertThat(FileUtils.isFileOlder(newFile, zonedDateTime)).as("New File - Older - ZonedDateTime").isFalse();
+        assertThat(FileUtils.isFileOlder(newFile, localDateTime)).as("New File - Older - LocalDateTime").isFalse();
+        assertThat(FileUtils.isFileOlder(newFile, localDateTime, ZoneId.systemDefault())).as("New File - Older - LocalDateTime,ZoneId").isFalse();
+        assertThat(FileUtils.isFileOlder(newFile, localDate)).as("New File - Older - LocalDate").isTrue();
+        assertThat(FileUtils.isFileOlder(newFile, localDate, localTime)).as("New File - Older - LocalDate,LocalTime").isFalse();
+        assertThat(FileUtils.isFileOlder(newFile, localDatePlusDay)).as("New File - Older - LocalDate plus one day").isTrue();
+        assertThat(FileUtils.isFileOlder(newFile, localDatePlusDay, localTime)).as("New File - Older - LocalDate plus one day,LocalTime").isTrue();
 
-        assertFalse(FileUtils.isFileOlder(invalidFile, reference), "Invalid - Older - File");
+        assertThat(FileUtils.isFileOlder(invalidFile, reference)).as("Invalid - Older - File").isFalse();
         assertThrows(IllegalArgumentException.class, () -> FileUtils.isFileOlder(newFile, invalidFile));
         try {
             FileUtils.isFileOlder(newFile, invalidFile);
             fail("Should have cause IllegalArgumentException");
         } catch (final IllegalArgumentException iae) {
             final String message = iae.getMessage();
-            assertTrue(message.contains(invalidFileName), "Message should contain: " + invalidFileName + " but was: " + message);
+            assertThat(message.contains(invalidFileName)).as("Message should contain: " + invalidFileName + " but was: " + message).isTrue();
         }
 
 
@@ -1783,26 +1767,26 @@ public class FileUtilsTestCase {
 
     @Test
     public void testIsDirectory() throws IOException {
-        assertFalse(FileUtils.isDirectory(null));
+        assertThat(FileUtils.isDirectory(null)).isFalse();
 
-        assertTrue(FileUtils.isDirectory(temporaryFolder));
-        assertFalse(FileUtils.isDirectory(testFile1));
+        assertThat(FileUtils.isDirectory(temporaryFolder)).isTrue();
+        assertThat(FileUtils.isDirectory(testFile1)).isFalse();
 
         final Path tempDir = Files.createTempDirectory(getClass().getCanonicalName());
         final File tempDirAsFile = tempDir.toFile();
         Files.delete(tempDir);
-        assertFalse(FileUtils.isDirectory(tempDirAsFile));
+        assertThat(FileUtils.isDirectory(tempDirAsFile)).isFalse();
     }
 
     @Test
     public void testIsRegularFile() throws IOException {
-        assertFalse(FileUtils.isRegularFile(null));
+        assertThat(FileUtils.isRegularFile(null)).isFalse();
 
-        assertFalse(FileUtils.isRegularFile(temporaryFolder));
-        assertTrue(FileUtils.isRegularFile(testFile1));
+        assertThat(FileUtils.isRegularFile(temporaryFolder)).isFalse();
+        assertThat(FileUtils.isRegularFile(testFile1)).isTrue();
 
         Files.delete(testFile1.toPath());
-        assertFalse(FileUtils.isRegularFile(testFile1));
+        assertThat(FileUtils.isRegularFile(testFile1)).isFalse();
     }
 
     @Test
@@ -1811,16 +1795,16 @@ public class FileUtilsTestCase {
         final File subDir = new File(srcDir, "list_test");
         final File subSubDir = new File(subDir, "subSubDir");
         final File notSubSubDir = new File(subDir, "notSubSubDir");
-        assertTrue(subDir.mkdir());
-        assertTrue(subSubDir.mkdir());
-        assertTrue(notSubSubDir.mkdir());
+        assertThat(subDir.mkdir()).isTrue();
+        assertThat(subSubDir.mkdir()).isTrue();
+        assertThat(notSubSubDir.mkdir()).isTrue();
         Iterator<File> iterator = null;
         try {
             // Need list to be appendable
             final List<String> expectedFileNames = new ArrayList<>(
                 Arrays.asList("a.txt", "b.txt", "c.txt", "d.txt", "e.txt", "f.txt"));
             final int[] fileSizes = {123, 234, 345, 456, 678, 789};
-            assertEquals(expectedFileNames.size(), fileSizes.length);
+            assertThat(fileSizes.length).isEqualTo(expectedFileNames.size());
             Collections.sort(expectedFileNames);
             Arrays.sort(fileSizes);
             for (int i = 0; i < fileSizes.length; ++i) {
@@ -1854,9 +1838,9 @@ public class FileUtilsTestCase {
                     }
                 }
             }
-            assertEquals(expectedFileNames.size(), matchedFileNames.size());
+            assertThat(matchedFileNames.size()).isEqualTo(expectedFileNames.size());
             Collections.sort(actualFileNames);
-            assertEquals(expectedFileNames, actualFileNames);
+            assertThat(actualFileNames).isEqualTo(expectedFileNames);
         } finally {
             consumeRemaining(iterator);
             notSubSubDir.delete();
@@ -1878,10 +1862,10 @@ public class FileUtilsTestCase {
         final File subDir2 = new File(subDir1, "subdir2");
         final File subDir3 = new File(subDir2, "subdir3");
         final File subDir4 = new File(subDir2, "subdir4");
-        assertTrue(subDir1.mkdir());
-        assertTrue(subDir2.mkdir());
-        assertTrue(subDir3.mkdir());
-        assertTrue(subDir4.mkdir());
+        assertThat(subDir1.mkdir()).isTrue();
+        assertThat(subDir2.mkdir()).isTrue();
+        assertThat(subDir3.mkdir()).isTrue();
+        assertThat(subDir4.mkdir()).isTrue();
         final File someFile = new File(subDir2, "a.txt");
         final WildcardFileFilter fileFilterAllFiles = new WildcardFileFilter("*.*");
         final WildcardFileFilter fileFilterAllDirs = new WildcardFileFilter("*");
@@ -1947,7 +1931,7 @@ public class FileUtilsTestCase {
             final int count = actualFiles.size();
             final Object[] fileObjs = actualFiles.toArray();
 
-            assertEquals(expectedFileNames.length, actualFiles.size(), () -> actualFiles.toString());
+            assertThat(actualFiles.size()).withFailMessage(() -> actualFiles.toString()).isEqualTo(expectedFileNames.length);
 
             final Map<String, String> foundFileNames = new HashMap<>();
 
@@ -1961,7 +1945,7 @@ public class FileUtilsTestCase {
                 }
             }
 
-            assertEquals(foundFileNames.size(), expectedFileNames.length, () -> foundFileNames.toString());
+            assertThat(expectedFileNames.length).withFailMessage(() -> foundFileNames.toString()).isEqualTo(foundFileNames.size());
         } finally {
             subDir.delete();
         }
@@ -1993,11 +1977,11 @@ public class FileUtilsTestCase {
             final Collection<File> files = FileUtils.listFilesAndDirs(subDir1, new WildcardFileFilter("*.*"),
                 new WildcardFileFilter("*"));
 
-            assertEquals(4, files.size());
-            assertTrue(files.contains(subDir1), "Should contain the directory.");
-            assertTrue(files.contains(subDir2), "Should contain the directory.");
-            assertTrue(files.contains(someFile), "Should contain the file.");
-            assertTrue(files.contains(subDir3), "Should contain the directory.");
+            assertThat(files.size()).isEqualTo(4);
+            assertThat(files.contains(subDir1)).as("Should contain the directory.").isTrue();
+            assertThat(files.contains(subDir2)).as("Should contain the directory.").isTrue();
+            assertThat(files.contains(someFile)).as("Should contain the file.").isTrue();
+            assertThat(files.contains(subDir3)).as("Should contain the directory.").isTrue();
         } finally {
             subDir1.delete();
         }
@@ -2037,12 +2021,12 @@ public class FileUtilsTestCase {
         FileUtils.moveDirectory(src, destination);
 
         // Check results
-        assertTrue(destination.exists(), "Check Exist");
-        assertFalse(src.exists(), "Original deleted");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(src.exists()).as("Original deleted").isFalse();
         final File movedDir = new File(destination, testDir.getName());
         final File movedFile = new File(movedDir, testFile.getName());
-        assertTrue(movedDir.exists(), "Check dir moved");
-        assertTrue(movedFile.exists(), "Check file moved");
+        assertThat(movedDir.exists()).as("Check dir moved").isTrue();
+        assertThat(movedFile.exists()).as("Check file moved").isTrue();
     }
 
     @Test
@@ -2105,12 +2089,12 @@ public class FileUtilsTestCase {
         FileUtils.moveDirectory(src, destination);
 
         // Check results
-        assertTrue(destination.exists(), "Check Exist");
-        assertFalse(src.exists(), "Original deleted");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(src.exists()).as("Original deleted").isFalse();
         final File movedDir = new File(destination, testDir.getName());
         final File movedFile = new File(movedDir, testFile.getName());
-        assertTrue(movedDir.exists(), "Check dir moved");
-        assertTrue(movedFile.exists(), "Check file moved");
+        assertThat(movedDir.exists()).as("Check dir moved").isTrue();
+        assertThat(movedFile.exists()).as("Check file moved").isTrue();
     }
 
     @Test
@@ -2133,20 +2117,20 @@ public class FileUtilsTestCase {
         }
         final File destDir = new File(dir, "testMoveDirectory1Dest");
         FileUtils.deleteDirectory(destDir);
-        assertFalse(destDir.exists(), "Check Exist before");
+        assertThat(destDir.exists()).as("Check Exist before").isFalse();
 
         // Move the directory
         FileUtils.moveDirectoryToDirectory(src, destDir, true);
 
         // Check results
-        assertTrue(destDir.exists(), "Check Exist after");
-        assertFalse(src.exists(), "Original deleted");
+        assertThat(destDir.exists()).as("Check Exist after").isTrue();
+        assertThat(src.exists()).as("Original deleted").isFalse();
         final File movedDir = new File(destDir, src.getName());
         final File movedChildDir = new File(movedDir, testChildDir.getName());
         final File movedFile = new File(movedChildDir, testFile.getName());
-        assertTrue(movedDir.exists(), "Check dir moved");
-        assertTrue(movedChildDir.exists(), "Check child dir moved");
-        assertTrue(movedFile.exists(), "Check file moved");
+        assertThat(movedDir.exists()).as("Check dir moved").isTrue();
+        assertThat(movedChildDir.exists()).as("Check child dir moved").isTrue();
+        assertThat(movedFile.exists()).as("Check file moved").isTrue();
     }
 
     @Test
@@ -2203,8 +2187,8 @@ public class FileUtilsTestCase {
             }
         };
         FileUtils.moveFile(src, destination);
-        assertTrue(destination.exists(), "Check Exist");
-        assertFalse(src.exists(), "Original deleted");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(src.exists()).as("Original deleted").isFalse();
     }
 
     @Test
@@ -2229,8 +2213,8 @@ public class FileUtilsTestCase {
         };
         assertThrows(IOException.class, () -> FileUtils.moveFile(src, destination));
         // expected
-        assertFalse(destination.exists(), "Check Rollback");
-        assertTrue(src.exists(), "Original exists");
+        assertThat(destination.exists()).as("Check Rollback").isFalse();
+        assertThat(src.exists()).as("Original exists").isTrue();
     }
 
     @Test
@@ -2252,12 +2236,12 @@ public class FileUtilsTestCase {
         final long expected = getLastModifiedMillis(testFile1);
 
         FileUtils.moveFile(src, destination, StandardCopyOption.COPY_ATTRIBUTES);
-        assertTrue(destination.exists(), "Check Exist");
-        assertFalse(src.exists(), "Original deleted");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(src.exists()).as("Original deleted").isFalse();
 
         final long destLastMod = getLastModifiedMillis(destination);
         final long delta = destLastMod - expected;
-        assertEquals(expected, destLastMod, "Check last modified date same as input, delta " + delta);
+        assertThat(destLastMod).as("Check last modified date same as input, delta " + delta).isEqualTo(expected);
     }
 
     @Test
@@ -2282,17 +2266,15 @@ public class FileUtilsTestCase {
         final long unexpectedMillis = getLastModifiedMillis(testFile1);
 
         FileUtils.moveFile(src, destination, PathUtils.EMPTY_COPY_OPTIONS);
-        assertTrue(destination.exists(), "Check Exist");
-        assertFalse(src.exists(), "Original deleted");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(src.exists()).as("Original deleted").isFalse();
 
         // On Windows, the last modified time is copied by default.
         if (!SystemUtils.IS_OS_WINDOWS) {
             final long destLastModMillis = getLastModifiedMillis(destination);
             final long deltaMillis = destLastModMillis - unexpectedMillis;
-            assertNotEquals(unexpectedMillis, destLastModMillis,
-                "Check last modified date not same as input, delta " + deltaMillis);
-            assertTrue(destLastModMillis > nowMillis,
-                destLastModMillis + " > " + nowMillis + " (delta " + deltaMillis + ")");
+            assertThat(destLastModMillis).as("Check last modified date not same as input, delta " + deltaMillis).isNotEqualTo(unexpectedMillis);
+            assertThat(destLastModMillis > nowMillis).as(destLastModMillis + " > " + nowMillis + " (delta " + deltaMillis + ")").isTrue();
         }
     }
 
@@ -2344,20 +2326,20 @@ public class FileUtilsTestCase {
         final File destination = new File(temporaryFolder, "move1.txt");
 
         FileUtils.moveFile(testFile1, destination);
-        assertTrue(destination.exists(), "Check Exist");
-        assertFalse(testFile1.exists(), "Original deleted");
+        assertThat(destination.exists()).as("Check Exist").isTrue();
+        assertThat(testFile1.exists()).as("Original deleted").isFalse();
     }
 
     @Test
     public void testMoveFileToDirectory() throws Exception {
         final File destDir = new File(temporaryFolder, "moveFileDestDir");
         final File movedFile = new File(destDir, testFile1.getName());
-        assertFalse(destDir.exists(), "Check Exist before");
-        assertFalse(movedFile.exists(), "Check Exist before");
+        assertThat(destDir.exists()).as("Check Exist before").isFalse();
+        assertThat(movedFile.exists()).as("Check Exist before").isFalse();
 
         FileUtils.moveFileToDirectory(testFile1, destDir, true);
-        assertTrue(movedFile.exists(), "Check Exist after");
-        assertFalse(testFile1.exists(), "Original deleted");
+        assertThat(movedFile.exists()).as("Check Exist after").isTrue();
+        assertThat(testFile1.exists()).as("Original deleted").isFalse();
     }
 
     @Test
@@ -2419,18 +2401,18 @@ public class FileUtilsTestCase {
         final File movedFile = new File(destDir, testFile.getName());
         final File movedDir = new File(destDir, testFile.getName());
 
-        assertFalse(movedFile.exists(), "Check File Doesnt exist");
-        assertFalse(movedDir.exists(), "Check Dir Doesnt exist");
+        assertThat(movedFile.exists()).as("Check File Doesnt exist").isFalse();
+        assertThat(movedDir.exists()).as("Check Dir Doesnt exist").isFalse();
 
         // Test moving a file
         FileUtils.moveToDirectory(testFile, destDir, true);
-        assertTrue(movedFile.exists(), "Check File exists");
-        assertFalse(testFile.exists(), "Check Original File doesn't exist");
+        assertThat(movedFile.exists()).as("Check File exists").isTrue();
+        assertThat(testFile.exists()).as("Check Original File doesn't exist").isFalse();
 
         // Test moving a directory
         FileUtils.moveToDirectory(testDir, destDir, true);
-        assertTrue(movedDir.exists(), "Check Dir exists");
-        assertFalse(testDir.exists(), "Check Original Dir doesn't exist");
+        assertThat(movedDir.exists()).as("Check Dir exists").isTrue();
+        assertThat(testDir.exists()).as("Check Original Dir doesn't exist").isFalse();
     }
 
     @Test
@@ -2467,10 +2449,10 @@ public class FileUtilsTestCase {
         out.close();
 
         final byte[] data = FileUtils.readFileToByteArray(file);
-        assertEquals(3, data.length);
-        assertEquals(11, data[0]);
-        assertEquals(21, data[1]);
-        assertEquals(31, data[2]);
+        assertThat(data.length).isEqualTo(3);
+        assertThat(data[0]).isEqualTo(11);
+        assertThat(data[1]).isEqualTo(21);
+        assertThat(data[2]).isEqualTo(31);
     }
 
     @Test
@@ -2482,7 +2464,7 @@ public class FileUtilsTestCase {
         out.close();
 
         final String data = FileUtils.readFileToString(file);
-        assertEquals("Hello /u1234", data);
+        assertThat(data).isEqualTo("Hello /u1234");
     }
 
     @Test
@@ -2494,7 +2476,7 @@ public class FileUtilsTestCase {
         out.close();
 
         final String data = FileUtils.readFileToString(file, "UTF8");
-        assertEquals("Hello /u1234", data);
+        assertThat(data).isEqualTo("Hello /u1234");
     }
 
     @Test
@@ -2505,7 +2487,7 @@ public class FileUtilsTestCase {
             TestUtils.createLineBasedFile(file, data);
 
             final List<String> lines = FileUtils.readLines(file, "UTF-8");
-            assertEquals(Arrays.asList(data), lines);
+            assertThat(lines).isEqualTo(Arrays.asList(data));
         } finally {
             TestUtils.deleteFile(file);
         }
@@ -2534,14 +2516,14 @@ public class FileUtilsTestCase {
         file.deleteOnExit();
 
         // New file
-        assertEquals(0, FileUtils.sizeOf(file));
+        assertThat(FileUtils.sizeOf(file)).isEqualTo(0);
         file.delete();
 
         // Existing file
-        assertEquals(testFile1Size, FileUtils.sizeOf(testFile1), "Unexpected files size");
+        assertThat(FileUtils.sizeOf(testFile1)).as("Unexpected files size").isEqualTo(testFile1Size);
 
         // Existing directory
-        assertEquals(TEST_DIRECTORY_SIZE, FileUtils.sizeOf(temporaryFolder), "Unexpected directory size");
+        assertThat(FileUtils.sizeOf(temporaryFolder)).as("Unexpected directory size").isEqualTo(TEST_DIRECTORY_SIZE);
     }
 
     @Test
@@ -2567,16 +2549,14 @@ public class FileUtilsTestCase {
         file.deleteOnExit();
 
         // New file
-        assertEquals(BigInteger.ZERO, FileUtils.sizeOfAsBigInteger(file));
+        assertThat(FileUtils.sizeOfAsBigInteger(file)).isEqualTo(BigInteger.ZERO);
         file.delete();
 
         // Existing file
-        assertEquals(BigInteger.valueOf(testFile1Size), FileUtils.sizeOfAsBigInteger(testFile1),
-                "Unexpected files size");
+        assertThat(FileUtils.sizeOfAsBigInteger(testFile1)).as("Unexpected files size").isEqualTo(BigInteger.valueOf(testFile1Size));
 
         // Existing directory
-        assertEquals(TEST_DIRECTORY_SIZE_BI, FileUtils.sizeOfAsBigInteger(temporaryFolder),
-                "Unexpected directory size");
+        assertThat(FileUtils.sizeOfAsBigInteger(temporaryFolder)).as("Unexpected directory size").isEqualTo(TEST_DIRECTORY_SIZE_BI);
     }
 
 
@@ -2608,7 +2588,7 @@ public class FileUtilsTestCase {
         // Create a cyclic symlink
         this.createCircularSymLink(file);
 
-        assertEquals(TEST_DIRECTORY_SIZE, FileUtils.sizeOfDirectory(file), "Unexpected directory size");
+        assertThat(FileUtils.sizeOfDirectory(file)).as("Unexpected directory size").isEqualTo(TEST_DIRECTORY_SIZE);
     }
 
     @Test
@@ -2639,7 +2619,7 @@ public class FileUtilsTestCase {
 
         this.createCircularSymLink(file);
 
-        assertEquals(TEST_DIRECTORY_SIZE_BI, FileUtils.sizeOfDirectoryAsBigInteger(file), "Unexpected directory size");
+        assertThat(FileUtils.sizeOfDirectoryAsBigInteger(file)).as("Unexpected directory size").isEqualTo(TEST_DIRECTORY_SIZE_BI);
 
         // Existing directory which size is greater than zero
         file.delete();
@@ -2659,8 +2639,7 @@ public class FileUtilsTestCase {
         }
         nonEmptyFile.deleteOnExit();
 
-        assertEquals(TEST_DIRECTORY_SIZE_GT_ZERO_BI, FileUtils.sizeOfDirectoryAsBigInteger(file),
-                "Unexpected directory size");
+        assertThat(FileUtils.sizeOfDirectoryAsBigInteger(file)).as("Unexpected directory size").isEqualTo(TEST_DIRECTORY_SIZE_GT_ZERO_BI);
 
         nonEmptyFile.delete();
         file.delete();
@@ -2671,27 +2650,27 @@ public class FileUtilsTestCase {
     public void testToFile1() throws Exception {
         final URL url = new URL("file", null, "a/b/c/file.txt");
         final File file = FileUtils.toFile(url);
-        assertTrue(file.toString().contains("file.txt"));
+        assertThat(file.toString().contains("file.txt")).isTrue();
     }
 
     @Test
     public void testToFile2() throws Exception {
         final URL url = new URL("file", null, "a/b/c/file%20n%61me%2520.tx%74");
         final File file = FileUtils.toFile(url);
-        assertTrue(file.toString().contains("file name%20.txt"));
+        assertThat(file.toString().contains("file name%20.txt")).isTrue();
     }
 
     @Test
     public void testToFile3() throws Exception {
-        assertNull(FileUtils.toFile(null));
-        assertNull(FileUtils.toFile(new URL("http://jakarta.apache.org")));
+        assertThat(FileUtils.toFile(null)).isNull();
+        assertThat(FileUtils.toFile(new URL("http://jakarta.apache.org"))).isNull();
     }
 
     @Test
     public void testToFile4() throws Exception {
         final URL url = new URL("file", null, "a/b/c/file%%20%me.txt%");
         final File file = FileUtils.toFile(url);
-        assertTrue(file.toString().contains("file% %me.txt%"));
+        assertThat(file.toString().contains("file% %me.txt%")).isTrue();
     }
 
     /* IO-252 */
@@ -2699,33 +2678,33 @@ public class FileUtilsTestCase {
     public void testToFile5() throws Exception {
         final URL url = new URL("file", null, "both%20are%20100%20%25%20true");
         final File file = FileUtils.toFile(url);
-        assertEquals("both are 100 % true", file.toString());
+        assertThat(file.toString()).isEqualTo("both are 100 % true");
     }
 
     @Test
     public void testToFiles1() throws Exception {
         final URL[] urls = {
                 new URL("file", null, "file1.txt"),
-                new URL("file", null, "file2.txt"),
+                new URL("file", null, "file2.txt")
         };
         final File[] files = FileUtils.toFiles(urls);
 
-        assertEquals(urls.length, files.length);
-        assertTrue(files[0].toString().contains("file1.txt"), "File: " + files[0]);
-        assertTrue(files[1].toString().contains("file2.txt"), "File: " + files[1]);
+        assertThat(files.length).isEqualTo(urls.length);
+        assertThat(files[0].toString().contains("file1.txt")).as("File: " + files[0]).isTrue();
+        assertThat(files[1].toString().contains("file2.txt")).as("File: " + files[1]).isTrue();
     }
 
     @Test
     public void testToFiles2() throws Exception {
         final URL[] urls = {
                 new URL("file", null, "file1.txt"),
-                null,
+                null
         };
         final File[] files = FileUtils.toFiles(urls);
 
-        assertEquals(urls.length, files.length);
-        assertTrue(files[0].toString().contains("file1.txt"), "File: " + files[0]);
-        assertNull(files[1], "File: " + files[1]);
+        assertThat(files.length).isEqualTo(urls.length);
+        assertThat(files[0].toString().contains("file1.txt")).as("File: " + files[0]).isTrue();
+        assertThat(files[1]).as("File: " + files[1]).isNull();
     }
 
     @Test
@@ -2733,7 +2712,7 @@ public class FileUtilsTestCase {
         final URL[] urls = null;
         final File[] files = FileUtils.toFiles(urls);
 
-        assertEquals(0, files.length);
+        assertThat(files.length).isEqualTo(0);
     }
 
     @Test
@@ -2741,14 +2720,14 @@ public class FileUtilsTestCase {
         final URL[] urls = {}; // empty array
         final File[] files = FileUtils.toFiles(urls);
 
-        assertEquals(0, files.length);
+        assertThat(files.length).isEqualTo(0);
     }
 
     @Test
     public void testToFiles4() throws Exception {
         final URL[] urls = {
                 new URL("file", null, "file1.txt"),
-                new URL("http", "jakarta.apache.org", "file1.txt"),
+                new URL("http", "jakarta.apache.org", "file1.txt")
         };
         try {
             FileUtils.toFiles(urls);
@@ -2761,7 +2740,7 @@ public class FileUtilsTestCase {
     public void testToFileUtf8() throws Exception {
         final URL url = new URL("file", null, "/home/%C3%A4%C3%B6%C3%BC%C3%9F");
         final File file = FileUtils.toFile(url);
-        assertTrue(file.toString().contains("\u00E4\u00F6\u00FC\u00DF"));
+        assertThat(file.toString().contains("\u00E4\u00F6\u00FC\u00DF")).isTrue();
     }
 
     @Test
@@ -2770,25 +2749,25 @@ public class FileUtilsTestCase {
         if (file.exists()) {
             file.delete();
         }
-        assertFalse(file.exists(), "Bad test: test file still exists");
+        assertThat(file.exists()).as("Bad test: test file still exists").isFalse();
         FileUtils.touch(file);
-        assertTrue(file.exists(), "FileUtils.touch() created file");
+        assertThat(file.exists()).as("FileUtils.touch() created file").isTrue();
         final FileOutputStream out = new FileOutputStream(file);
-        assertEquals(0, file.length(), "Created empty file.");
+        assertThat(file.length()).as("Created empty file.").isEqualTo(0);
         out.write(0);
         out.close();
-        assertEquals(1, file.length(), "Wrote one byte to file");
+        assertThat(file.length()).as("Wrote one byte to file").isEqualTo(1);
         final long y2k = new GregorianCalendar(2000, 0, 1).getTime().getTime();
         final boolean res = setLastModifiedMillis(file, y2k);  // 0L fails on Win98
-        assertTrue(res, "Bad test: set lastModified failed");
-        assertEquals(y2k, getLastModifiedMillis(file), "Bad test: set lastModified set incorrect value");
+        assertThat(res).as("Bad test: set lastModified failed").isTrue();
+        assertThat(getLastModifiedMillis(file)).as("Bad test: set lastModified set incorrect value").isEqualTo(y2k);
         final long nowMillis = System.currentTimeMillis();
         FileUtils.touch(file);
-        assertEquals(1, file.length(), "FileUtils.touch() didn't empty the file.");
-        assertNotEquals(y2k, getLastModifiedMillis(file), "FileUtils.touch() changed lastModified");
+        assertThat(file.length()).as("FileUtils.touch() didn't empty the file.").isEqualTo(1);
+        assertThat(getLastModifiedMillis(file)).as("FileUtils.touch() changed lastModified").isNotEqualTo(y2k);
         final int delta = 3000;
-        assertTrue(getLastModifiedMillis(file) >= nowMillis - delta, "FileUtils.touch() changed lastModified to more than now-3s");
-        assertTrue(getLastModifiedMillis(file) <= nowMillis + delta, "FileUtils.touch() changed lastModified to less than now+3s");
+        assertThat(getLastModifiedMillis(file) >= nowMillis - delta).as("FileUtils.touch() changed lastModified to more than now-3s").isTrue();
+        assertThat(getLastModifiedMillis(file) <= nowMillis + delta).as("FileUtils.touch() changed lastModified to less than now+3s").isTrue();
     }
 
     @Test
@@ -2796,19 +2775,19 @@ public class FileUtilsTestCase {
         final File[] files = {
                 new File(temporaryFolder, "file1.txt"),
                 new File(temporaryFolder, "file2.txt"),
-                new File(temporaryFolder, "test file.txt"),
+                new File(temporaryFolder, "test file.txt")
         };
         final URL[] urls = FileUtils.toURLs(files);
 
-        assertEquals(files.length, urls.length);
-        assertTrue(urls[0].toExternalForm().startsWith("file:"));
-        assertTrue(urls[0].toExternalForm().contains("file1.txt"));
-        assertTrue(urls[1].toExternalForm().startsWith("file:"));
-        assertTrue(urls[1].toExternalForm().contains("file2.txt"));
+        assertThat(urls.length).isEqualTo(files.length);
+        assertThat(urls[0].toExternalForm().startsWith("file:")).isTrue();
+        assertThat(urls[0].toExternalForm().contains("file1.txt")).isTrue();
+        assertThat(urls[1].toExternalForm().startsWith("file:")).isTrue();
+        assertThat(urls[1].toExternalForm().contains("file2.txt")).isTrue();
 
         // Test escaped char
-        assertTrue(urls[2].toExternalForm().startsWith("file:"));
-        assertTrue(urls[2].toExternalForm().contains("test%20file.txt"));
+        assertThat(urls[2].toExternalForm().startsWith("file:")).isTrue();
+        assertThat(urls[2].toExternalForm().contains("test%20file.txt")).isTrue();
     }
 
     @Test
@@ -2816,7 +2795,7 @@ public class FileUtilsTestCase {
         final File[] files = {}; // empty array
         final URL[] urls = FileUtils.toURLs(files);
 
-        assertEquals(0, urls.length);
+        assertThat(urls.length).isEqualTo(0);
     }
 
     @Test
@@ -2828,7 +2807,7 @@ public class FileUtilsTestCase {
 
         final String expected = "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2841,7 +2820,7 @@ public class FileUtilsTestCase {
         final String expected = "This line was there before you..."
                 + "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2861,7 +2840,7 @@ public class FileUtilsTestCase {
 
         final String expected = "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2874,7 +2853,7 @@ public class FileUtilsTestCase {
         final String expected = "This line was there before you..."
                 + "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2897,7 +2876,7 @@ public class FileUtilsTestCase {
 
         final String expected = "this is brand new data";
         final String actual = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2910,7 +2889,7 @@ public class FileUtilsTestCase {
 
         final String expected = "This line was there before you..." + "this is brand new data";
         final String actual = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2942,7 +2921,7 @@ public class FileUtilsTestCase {
                 System.lineSeparator() + "this is" + System.lineSeparator() +
                 System.lineSeparator() + "some text" + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file, "US-ASCII");
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2957,7 +2936,7 @@ public class FileUtilsTestCase {
                 + System.lineSeparator() + "The second Line"
                 + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2973,7 +2952,7 @@ public class FileUtilsTestCase {
                 + System.lineSeparator() + "The second Line"
                 + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -2987,7 +2966,7 @@ public class FileUtilsTestCase {
 
         final String expected = "hello*world**this is**some text*";
         final String actual = FileUtils.readFileToString(file, "US-ASCII");
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3003,7 +2982,7 @@ public class FileUtilsTestCase {
                 System.lineSeparator() + "this is" + System.lineSeparator() +
                 System.lineSeparator() + "some text" + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file, "US-ASCII");
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3011,7 +2990,7 @@ public class FileUtilsTestCase {
         final File file = TestUtils.newFile(temporaryFolder, "lines.txt");
         FileUtils.writeLines(file, "US-ASCII", null, "*");
 
-        assertEquals(0, file.length(), "Sizes differ");
+        assertThat(file.length()).as("Sizes differ").isEqualTo(0);
     }
 
     @Test
@@ -3026,7 +3005,7 @@ public class FileUtilsTestCase {
                 + System.lineSeparator() + "The second Line"
                 + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
 
@@ -3043,7 +3022,7 @@ public class FileUtilsTestCase {
                 + System.lineSeparator() + "The second Line"
                 + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3058,7 +3037,7 @@ public class FileUtilsTestCase {
                 + System.lineSeparator() + "The second Line"
                 + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3074,7 +3053,7 @@ public class FileUtilsTestCase {
                 + System.lineSeparator() + "The second Line"
                 + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3089,7 +3068,7 @@ public class FileUtilsTestCase {
                 + System.lineSeparator() + "The second Line"
                 + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3105,7 +3084,7 @@ public class FileUtilsTestCase {
                 + System.lineSeparator() + "The second Line"
                 + System.lineSeparator();
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3117,7 +3096,7 @@ public class FileUtilsTestCase {
 
         final String expected = "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3130,7 +3109,7 @@ public class FileUtilsTestCase {
         final String expected = "This line was there before you..."
                 + "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3166,7 +3145,7 @@ public class FileUtilsTestCase {
 
         final String expected = "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3179,7 +3158,7 @@ public class FileUtilsTestCase {
         final String expected = "This line was there before you..."
                 + "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3191,7 +3170,7 @@ public class FileUtilsTestCase {
 
         final String expected = "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -3204,7 +3183,7 @@ public class FileUtilsTestCase {
         final String expected = "This line was there before you..."
                 + "this is brand new data";
         final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
 }

@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -26,7 +25,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -39,19 +37,19 @@ public class SequenceReaderTest {
 
     private void checkArray(final char[] expected, final char[] actual) {
         for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], actual[i], "Compare[" + i + "]");
+            assertThat(actual[i]).as("Compare[" + i + "]").isEqualTo(expected[i]);
         }
     }
 
     private void checkRead(final Reader reader, final String expected) throws IOException {
         for (int i = 0; i < expected.length(); i++) {
-            assertEquals(expected.charAt(i), (char) reader.read(), "Read[" + i + "] of '" + expected + "'");
+            assertThat((char) reader.read()).as("Read[" + i + "] of '" + expected + "'").isEqualTo(expected.charAt(i));
         }
     }
 
     private void checkReadEof(final Reader reader) throws IOException {
         for (int i = 0; i < 10; i++) {
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -75,19 +73,19 @@ public class SequenceReaderTest {
     @Test
     public void testMarkSupported() throws Exception {
         try (final Reader reader = new SequenceReader()) {
-            assertFalse(reader.markSupported());
+            assertThat(reader.markSupported()).isFalse();
         }
     }
 
     @Test
     public void testRead() throws IOException {
         try (final Reader reader = new SequenceReader(new StringReader("Foo"), new StringReader("Bar"))) {
-            assertEquals('F', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('B', reader.read());
-            assertEquals('a', reader.read());
-            assertEquals('r', reader.read());
+            assertThat(reader.read()).isEqualTo('F');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('B');
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo('r');
             checkReadEof(reader);
         }
     }
@@ -96,15 +94,15 @@ public class SequenceReaderTest {
     public void testReadCharArray() throws IOException {
         try (final Reader reader = new SequenceReader(new StringReader("Foo"), new StringReader("Bar"))) {
             char[] chars = new char[2];
-            assertEquals(2, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(2);
             checkArray(new char[] { 'F', 'o' }, chars);
             chars = new char[3];
-            assertEquals(3, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(3);
             checkArray(new char[] { 'o', 'B', 'a' }, chars);
             chars = new char[3];
-            assertEquals(1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(1);
             checkArray(new char[] { 'r', NUL, NUL }, chars);
-            assertEquals(-1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(-1);
         }
     }
 
@@ -112,11 +110,11 @@ public class SequenceReaderTest {
     public void testReadCharArrayPortion() throws IOException {
         final char[] chars = new char[10];
         try (final Reader reader = new SequenceReader(new StringReader("Foo"), new StringReader("Bar"))) {
-            assertEquals(3, reader.read(chars, 3, 3));
+            assertThat(reader.read(chars, 3, 3)).isEqualTo(3);
             checkArray(new char[] { NUL, NUL, NUL, 'F', 'o', 'o' }, chars);
-            assertEquals(3, reader.read(chars, 0, 3));
+            assertThat(reader.read(chars, 0, 3)).isEqualTo(3);
             checkArray(new char[] { 'B', 'a', 'r', 'F', 'o', 'o', NUL }, chars);
-            assertEquals(-1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(-1);
             assertThrows(IndexOutOfBoundsException.class, () -> reader.read(chars, 10, 10));
             assertThrows(NullPointerException.class, () -> reader.read(null, 0, 10));
         }
@@ -128,8 +126,8 @@ public class SequenceReaderTest {
         readers.add(new StringReader("F"));
         readers.add(new StringReader("B"));
         try (final Reader reader = new SequenceReader(readers)) {
-            assertEquals('F', reader.read());
-            assertEquals('B', reader.read());
+            assertThat(reader.read()).isEqualTo('F');
+            assertThat(reader.read()).isEqualTo('B');
             checkReadEof(reader);
         }
     }
@@ -141,8 +139,8 @@ public class SequenceReaderTest {
         readers.add(new StringReader("B"));
         final Iterable<Reader> iterable = readers;
         try (final Reader reader = new SequenceReader(iterable)) {
-            assertEquals('F', reader.read());
-            assertEquals('B', reader.read());
+            assertThat(reader.read()).isEqualTo('F');
+            assertThat(reader.read()).isEqualTo('B');
             checkReadEof(reader);
         }
     }
@@ -164,10 +162,10 @@ public class SequenceReaderTest {
             new StringReader("2"),
             new StringReader("3"))) {
             // @formatter:on
-            assertEquals('0', reader.read());
-            assertEquals('1', reader.read());
-            assertEquals('2', reader.read());
-            assertEquals('3', reader.read());
+            assertThat(reader.read()).isEqualTo('0');
+            assertThat(reader.read()).isEqualTo('1');
+            assertThat(reader.read()).isEqualTo('2');
+            assertThat(reader.read()).isEqualTo('3');
         }
     }
 
@@ -177,8 +175,8 @@ public class SequenceReaderTest {
         readers.add(new StringReader("F"));
         readers.add(new StringReader("B"));
         try (final Reader reader = new SequenceReader(readers)) {
-            assertEquals('F', reader.read());
-            assertEquals('B', reader.read());
+            assertThat(reader.read()).isEqualTo('F');
+            assertThat(reader.read()).isEqualTo('B');
             checkReadEof(reader);
         }
     }
@@ -186,9 +184,9 @@ public class SequenceReaderTest {
     @Test
     public void testSkip() throws IOException {
         try (final Reader reader = new SequenceReader(new StringReader("Foo"), new StringReader("Bar"))) {
-            assertEquals(3, reader.skip(3));
+            assertThat(reader.skip(3)).isEqualTo(3);
             checkRead(reader, "Bar");
-            assertEquals(0, reader.skip(3));
+            assertThat(reader.skip(3)).isEqualTo(0);
         }
     }
 }

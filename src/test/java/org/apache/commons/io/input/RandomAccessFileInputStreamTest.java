@@ -17,17 +17,13 @@
 
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Test;
 
 public class RandomAccessFileInputStreamTest {
@@ -43,7 +39,7 @@ public class RandomAccessFileInputStreamTest {
     public void testAvailable() throws IOException {
         try (final RandomAccessFileInputStream inputStream = new RandomAccessFileInputStream(createRandomAccessFile(),
             true)) {
-            assertEquals(DATA_FILE_LEN, inputStream.available());
+            assertThat(inputStream.available()).isEqualTo(DATA_FILE_LEN);
         }
     }
 
@@ -51,7 +47,7 @@ public class RandomAccessFileInputStreamTest {
     public void testAvailableLong() throws IOException {
         try (final RandomAccessFileInputStream inputStream = new RandomAccessFileInputStream(createRandomAccessFile(),
             true)) {
-            assertEquals(DATA_FILE_LEN, inputStream.availableLong());
+            assertThat(inputStream.availableLong()).isEqualTo(DATA_FILE_LEN);
         }
     }
 
@@ -59,7 +55,7 @@ public class RandomAccessFileInputStreamTest {
     public void testCtorCloseOnCloseFalse() throws IOException {
         try (RandomAccessFile file = createRandomAccessFile()) {
             try (final RandomAccessFileInputStream inputStream = new RandomAccessFileInputStream(file, false)) {
-                assertFalse(inputStream.isCloseOnClose());
+                assertThat(inputStream.isCloseOnClose()).isFalse();
             }
             file.read();
         }
@@ -69,7 +65,7 @@ public class RandomAccessFileInputStreamTest {
     public void testCtorCloseOnCloseTrue() throws IOException {
         try (RandomAccessFile file = createRandomAccessFile()) {
             try (final RandomAccessFileInputStream inputStream = new RandomAccessFileInputStream(file, true)) {
-                assertTrue(inputStream.isCloseOnClose());
+                assertThat(inputStream.isCloseOnClose()).isTrue();
             }
             assertThrows(IOException.class, () -> file.read());
         }
@@ -84,8 +80,8 @@ public class RandomAccessFileInputStreamTest {
     public void testGetters() throws IOException {
         try (RandomAccessFile file = createRandomAccessFile()) {
             try (final RandomAccessFileInputStream inputStream = new RandomAccessFileInputStream(file, true)) {
-                assertEquals(file, inputStream.getRandomAccessFile());
-                assertTrue(inputStream.isCloseOnClose());
+                assertThat(inputStream.getRandomAccessFile()).isEqualTo(file);
+                assertThat(inputStream.isCloseOnClose()).isTrue();
             }
         }
     }
@@ -95,20 +91,20 @@ public class RandomAccessFileInputStreamTest {
         try (final RandomAccessFileInputStream inputStream = new RandomAccessFileInputStream(createRandomAccessFile(),
             true)) {
             // A Test Line.
-            assertEquals('A', inputStream.read());
-            assertEquals(' ', inputStream.read());
-            assertEquals('T', inputStream.read());
-            assertEquals('e', inputStream.read());
-            assertEquals('s', inputStream.read());
-            assertEquals('t', inputStream.read());
-            assertEquals(' ', inputStream.read());
-            assertEquals('L', inputStream.read());
-            assertEquals('i', inputStream.read());
-            assertEquals('n', inputStream.read());
-            assertEquals('e', inputStream.read());
-            assertEquals('.', inputStream.read());
-            assertEquals(DATA_FILE_LEN - 12, inputStream.available());
-            assertEquals(DATA_FILE_LEN - 12, inputStream.availableLong());
+            assertThat(inputStream.read()).isEqualTo('A');
+            assertThat(inputStream.read()).isEqualTo(' ');
+            assertThat(inputStream.read()).isEqualTo('T');
+            assertThat(inputStream.read()).isEqualTo('e');
+            assertThat(inputStream.read()).isEqualTo('s');
+            assertThat(inputStream.read()).isEqualTo('t');
+            assertThat(inputStream.read()).isEqualTo(' ');
+            assertThat(inputStream.read()).isEqualTo('L');
+            assertThat(inputStream.read()).isEqualTo('i');
+            assertThat(inputStream.read()).isEqualTo('n');
+            assertThat(inputStream.read()).isEqualTo('e');
+            assertThat(inputStream.read()).isEqualTo('.');
+            assertThat(inputStream.available()).isEqualTo(DATA_FILE_LEN - 12);
+            assertThat(inputStream.availableLong()).isEqualTo(DATA_FILE_LEN - 12);
         }
     }
 
@@ -117,36 +113,36 @@ public class RandomAccessFileInputStreamTest {
 
         try (final RandomAccessFile file = createRandomAccessFile();
             final RandomAccessFileInputStream inputStream = new RandomAccessFileInputStream(file, false)) {
-            assertEquals(0, inputStream.skip(-1));
-            assertEquals(0, inputStream.skip(Integer.MIN_VALUE));
-            assertEquals(0, inputStream.skip(0));
+            assertThat(inputStream.skip(-1)).isEqualTo(0);
+            assertThat(inputStream.skip(Integer.MIN_VALUE)).isEqualTo(0);
+            assertThat(inputStream.skip(0)).isEqualTo(0);
             // A Test Line.
-            assertEquals('A', inputStream.read());
-            assertEquals(1, inputStream.skip(1));
-            assertEquals('T', inputStream.read());
-            assertEquals(1, inputStream.skip(1));
-            assertEquals('s', inputStream.read());
-            assertEquals(1, inputStream.skip(1));
-            assertEquals(' ', inputStream.read());
-            assertEquals(1, inputStream.skip(1));
-            assertEquals('i', inputStream.read());
-            assertEquals(1, inputStream.skip(1));
-            assertEquals('e', inputStream.read());
-            assertEquals(1, inputStream.skip(1));
+            assertThat(inputStream.read()).isEqualTo('A');
+            assertThat(inputStream.skip(1)).isEqualTo(1);
+            assertThat(inputStream.read()).isEqualTo('T');
+            assertThat(inputStream.skip(1)).isEqualTo(1);
+            assertThat(inputStream.read()).isEqualTo('s');
+            assertThat(inputStream.skip(1)).isEqualTo(1);
+            assertThat(inputStream.read()).isEqualTo(' ');
+            assertThat(inputStream.skip(1)).isEqualTo(1);
+            assertThat(inputStream.read()).isEqualTo('i');
+            assertThat(inputStream.skip(1)).isEqualTo(1);
+            assertThat(inputStream.read()).isEqualTo('e');
+            assertThat(inputStream.skip(1)).isEqualTo(1);
             //
-            assertEquals(DATA_FILE_LEN - 12, inputStream.available());
-            assertEquals(DATA_FILE_LEN - 12, inputStream.availableLong());
-            assertEquals(10, inputStream.skip(10));
-            assertEquals(DATA_FILE_LEN - 22, inputStream.availableLong());
+            assertThat(inputStream.available()).isEqualTo(DATA_FILE_LEN - 12);
+            assertThat(inputStream.availableLong()).isEqualTo(DATA_FILE_LEN - 12);
+            assertThat(inputStream.skip(10)).isEqualTo(10);
+            assertThat(inputStream.availableLong()).isEqualTo(DATA_FILE_LEN - 22);
             //
             final long avail = inputStream.availableLong();
-            assertEquals(avail, inputStream.skip(inputStream.availableLong()));
+            assertThat(inputStream.skip(inputStream.availableLong())).isEqualTo(avail);
             // At EOF
-            assertEquals(DATA_FILE_LEN, file.length());
-            assertEquals(DATA_FILE_LEN, file.getFilePointer());
+            assertThat(file.length()).isEqualTo(DATA_FILE_LEN);
+            assertThat(file.getFilePointer()).isEqualTo(DATA_FILE_LEN);
             //
-            assertEquals(0, inputStream.skip(1));
-            assertEquals(0, inputStream.skip(1000000000000L));
+            assertThat(inputStream.skip(1)).isEqualTo(0);
+            assertThat(inputStream.skip(1000000000000L)).isEqualTo(0);
         }
     }
 
@@ -157,11 +153,11 @@ public class RandomAccessFileInputStreamTest {
             // A Test Line.
             final int dataLen = 12;
             final byte[] buffer = new byte[dataLen];
-            assertEquals(dataLen, inputStream.read(buffer));
-            assertArrayEquals("A Test Line.".getBytes(StandardCharsets.ISO_8859_1), buffer);
+            assertThat(inputStream.read(buffer)).isEqualTo(dataLen);
+            assertThat(buffer).containsExactly("A Test Line.".getBytes(StandardCharsets.ISO_8859_1));
             //
-            assertEquals(DATA_FILE_LEN - dataLen, inputStream.available());
-            assertEquals(DATA_FILE_LEN - dataLen, inputStream.availableLong());
+            assertThat(inputStream.available()).isEqualTo(DATA_FILE_LEN - dataLen);
+            assertThat(inputStream.availableLong()).isEqualTo(DATA_FILE_LEN - dataLen);
         }
     }
 
@@ -172,11 +168,11 @@ public class RandomAccessFileInputStreamTest {
             // A Test Line.
             final int dataLen = 12;
             final byte[] buffer = new byte[dataLen];
-            assertEquals(dataLen, inputStream.read(buffer, 0, dataLen));
-            assertArrayEquals("A Test Line.".getBytes(StandardCharsets.ISO_8859_1), buffer);
+            assertThat(inputStream.read(buffer, 0, dataLen)).isEqualTo(dataLen);
+            assertThat(buffer).containsExactly("A Test Line.".getBytes(StandardCharsets.ISO_8859_1));
             //
-            assertEquals(DATA_FILE_LEN - dataLen, inputStream.available());
-            assertEquals(DATA_FILE_LEN - dataLen, inputStream.availableLong());
+            assertThat(inputStream.available()).isEqualTo(DATA_FILE_LEN - dataLen);
+            assertThat(inputStream.availableLong()).isEqualTo(DATA_FILE_LEN - dataLen);
         }
     }
 }

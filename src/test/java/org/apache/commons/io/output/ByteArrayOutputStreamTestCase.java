@@ -16,18 +16,14 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOFunction;
 import org.apache.commons.io.input.ClosedInputStream;
@@ -96,7 +92,7 @@ public class ByteArrayOutputStreamTestCase {
     private void checkStreams(
             final AbstractByteArrayOutputStream actual,
             final java.io.ByteArrayOutputStream expected) {
-        assertEquals(expected.size(), actual.size(), "Sizes are not equal");
+        assertThat(actual.size()).as("Sizes are not equal").isEqualTo(expected.size());
         final byte[] buf = actual.toByteArray();
         final byte[] refbuf = expected.toByteArray();
         checkByteArrays(buf, refbuf);
@@ -107,7 +103,7 @@ public class ByteArrayOutputStreamTestCase {
     public void testWriteZero(final String baosName, final BAOSFactory<?> baosFactory) throws IOException {
         try (final AbstractByteArrayOutputStream baout = baosFactory.newInstance()) {
             baout.write(IOUtils.EMPTY_BYTE_ARRAY, 0, 0);
-            assertTrue(true, "Dummy");
+            assertThat(true).as("Dummy").isTrue();
         }
     }
 
@@ -166,8 +162,8 @@ public class ByteArrayOutputStreamTestCase {
         try (final AbstractByteArrayOutputStream baout = baosFactory.newInstance();
             // Get data before more writes
             final InputStream in = baout.toInputStream()) {
-            assertEquals(0, in.available());
-            assertTrue(in instanceof ClosedInputStream);
+            assertThat(in.available()).isEqualTo(0);
+            assertThat(in instanceof ClosedInputStream).isTrue();
         }
     }
 
@@ -175,10 +171,10 @@ public class ByteArrayOutputStreamTestCase {
     @MethodSource("toBufferedInputStreamFunctionFactories")
     public void testToBufferedInputStreamEmpty(final String baosName, final IOFunction<InputStream, InputStream> toBufferedInputStreamFunction) throws IOException {
         try (final ByteArrayInputStream bain = new ByteArrayInputStream(IOUtils.EMPTY_BYTE_ARRAY)) {
-            assertEquals(0, bain.available());
+            assertThat(bain.available()).isEqualTo(0);
 
             try (final InputStream buffered = toBufferedInputStreamFunction.apply(bain)) {
-                assertEquals(0, buffered.available());
+                assertThat(buffered.available()).isEqualTo(0);
 
             }
         }
@@ -190,12 +186,12 @@ public class ByteArrayOutputStreamTestCase {
         final byte data[] = {(byte)0xCA, (byte)0xFE, (byte)0xBA, (byte)0xBE};
 
         try (final ByteArrayInputStream bain = new ByteArrayInputStream(data)) {
-            assertEquals(data.length, bain.available());
+            assertThat(bain.available()).isEqualTo(data.length);
 
             try (final InputStream buffered = toBufferedInputStreamFunction.apply(bain)) {
-                assertEquals(data.length, buffered.available());
+                assertThat(buffered.available()).isEqualTo(data.length);
 
-                assertArrayEquals(data, IOUtils.toByteArray(buffered));
+                assertThat(IOUtils.toByteArray(buffered)).containsExactly(data);
 
             }
         }
@@ -222,7 +218,7 @@ public class ByteArrayOutputStreamTestCase {
 
                 // Check original data
                 byte baoutData[] = IOUtils.toByteArray(in);
-                assertEquals(8224, baoutData.length);
+                assertThat(baoutData.length).isEqualTo(8224);
                 checkByteArrays(refData, baoutData);
 
                 // Check all data written
@@ -230,7 +226,7 @@ public class ByteArrayOutputStreamTestCase {
                     baoutData = IOUtils.toByteArray(in2);
                 }
                 refData = ref.toByteArray();
-                assertEquals(8254, baoutData.length);
+                assertThat(baoutData.length).isEqualTo(8254);
                 checkByteArrays(refData, baoutData);
             }
         }
@@ -260,7 +256,7 @@ public class ByteArrayOutputStreamTestCase {
 
                 // Check original data
                 byte baoutData[] = IOUtils.toByteArray(in);
-                assertEquals(8224, baoutData.length);
+                assertThat(baoutData.length).isEqualTo(8224);
                 checkByteArrays(refData, baoutData);
 
                 // Check new data written after reset
@@ -268,7 +264,7 @@ public class ByteArrayOutputStreamTestCase {
                     baoutData = IOUtils.toByteArray(in2);
                 }
                 refData = ref.toByteArray();
-                assertEquals(30, baoutData.length);
+                assertThat(baoutData.length).isEqualTo(30);
                 checkByteArrays(refData, baoutData);
             }
         }
@@ -286,12 +282,12 @@ public class ByteArrayOutputStreamTestCase {
 
             // First three writes
             written = writeData(baout, ref, new int[] {4, 10, 22});
-            assertEquals(36, written);
+            assertThat(written).isEqualTo(36);
             checkStreams(baout, ref);
 
             // Another two writes to see if there are any bad effects after toByteArray()
             written = writeData(baout, ref, new int[] {20, 12});
-            assertEquals(32, written);
+            assertThat(written).isEqualTo(32);
             checkStreams(baout, ref);
 
             // Now reset the streams
@@ -300,13 +296,13 @@ public class ByteArrayOutputStreamTestCase {
 
             // Test again to see if reset() had any bad effects
             written = writeData(baout, ref, new int[] {5, 47, 33, 60, 1, 0, 8});
-            assertEquals(155, written);
+            assertThat(written).isEqualTo(155);
             checkStreams(baout, ref);
 
             // Test the readFrom(InputStream) method
             baout.reset();
             written = baout.write(new ByteArrayInputStream(ref.toByteArray()));
-            assertEquals(155, written);
+            assertThat(written).isEqualTo(155);
             checkStreams(baout, ref);
 
             // Write the commons Byte[]OutputStream to a java.io.Byte[]OutputStream
@@ -320,13 +316,13 @@ public class ByteArrayOutputStreamTestCase {
                 // Testing toString(String)
                 final String baoutString = baout.toString("ASCII");
                 final String refString = ref.toString("ASCII");
-                assertEquals(refString, baoutString, "ASCII decoded String must be equal");
+                assertThat(baoutString).as("ASCII decoded String must be equal").isEqualTo(refString);
 
                 // Make sure that empty ByteArrayOutputStreams really don't create garbage
                 // on toByteArray()
                 try (final AbstractByteArrayOutputStream baos1 = baosFactory.newInstance();
                     final AbstractByteArrayOutputStream baos2 = baosFactory.newInstance()) {
-                    assertSame(baos1.toByteArray(), baos2.toByteArray());
+                    assertThat(baos2.toByteArray()).isSameAs(baos1.toByteArray());
                 }
             }
         }

@@ -18,8 +18,7 @@ package org.apache.commons.io.output;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.InterruptedIOException;
@@ -29,7 +28,6 @@ import java.util.concurrent.Exchanger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.QueueInputStream;
 import org.apache.commons.io.input.QueueInputStreamTest;
@@ -91,8 +89,8 @@ public class QueueOutputStreamTest {
             });
 
             final Exception exception = exceptionExchanger.exchange(null, timeout, SECONDS);
-            assertNotNull(exception);
-            assertEquals(exception.getClass(), InterruptedIOException.class);
+            assertThat(exception).isNotNull();
+            assertThat(InterruptedIOException.class).isEqualTo(exception.getClass());
         }
     }
 
@@ -102,7 +100,7 @@ public class QueueOutputStreamTest {
                 final QueueInputStream inputStream = outputStream.newQueueInputStream()) {
             outputStream.write("ABC".getBytes(UTF_8));
             final String value = IOUtils.toString(inputStream, UTF_8);
-            assertEquals("ABC", value);
+            assertThat(value).isEqualTo("ABC");
         }
     }
 
@@ -116,7 +114,7 @@ public class QueueOutputStreamTest {
             });
 
             final String value = callInThrowAwayThread(() -> IOUtils.toString(inputStream, UTF_8));
-            assertEquals("ABC", value);
+            assertThat(value).isEqualTo("ABC");
         }
     }
 }

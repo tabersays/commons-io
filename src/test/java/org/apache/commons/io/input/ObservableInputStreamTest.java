@@ -16,15 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ObservableInputStream.Observer;
 import org.apache.commons.io.output.NullOutputStream;
@@ -157,26 +153,26 @@ public class ObservableInputStreamTest {
             .generateRandomByteStream(IOUtils.DEFAULT_BUFFER_SIZE);
         final DataViewObserver lko = new DataViewObserver();
         try (final ObservableInputStream ois = new ObservableInputStream(new ByteArrayInputStream(buffer))) {
-            assertEquals(-1, lko.lastValue);
+            assertThat(lko.lastValue).isEqualTo(-1);
             ois.read();
-            assertEquals(-1, lko.lastValue);
-            assertEquals(0, lko.getFinishedCount());
-            assertEquals(0, lko.getClosedCount());
+            assertThat(lko.lastValue).isEqualTo(-1);
+            assertThat(lko.getFinishedCount()).isEqualTo(0);
+            assertThat(lko.getClosedCount()).isEqualTo(0);
             ois.add(lko);
             for (int i = 1; i < buffer.length; i++) {
                 final int result = ois.read();
-                assertEquals((byte) result, buffer[i]);
-                assertEquals(result, lko.lastValue);
-                assertEquals(0, lko.getFinishedCount());
-                assertEquals(0, lko.getClosedCount());
+                assertThat(buffer[i]).isEqualTo((byte) result);
+                assertThat(lko.lastValue).isEqualTo(result);
+                assertThat(lko.getFinishedCount()).isEqualTo(0);
+                assertThat(lko.getClosedCount()).isEqualTo(0);
             }
             final int result = ois.read();
-            assertEquals(-1, result);
-            assertEquals(1, lko.getFinishedCount());
-            assertEquals(0, lko.getClosedCount());
+            assertThat(result).isEqualTo(-1);
+            assertThat(lko.getFinishedCount()).isEqualTo(1);
+            assertThat(lko.getClosedCount()).isEqualTo(0);
             ois.close();
-            assertEquals(1, lko.getFinishedCount());
-            assertEquals(1, lko.getClosedCount());
+            assertThat(lko.getFinishedCount()).isEqualTo(1);
+            assertThat(lko.getClosedCount()).isEqualTo(1);
         }
     }
 
@@ -189,25 +185,25 @@ public class ObservableInputStreamTest {
             .generateRandomByteStream(IOUtils.DEFAULT_BUFFER_SIZE);
         final DataViewObserver lko = new DataViewObserver();
         try (final ObservableInputStream ois = new ObservableInputStream(new ByteArrayInputStream(buffer), lko)) {
-            assertEquals(-1, lko.lastValue);
+            assertThat(lko.lastValue).isEqualTo(-1);
             ois.read();
-            assertNotEquals(-1, lko.lastValue);
-            assertEquals(0, lko.getFinishedCount());
-            assertEquals(0, lko.getClosedCount());
+            assertThat(lko.lastValue).isNotEqualTo(-1);
+            assertThat(lko.getFinishedCount()).isEqualTo(0);
+            assertThat(lko.getClosedCount()).isEqualTo(0);
             for (int i = 1; i < buffer.length; i++) {
                 final int result = ois.read();
-                assertEquals((byte) result, buffer[i]);
-                assertEquals(result, lko.lastValue);
-                assertEquals(0, lko.getFinishedCount());
-                assertEquals(0, lko.getClosedCount());
+                assertThat(buffer[i]).isEqualTo((byte) result);
+                assertThat(lko.lastValue).isEqualTo(result);
+                assertThat(lko.getFinishedCount()).isEqualTo(0);
+                assertThat(lko.getClosedCount()).isEqualTo(0);
             }
             final int result = ois.read();
-            assertEquals(-1, result);
-            assertEquals(1, lko.getFinishedCount());
-            assertEquals(0, lko.getClosedCount());
+            assertThat(result).isEqualTo(-1);
+            assertThat(lko.getFinishedCount()).isEqualTo(1);
+            assertThat(lko.getClosedCount()).isEqualTo(0);
             ois.close();
-            assertEquals(1, lko.getFinishedCount());
-            assertEquals(1, lko.getClosedCount());
+            assertThat(lko.getFinishedCount()).isEqualTo(1);
+            assertThat(lko.getClosedCount()).isEqualTo(1);
         }
     }
 
@@ -222,9 +218,9 @@ public class ObservableInputStreamTest {
             final ObservableInputStream ois = new ObservableInputStream(bais)) {
             final DataViewObserver observer = new DataViewObserver();
             final byte[] readBuffer = new byte[23];
-            assertNull(observer.buffer);
+            assertThat(observer.buffer).isNull();
             ois.read(readBuffer);
-            assertNull(observer.buffer);
+            assertThat(observer.buffer).isNull();
             ois.add(observer);
             for (;;) {
                 if (bais.available() >= 2048) {
@@ -233,9 +229,9 @@ public class ObservableInputStreamTest {
                         ois.close();
                         break;
                     }
-                    assertEquals(readBuffer, observer.buffer);
-                    assertEquals(0, observer.offset);
-                    assertEquals(readBuffer.length, observer.length);
+                    assertThat(observer.buffer).isEqualTo(readBuffer);
+                    assertThat(observer.offset).isEqualTo(0);
+                    assertThat(observer.length).isEqualTo(readBuffer.length);
                 } else {
                     final int res = Math.min(11, bais.available());
                     final int result = ois.read(readBuffer, 1, 11);
@@ -243,9 +239,9 @@ public class ObservableInputStreamTest {
                         ois.close();
                         break;
                     }
-                    assertEquals(readBuffer, observer.buffer);
-                    assertEquals(1, observer.offset);
-                    assertEquals(res, observer.length);
+                    assertThat(observer.buffer).isEqualTo(readBuffer);
+                    assertThat(observer.offset).isEqualTo(1);
+                    assertThat(observer.length).isEqualTo(res);
                 }
             }
         }
@@ -254,7 +250,7 @@ public class ObservableInputStreamTest {
     @Test
     public void testGetObservers0() throws IOException {
         try (final ObservableInputStream ois = new ObservableInputStream(new NullInputStream())) {
-            assertTrue(ois.getObservers().isEmpty());
+            assertThat(ois.getObservers().isEmpty()).isTrue();
         }
     }
 
@@ -262,7 +258,7 @@ public class ObservableInputStreamTest {
     public void testGetObservers1() throws IOException {
         final DataViewObserver observer0 = new DataViewObserver();
         try (final ObservableInputStream ois = new ObservableInputStream(new NullInputStream(), observer0)) {
-            assertEquals(observer0, ois.getObservers().get(0));
+            assertThat(ois.getObservers().get(0)).isEqualTo(observer0);
         }
     }
 
@@ -271,8 +267,8 @@ public class ObservableInputStreamTest {
         final DataViewObserver observer0 = new DataViewObserver();
         final DataViewObserver observer1 = new DataViewObserver();
         try (final ObservableInputStream ois = new ObservableInputStream(new NullInputStream(), observer0, observer1)) {
-            assertEquals(observer0, ois.getObservers().get(0));
-            assertEquals(observer1, ois.getObservers().get(1));
+            assertThat(ois.getObservers().get(0)).isEqualTo(observer0);
+            assertThat(ois.getObservers().get(1)).isEqualTo(observer1);
         }
     }
 
@@ -282,15 +278,14 @@ public class ObservableInputStreamTest {
         final MethodCountObserver methodCountObserver = new MethodCountObserver();
         try (final ObservableInputStream ois = new ObservableInputStream(new ByteArrayInputStream(buffer),
             lengthObserver, methodCountObserver)) {
-            assertEquals(IOUtils.DEFAULT_BUFFER_SIZE,
-                IOUtils.copy(ois, NullOutputStream.NULL_OUTPUT_STREAM, bufferSize));
+            assertThat(IOUtils.copy(ois, NullOutputStream.NULL_OUTPUT_STREAM, bufferSize)).isEqualTo(IOUtils.DEFAULT_BUFFER_SIZE);
         }
-        assertEquals(IOUtils.DEFAULT_BUFFER_SIZE, lengthObserver.getTotal());
-        assertEquals(1, methodCountObserver.getClosedCount());
-        assertEquals(1, methodCountObserver.getFinishedCount());
-        assertEquals(0, methodCountObserver.getErrorCount());
-        assertEquals(0, methodCountObserver.getDataCount());
-        assertEquals(buffer.length / bufferSize, methodCountObserver.getDataBufferCount());
+        assertThat(lengthObserver.getTotal()).isEqualTo(IOUtils.DEFAULT_BUFFER_SIZE);
+        assertThat(methodCountObserver.getClosedCount()).isEqualTo(1);
+        assertThat(methodCountObserver.getFinishedCount()).isEqualTo(1);
+        assertThat(methodCountObserver.getErrorCount()).isEqualTo(0);
+        assertThat(methodCountObserver.getDataCount()).isEqualTo(0);
+        assertThat(methodCountObserver.getDataBufferCount()).isEqualTo(buffer.length / bufferSize);
     }
 
     @Test

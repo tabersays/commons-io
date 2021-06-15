@@ -16,10 +16,7 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -27,7 +24,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Random;
 import java.util.Set;
-
 import org.apache.commons.io.Charsets;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -62,14 +58,13 @@ public class CharSequenceInputStreamTest {
                 final int bufferLength = random.nextInt(64);
                 int read = in.read(buffer, bufferOffset, bufferLength);
                 if (read == -1) {
-                    assertEquals(expected.length, offset, "EOF: offset should equal length for charset " + charsetName);
+                    assertThat(offset).as("EOF: offset should equal length for charset " + charsetName).isEqualTo(expected.length);
                     break;
                 }
-                assertTrue(read <= bufferLength, "Read " + read + " <= " + bufferLength);
+            assertThat(read <= bufferLength).as("Read " + read + " <= " + bufferLength).isTrue();
                 while (read > 0) {
-                    assertTrue(offset < expected.length,
-                            "offset for " + charsetName + " " + offset + " < " + expected.length);
-                    assertEquals(expected[offset], buffer[bufferOffset], "bytes should agree for " + charsetName);
+                    assertThat(offset < expected.length).as("offset for " + charsetName + " " + offset + " < " + expected.length).isTrue();
+                    assertThat(buffer[bufferOffset]).as("bytes should agree for " + charsetName).isEqualTo(expected[offset]);
                     offset++;
                     bufferOffset++;
                     read--;
@@ -132,25 +127,25 @@ public class CharSequenceInputStreamTest {
 
         for (int i = 0; i < readFirst; i++) {
             final int ch = is.read();
-            assertNotEquals(-1, ch);
+            assertThat(ch).isNotEqualTo(-1);
         }
 
         is.mark(dataSize);
 
         final byte[] data1 = new byte[dataSize];
         final int readCount1 = is.read(data1);
-        assertEquals(dataSize, readCount1);
+        assertThat(readCount1).isEqualTo(dataSize);
 
         is.reset(); // should allow data to be re-read
 
         final byte[] data2 = new byte[dataSize];
         final int readCount2 = is.read(data2);
-        assertEquals(dataSize, readCount2);
+        assertThat(readCount2).isEqualTo(dataSize);
 
         is.close();
 
         // data buffers should be identical
-        assertArrayEquals(data1, data2, "bufferSize=" + bufferSize + " dataSize=" + dataSize);
+        assertThat(data2).as("bufferSize=" + bufferSize + " dataSize=" + dataSize).containsExactly(data1);
     }
 
     @Test
@@ -233,15 +228,15 @@ public class CharSequenceInputStreamTest {
     // This test is broken for charsets that don't create a single byte for each char
     private void testMarkReset(final String csName) throws Exception {
         try (InputStream r = new CharSequenceInputStream("test", csName)) {
-            assertEquals(2, r.skip(2));
+            assertThat(r.skip(2)).isEqualTo(2);
             r.mark(0);
-            assertEquals('s', r.read(), csName);
-            assertEquals('t', r.read(), csName);
-            assertEquals(-1, r.read(), csName);
+            assertThat(r.read()).as(csName).isEqualTo('s');
+            assertThat(r.read()).as(csName).isEqualTo('t');
+            assertThat(r.read()).as(csName).isEqualTo(-1);
             r.reset();
-            assertEquals('s', r.read(), csName);
-            assertEquals('t', r.read(), csName);
-            assertEquals(-1, r.read(), csName);
+            assertThat(r.read()).as(csName).isEqualTo('s');
+            assertThat(r.read()).as(csName).isEqualTo('t');
+            assertThat(r.read()).as(csName).isEqualTo(-1);
             r.reset();
             r.reset();
         }
@@ -268,14 +263,14 @@ public class CharSequenceInputStreamTest {
     @Test
     public void testMarkSupported() throws Exception {
         try (InputStream r = new CharSequenceInputStream("test", "UTF-8")) {
-            assertTrue(r.markSupported());
+            assertThat(r.markSupported()).isTrue();
         }
     }
 
     private void testReadZero(final String csName) throws Exception {
         try (InputStream r = new CharSequenceInputStream("test", csName)) {
             final byte[] bytes = new byte[30];
-            assertEquals(0, r.read(bytes, 0, 0));
+            assertThat(r.read(bytes, 0, 0)).isEqualTo(0);
         }
     }
 
@@ -283,7 +278,7 @@ public class CharSequenceInputStreamTest {
     public void testReadZero_EmptyString() throws Exception {
         try (InputStream r = new CharSequenceInputStream("", "UTF-8")) {
             final byte[] bytes = new byte[30];
-            assertEquals(0, r.read(bytes, 0, 0));
+            assertThat(r.read(bytes, 0, 0)).isEqualTo(0);
         }
     }
 
@@ -299,11 +294,11 @@ public class CharSequenceInputStreamTest {
         try (InputStream in = new CharSequenceInputStream(testString, charsetName, 512)) {
             for (final byte b : bytes) {
                 final int read = in.read();
-                assertTrue(read >= 0, "read " + read + " >=0 ");
-                assertTrue(read <= 255, "read " + read + " <= 255");
-                assertEquals(b, (byte) read, "Should agree with input");
+                assertThat(read >= 0).as("read " + read + " >=0 ").isTrue();
+                assertThat(read <= 255).as("read " + read + " <= 255").isTrue();
+                assertThat((byte) read).as("Should agree with input").isEqualTo(b);
             }
-            assertEquals(-1, in.read());
+            assertThat(in.read()).isEqualTo(-1);
         }
     }
 
@@ -327,11 +322,11 @@ public class CharSequenceInputStreamTest {
     // This is broken for charsets that don't map each char to a byte
     private void testSkip(final String csName) throws Exception {
         try (InputStream r = new CharSequenceInputStream("test", csName)) {
-            assertEquals(1, r.skip(1));
-            assertEquals(2, r.skip(2));
-            assertEquals('t', r.read(), csName);
+            assertThat(r.skip(1)).isEqualTo(1);
+            assertThat(r.skip(2)).isEqualTo(2);
+            assertThat(r.read()).as(csName).isEqualTo('t');
             r.skip(100);
-            assertEquals(-1, r.read(), csName);
+            assertThat(r.read()).as(csName).isEqualTo(-1);
         }
     }
 
@@ -355,7 +350,7 @@ public class CharSequenceInputStreamTest {
 
     private int checkAvail(final InputStream is, final int min) throws Exception {
         final int available = is.available();
-        assertTrue(available >= min, "avail should be >= " + min + ", but was " + available);
+        assertThat(available >= min).as("avail should be >= " + min + ", but was " + available).isTrue();
         return available;
     }
 
@@ -363,9 +358,9 @@ public class CharSequenceInputStreamTest {
         final String input = "test";
         try (InputStream r = new CharSequenceInputStream(input, csName)) {
             int available = checkAvail(r, input.length());
-            assertEquals(available - 1, r.skip(available - 1)); // skip all but one
+            assertThat(r.skip(available - 1)).isEqualTo(available - 1); // skip all but one
             available = checkAvail(r, 1);
-            assertEquals(1, r.skip(1));
+            assertThat(r.skip(1)).isEqualTo(1);
             available = checkAvail(r, 0);
         }
     }
@@ -374,10 +369,10 @@ public class CharSequenceInputStreamTest {
         final String input = "test";
         try (InputStream r = new CharSequenceInputStream(input, csName)) {
             int available = checkAvail(r, input.length());
-            assertEquals(available - 1, r.skip(available - 1)); // skip all but one
+            assertThat(r.skip(available - 1)).isEqualTo(available - 1); // skip all but one
             available = checkAvail(r, 1);
             final byte[] buff = new byte[available];
-            assertEquals(available, r.read(buff, 0, available));
+            assertThat(r.read(buff, 0, available)).isEqualTo(available);
         }
     }
 

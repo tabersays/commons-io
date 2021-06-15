@@ -16,10 +16,7 @@
  */
 package org.apache.commons.io.filefilter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-
 import org.apache.commons.io.file.AccumulatorPathVisitor;
 import org.apache.commons.io.file.CounterAssertions;
 import org.apache.commons.io.file.Counters;
@@ -51,7 +47,7 @@ public class NameFileFilterTest {
             // System.out.println(file);
         }
         // End of Javadoc example
-        assertEquals(1, files.length);
+        assertThat(files.length).isEqualTo(1);
     }
 
     /**
@@ -71,12 +67,12 @@ public class NameFileFilterTest {
         // System.out.println(visitor.getPathCounters());
         // System.out.println(visitor.getFileList());
         // System.out.println(visitor.getDirList());
-        assertEquals(1, visitor.getPathCounters().getFileCounter().get());
-        assertEquals(1, visitor.getPathCounters().getDirectoryCounter().get());
-        assertTrue(visitor.getPathCounters().getByteCounter().get() > 0);
-        assertFalse(visitor.getDirList().isEmpty());
-        assertFalse(visitor.getFileList().isEmpty());
-        assertEquals(1, visitor.getFileList().size());
+        assertThat(visitor.getPathCounters().getFileCounter().get()).isEqualTo(1);
+        assertThat(visitor.getPathCounters().getDirectoryCounter().get()).isEqualTo(1);
+        assertThat(visitor.getPathCounters().getByteCounter().get() > 0).isTrue();
+        assertThat(visitor.getDirList().isEmpty()).isFalse();
+        assertThat(visitor.getFileList().isEmpty()).isFalse();
+        assertThat(visitor.getFileList().size()).isEqualTo(1);
         //
         visitor.getPathCounters().reset();
         //
@@ -87,14 +83,14 @@ public class NameFileFilterTest {
         // System.out.println(visitor.getFileList());
         //
         // End of Javadoc example
-        assertTrue(visitor.getPathCounters().getFileCounter().get() > 0);
-        assertTrue(visitor.getPathCounters().getDirectoryCounter().get() > 0);
-        assertTrue(visitor.getPathCounters().getByteCounter().get() > 0);
+        assertThat(visitor.getPathCounters().getFileCounter().get() > 0).isTrue();
+        assertThat(visitor.getPathCounters().getDirectoryCounter().get() > 0).isTrue();
+        assertThat(visitor.getPathCounters().getByteCounter().get() > 0).isTrue();
         // We counted and accumulated
-        assertFalse(visitor.getDirList().isEmpty());
-        assertFalse(visitor.getFileList().isEmpty());
+        assertThat(visitor.getDirList().isEmpty()).isFalse();
+        assertThat(visitor.getFileList().isEmpty()).isFalse();
         //
-        assertNotEquals(Counters.noopPathCounters(), visitor.getPathCounters());
+        assertThat(visitor.getPathCounters()).isNotEqualTo(Counters.noopPathCounters());
         visitor.getPathCounters().reset();
         CounterAssertions.assertZeroCounters(visitor.getPathCounters());
     }
@@ -108,7 +104,7 @@ public class NameFileFilterTest {
         //
         CounterAssertions.assertZeroCounters(visitor.getPathCounters());
         // We did not count, but we still accumulated
-        assertFalse(visitor.getDirList().isEmpty());
-        assertFalse(visitor.getFileList().isEmpty());
+        assertThat(visitor.getDirList().isEmpty()).isFalse();
+        assertThat(visitor.getFileList().isEmpty()).isFalse();
     }
 }

@@ -16,7 +16,7 @@
  */
 package org.apache.commons.io.filefilter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -24,7 +24,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Pattern;
-
 import org.apache.commons.io.IOCase;
 import org.junit.jupiter.api.Test;
 
@@ -36,15 +35,12 @@ public class RegexFileFilterTestCase {
     public void assertFiltering(final IOFileFilter filter, final File file, final boolean expected) {
         // Note. This only tests the (File, String) version if the parent of
         //       the File passed in is not null
-        assertEquals(expected, filter.accept(file),
-                "Filter(File) " + filter.getClass().getName() + " not " + expected + " for " + file);
+        assertThat(filter.accept(file)).as("Filter(File) " + filter.getClass().getName() + " not " + expected + " for " + file).isEqualTo(expected);
 
         if (file != null && file.getParentFile() != null) {
-            assertEquals(expected, filter.accept(file.getParentFile(), file.getName()),
-                    "Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for " + file);
+            assertThat(filter.accept(file.getParentFile(), file.getName())).as("Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for " + file).isEqualTo(expected);
         } else if (file == null) {
-            assertEquals(expected, filter.accept(file),
-                    "Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for null");
+            assertThat(filter.accept(file)).as("Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for null").isEqualTo(expected);
         }
     }
 
@@ -52,16 +48,13 @@ public class RegexFileFilterTestCase {
         // Note. This only tests the (Path, Path) version if the parent of
         // the Path passed in is not null
         final FileVisitResult expectedFileVisitResult = AbstractFileFilter.toFileVisitResult(expected, path);
-        assertEquals(expectedFileVisitResult, filter.accept(path, null),
-            "Filter(Path) " + filter.getClass().getName() + " not " + expectedFileVisitResult + " for " + path);
+        assertThat(filter.accept(path, null)).as("Filter(Path) " + filter.getClass().getName() + " not " + expectedFileVisitResult + " for " + path).isEqualTo(expectedFileVisitResult);
 
         if (path != null && path.getParent() != null) {
-            assertEquals(expectedFileVisitResult, filter.accept(path, null),
-                "Filter(Path, Path) " + filter.getClass().getName() + " not " + expectedFileVisitResult + " for "
-                    + path);
+            assertThat(filter.accept(path, null)).as("Filter(Path, Path) " + filter.getClass().getName() + " not " + expectedFileVisitResult + " for "
+                    + path).isEqualTo(expectedFileVisitResult);
         } else if (path == null) {
-            assertEquals(expectedFileVisitResult, filter.accept(path, null),
-                "Filter(Path, Path) " + filter.getClass().getName() + " not " + expectedFileVisitResult + " for null");
+            assertThat(filter.accept(path, null)).as("Filter(Path, Path) " + filter.getClass().getName() + " not " + expectedFileVisitResult + " for null").isEqualTo(expectedFileVisitResult);
         }
     }
 

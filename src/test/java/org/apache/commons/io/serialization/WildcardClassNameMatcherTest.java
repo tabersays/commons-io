@@ -18,8 +18,7 @@
  */
 package org.apache.commons.io.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,23 +27,23 @@ public class WildcardClassNameMatcherTest {
     @Test
     public void noPattern() {
         final ClassNameMatcher ca = new WildcardClassNameMatcher("org.foo");
-        assertTrue(ca.matches("org.foo"));
-        assertFalse(ca.matches("org.foo.and.more"));
-        assertFalse(ca.matches("org_foo"));
+        assertThat(ca.matches("org.foo")).isTrue();
+        assertThat(ca.matches("org.foo.and.more")).isFalse();
+        assertThat(ca.matches("org_foo")).isFalse();
     }
 
     @Test
     public void star() {
         final ClassNameMatcher ca = new WildcardClassNameMatcher("org*");
-        assertTrue(ca.matches("org.foo.should.match"));
-        assertFalse(ca.matches("bar.should.not.match"));
+        assertThat(ca.matches("org.foo.should.match")).isTrue();
+        assertThat(ca.matches("bar.should.not.match")).isFalse();
     }
 
     @Test
     public void starAndQuestionMark() {
         final ClassNameMatcher ca = new WildcardClassNameMatcher("org?apache?something*");
-        assertTrue(ca.matches("org.apache_something.more"));
-        assertFalse(ca.matches("org..apache_something.more"));
+        assertThat(ca.matches("org.apache_something.more")).isTrue();
+        assertThat(ca.matches("org..apache_something.more")).isFalse();
     }
 
 }

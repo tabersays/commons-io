@@ -16,12 +16,7 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -31,10 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.stream.IntStream;
-
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -78,8 +72,8 @@ public class DeferredFileOutputStreamTest {
         } catch (final IOException e) {
             fail("Unexpected IOException");
         }
-        assertFalse(dfos.isInMemory());
-        assertNull(dfos.getData());
+        assertThat(dfos.isInMemory()).isFalse();
+        assertThat(dfos.getData()).isNull();
 
         verifyResultFile(testFile);
 
@@ -101,10 +95,10 @@ public class DeferredFileOutputStreamTest {
             testFile);
         dfos.write(testBytes, 0, testBytes.length);
         dfos.close();
-        assertFalse(dfos.isInMemory());
+        assertThat(dfos.isInMemory()).isFalse();
 
         try (InputStream is = dfos.toInputStream()) {
-            assertArrayEquals(testBytes, IOUtils.toByteArray(is));
+            assertThat(IOUtils.toByteArray(is)).containsExactly(testBytes);
         }
 
         verifyResultFile(testFile);
@@ -124,11 +118,11 @@ public class DeferredFileOutputStreamTest {
         } catch (final IOException e) {
             fail("Unexpected IOException");
         }
-        assertTrue(dfos.isInMemory());
+        assertThat(dfos.isInMemory()).isTrue();
 
         final byte[] resultBytes = dfos.getData();
-        assertEquals(testBytes.length, resultBytes.length);
-        assertArrayEquals(resultBytes, testBytes);
+        assertThat(resultBytes.length).isEqualTo(testBytes.length);
+        assertThat(testBytes).containsExactly(resultBytes);
     }
 
     /**
@@ -145,11 +139,11 @@ public class DeferredFileOutputStreamTest {
         } catch (final IOException e) {
             fail("Unexpected IOException");
         }
-        assertTrue(dfos.isInMemory());
+        assertThat(dfos.isInMemory()).isTrue();
 
         final byte[] resultBytes = dfos.getData();
-        assertEquals(testBytes.length, resultBytes.length);
-        assertArrayEquals(resultBytes, testBytes);
+        assertThat(resultBytes.length).isEqualTo(testBytes.length);
+        assertThat(testBytes).containsExactly(resultBytes);
     }
 
     /**
@@ -163,10 +157,10 @@ public class DeferredFileOutputStreamTest {
             null);
         dfos.write(testBytes, 0, testBytes.length);
         dfos.close();
-        assertTrue(dfos.isInMemory());
+        assertThat(dfos.isInMemory()).isTrue();
 
         try (InputStream is = dfos.toInputStream()) {
-            assertArrayEquals(testBytes, IOUtils.toByteArray(is));
+            assertThat(IOUtils.toByteArray(is)).containsExactly(testBytes);
         }
     }
 
@@ -182,20 +176,20 @@ public class DeferredFileOutputStreamTest {
         final File tempDir = new File(".");
         final DeferredFileOutputStream dfos = new DeferredFileOutputStream(testBytes.length - 5, initialBufferSize,
             prefix, suffix, tempDir);
-        assertNull(dfos.getFile(), "Check file is null-A");
+        assertThat(dfos.getFile()).as("Check file is null-A").isNull();
         try {
             dfos.write(testBytes, 0, testBytes.length);
             dfos.close();
         } catch (final IOException e) {
             fail("Unexpected IOException");
         }
-        assertFalse(dfos.isInMemory());
-        assertNull(dfos.getData());
-        assertNotNull(dfos.getFile(), "Check file not null");
-        assertTrue(dfos.getFile().exists(), "Check file exists");
-        assertTrue(dfos.getFile().getName().startsWith(prefix), "Check prefix");
-        assertTrue(dfos.getFile().getName().endsWith(suffix), "Check suffix");
-        assertEquals(tempDir.getPath(), dfos.getFile().getParent(), "Check dir");
+        assertThat(dfos.isInMemory()).isFalse();
+        assertThat(dfos.getData()).isNull();
+        assertThat(dfos.getFile()).as("Check file not null").isNotNull();
+        assertThat(dfos.getFile().exists()).as("Check file exists").isTrue();
+        assertThat(dfos.getFile().getName().startsWith(prefix)).as("Check prefix").isTrue();
+        assertThat(dfos.getFile().getName().endsWith(suffix)).as("Check suffix").isTrue();
+        assertThat(dfos.getFile().getParent()).as("Check dir").isEqualTo(tempDir.getPath());
 
         verifyResultFile(dfos.getFile());
 
@@ -215,19 +209,19 @@ public class DeferredFileOutputStreamTest {
         final File tempDir = null;
         final DeferredFileOutputStream dfos = new DeferredFileOutputStream(testBytes.length - 5, initialBufferSize,
             prefix, suffix, tempDir);
-        assertNull(dfos.getFile(), "Check file is null-A");
+        assertThat(dfos.getFile()).as("Check file is null-A").isNull();
         try {
             dfos.write(testBytes, 0, testBytes.length);
             dfos.close();
         } catch (final IOException e) {
             fail("Unexpected IOException");
         }
-        assertFalse(dfos.isInMemory());
-        assertNull(dfos.getData());
-        assertNotNull(dfos.getFile(), "Check file not null");
-        assertTrue(dfos.getFile().exists(), "Check file exists");
-        assertTrue(dfos.getFile().getName().startsWith(prefix), "Check prefix");
-        assertTrue(dfos.getFile().getName().endsWith(".tmp"), "Check suffix"); // ".tmp" is default
+        assertThat(dfos.isInMemory()).isFalse();
+        assertThat(dfos.getData()).isNull();
+        assertThat(dfos.getFile()).as("Check file not null").isNotNull();
+        assertThat(dfos.getFile().exists()).as("Check file exists").isTrue();
+        assertThat(dfos.getFile().getName().startsWith(prefix)).as("Check prefix").isTrue();
+        assertThat(dfos.getFile().getName().endsWith(".tmp")).as("Check suffix").isTrue(); // ".tmp" is default
 
         verifyResultFile(dfos.getFile());
 
@@ -247,15 +241,15 @@ public class DeferredFileOutputStreamTest {
         final File tempDir = new File(".");
         final DeferredFileOutputStream dfos = new DeferredFileOutputStream(testBytes.length + 42, initialBufferSize,
             prefix, suffix, tempDir);
-        assertNull(dfos.getFile(), "Check file is null-A");
+        assertThat(dfos.getFile()).as("Check file is null-A").isNull();
         try {
             dfos.write(testBytes, 0, testBytes.length);
             dfos.close();
         } catch (final IOException e) {
             fail("Unexpected IOException");
         }
-        assertTrue(dfos.isInMemory());
-        assertNull(dfos.getFile(), "Check file is null-B");
+        assertThat(dfos.isInMemory()).isTrue();
+        assertThat(dfos.getFile()).as("Check file is null-B").isNull();
     }
 
     /**
@@ -301,8 +295,8 @@ public class DeferredFileOutputStreamTest {
         } catch (final IOException e) {
             fail("Unexpected IOException");
         }
-        assertFalse(dfos.isInMemory());
-        assertNull(dfos.getData());
+        assertThat(dfos.isInMemory()).isFalse();
+        assertThat(dfos.getData()).isNull();
 
         verifyResultFile(testFile);
 
@@ -325,8 +319,8 @@ public class DeferredFileOutputStreamTest {
         try {
             dfos.write(testBytes);
 
-            assertTrue(testFile.exists());
-            assertFalse(dfos.isInMemory());
+            assertThat(testFile.exists()).isTrue();
+            assertThat(dfos.isInMemory()).isFalse();
 
             try {
                 dfos.writeTo(baos);
@@ -341,7 +335,7 @@ public class DeferredFileOutputStreamTest {
             fail("Unexpected IOException");
         }
         final byte[] copiedBytes = baos.toByteArray();
-        assertArrayEquals(testBytes, copiedBytes);
+        assertThat(copiedBytes).containsExactly(testBytes);
         verifyResultFile(testFile);
         testFile.delete();
     }
@@ -362,8 +356,8 @@ public class DeferredFileOutputStreamTest {
         try {
             dfos.write(testBytes);
 
-            assertFalse(testFile.exists());
-            assertTrue(dfos.isInMemory());
+            assertThat(testFile.exists()).isFalse();
+            assertThat(dfos.isInMemory()).isTrue();
 
             try {
                 dfos.writeTo(baos);
@@ -378,7 +372,7 @@ public class DeferredFileOutputStreamTest {
             fail("Unexpected IOException");
         }
         final byte[] copiedBytes = baos.toByteArray();
-        assertArrayEquals(testBytes, copiedBytes);
+        assertThat(copiedBytes).containsExactly(testBytes);
 
         testFile.delete();
     }
@@ -391,13 +385,13 @@ public class DeferredFileOutputStreamTest {
     private void verifyResultFile(final File testFile) {
         try {
             final FileInputStream fis = new FileInputStream(testFile);
-            assertEquals(testBytes.length, fis.available());
+            assertThat(fis.available()).isEqualTo(testBytes.length);
 
             final byte[] resultBytes = new byte[testBytes.length];
-            assertEquals(testBytes.length, fis.read(resultBytes));
+            assertThat(fis.read(resultBytes)).isEqualTo(testBytes.length);
 
-            assertArrayEquals(resultBytes, testBytes);
-            assertEquals(-1, fis.read(resultBytes));
+            assertThat(testBytes).containsExactly(resultBytes);
+            assertThat(fis.read(resultBytes)).isEqualTo(-1);
 
             try {
                 fis.close();

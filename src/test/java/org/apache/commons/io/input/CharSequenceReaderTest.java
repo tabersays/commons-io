@@ -16,10 +16,8 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +27,6 @@ import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.Arrays;
-
 import org.apache.commons.io.TestResources;
 import org.junit.jupiter.api.Test;
 
@@ -56,44 +53,44 @@ public class CharSequenceReaderTest {
     @Test
     public void testReady() throws IOException {
         final Reader reader = new CharSequenceReader("FooBar");
-        assertTrue(reader.ready());
+        assertThat(reader.ready()).isTrue();
         reader.skip(3);
-        assertTrue(reader.ready());
+        assertThat(reader.ready()).isTrue();
         checkRead(reader, "Bar");
-        assertFalse(reader.ready());
+        assertThat(reader.ready()).isFalse();
         reader.reset();
-        assertTrue(reader.ready());
+        assertThat(reader.ready()).isTrue();
         reader.skip(2);
-        assertTrue(reader.ready());
+        assertThat(reader.ready()).isTrue();
         reader.skip(10);
-        assertFalse(reader.ready());
+        assertThat(reader.ready()).isFalse();
         reader.close();
-        assertTrue(reader.ready());
+        assertThat(reader.ready()).isTrue();
         reader.skip(20);
-        assertFalse(reader.ready());
+        assertThat(reader.ready()).isFalse();
 
         final Reader subReader = new CharSequenceReader("xFooBarx", 1, 7);
-        assertTrue(subReader.ready());
+        assertThat(subReader.ready()).isTrue();
         subReader.skip(3);
-        assertTrue(subReader.ready());
+        assertThat(subReader.ready()).isTrue();
         checkRead(subReader, "Bar");
-        assertFalse(subReader.ready());
+        assertThat(subReader.ready()).isFalse();
         subReader.reset();
-        assertTrue(subReader.ready());
+        assertThat(subReader.ready()).isTrue();
         subReader.skip(2);
-        assertTrue(subReader.ready());
+        assertThat(subReader.ready()).isTrue();
         subReader.skip(10);
-        assertFalse(subReader.ready());
+        assertThat(subReader.ready()).isFalse();
         subReader.close();
-        assertTrue(subReader.ready());
+        assertThat(subReader.ready()).isTrue();
         subReader.skip(20);
-        assertFalse(subReader.ready());
+        assertThat(subReader.ready()).isFalse();
     }
 
     @Test
     public void testMarkSupported() throws Exception {
         try (final Reader reader = new CharSequenceReader("FooBar")) {
-            assertTrue(reader.markSupported());
+            assertThat(reader.markSupported()).isTrue();
         }
     }
 
@@ -126,28 +123,28 @@ public class CharSequenceReaderTest {
     @Test
     public void testSkip() throws IOException {
         final Reader reader = new CharSequenceReader("FooBar");
-        assertEquals(3, reader.skip(3));
+        assertThat(reader.skip(3)).isEqualTo(3);
         checkRead(reader, "Bar");
-        assertEquals(0, reader.skip(3));
+        assertThat(reader.skip(3)).isEqualTo(0);
         reader.reset();
-        assertEquals(2, reader.skip(2));
-        assertEquals(4, reader.skip(10));
-        assertEquals(0, reader.skip(1));
+        assertThat(reader.skip(2)).isEqualTo(2);
+        assertThat(reader.skip(10)).isEqualTo(4);
+        assertThat(reader.skip(1)).isEqualTo(0);
         reader.close();
-        assertEquals(6, reader.skip(20));
-        assertEquals(-1, reader.read());
+        assertThat(reader.skip(20)).isEqualTo(6);
+        assertThat(reader.read()).isEqualTo(-1);
 
         final Reader subReader = new CharSequenceReader("xFooBarx", 1, 7);
-        assertEquals(3, subReader.skip(3));
+        assertThat(subReader.skip(3)).isEqualTo(3);
         checkRead(subReader, "Bar");
-        assertEquals(0, subReader.skip(3));
+        assertThat(subReader.skip(3)).isEqualTo(0);
         subReader.reset();
-        assertEquals(2, subReader.skip(2));
-        assertEquals(4, subReader.skip(10));
-        assertEquals(0, subReader.skip(1));
+        assertThat(subReader.skip(2)).isEqualTo(2);
+        assertThat(subReader.skip(10)).isEqualTo(4);
+        assertThat(subReader.skip(1)).isEqualTo(0);
         subReader.close();
-        assertEquals(6, subReader.skip(20));
-        assertEquals(-1, subReader.read());
+        assertThat(subReader.skip(20)).isEqualTo(6);
+        assertThat(subReader.read()).isEqualTo(-1);
     }
 
     @Test
@@ -161,17 +158,17 @@ public class CharSequenceReaderTest {
 
     private void testRead(final CharSequence charSequence) throws IOException {
         try (final Reader reader = new CharSequenceReader(charSequence)) {
-            assertEquals('F', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals(-1, reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('F');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo(-1);
+            assertThat(reader.read()).isEqualTo(-1);
         }
         try (final Reader reader = new CharSequenceReader(charSequence, 1, 5)) {
-            assertEquals('o', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals(-1, reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo(-1);
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -187,27 +184,27 @@ public class CharSequenceReaderTest {
     private void testReadCharArray(final CharSequence charSequence) throws IOException {
         try (final Reader reader = new CharSequenceReader(charSequence)) {
             char[] chars = new char[2];
-            assertEquals(2, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(2);
             checkArray(new char[] { 'F', 'o' }, chars);
             chars = new char[3];
-            assertEquals(3, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(3);
             checkArray(new char[] { 'o', 'B', 'a' }, chars);
             chars = new char[3];
-            assertEquals(1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(1);
             checkArray(new char[] { 'r', NONE, NONE }, chars);
-            assertEquals(-1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(-1);
         }
         try (final Reader reader = new CharSequenceReader(charSequence, 1, 5)) {
             char[] chars = new char[2];
-            assertEquals(2, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(2);
             checkArray(new char[] { 'o', 'o' }, chars);
             chars = new char[3];
-            assertEquals(2, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(2);
             checkArray(new char[] { 'B', 'a', NONE }, chars);
             chars = new char[3];
-            assertEquals(-1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(-1);
             checkArray(new char[] { NONE, NONE, NONE }, chars);
-            assertEquals(-1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(-1);
         }
     }
 
@@ -223,31 +220,31 @@ public class CharSequenceReaderTest {
     private void testReadCharArrayPortion(final CharSequence charSequence) throws IOException {
         final char[] chars = new char[10];
         try (final Reader reader = new CharSequenceReader(charSequence)) {
-            assertEquals(3, reader.read(chars, 3, 3));
+            assertThat(reader.read(chars, 3, 3)).isEqualTo(3);
             checkArray(new char[] { NONE, NONE, NONE, 'F', 'o', 'o' }, chars);
-            assertEquals(3, reader.read(chars, 0, 3));
+            assertThat(reader.read(chars, 0, 3)).isEqualTo(3);
             checkArray(new char[] { 'B', 'a', 'r', 'F', 'o', 'o', NONE }, chars);
-            assertEquals(-1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(-1);
         }
         Arrays.fill(chars, NONE);
         try (final Reader reader = new CharSequenceReader(charSequence, 1, 5)) {
-            assertEquals(2, reader.read(chars, 3, 2));
+            assertThat(reader.read(chars, 3, 2)).isEqualTo(2);
             checkArray(new char[] { NONE, NONE, NONE, 'o', 'o', NONE }, chars);
-            assertEquals(2, reader.read(chars, 0, 3));
+            assertThat(reader.read(chars, 0, 3)).isEqualTo(2);
             checkArray(new char[] { 'B', 'a', NONE, 'o', 'o', NONE }, chars);
-            assertEquals(-1, reader.read(chars));
+            assertThat(reader.read(chars)).isEqualTo(-1);
         }
     }
 
     private void checkRead(final Reader reader, final String expected) throws IOException {
         for (int i = 0; i < expected.length(); i++) {
-            assertEquals(expected.charAt(i), (char)reader.read(), "Read[" + i + "] of '" + expected + "'");
+            assertThat((char) reader.read()).as("Read[" + i + "] of '" + expected + "'").isEqualTo(expected.charAt(i));
         }
     }
 
     private void checkArray(final char[] expected, final char[] actual) {
         for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], actual[i], "Compare[" +i + "]");
+            assertThat(actual[i]).as("Compare[" + i + "]").isEqualTo(expected[i]);
         }
     }
 
@@ -262,8 +259,8 @@ public class CharSequenceReaderTest {
     @Test
     @SuppressWarnings("resource") // don't really need to close CharSequenceReader here
     public void testToString() {
-        assertEquals("FooBar", new CharSequenceReader("FooBar").toString());
-        assertEquals("FooBar", new CharSequenceReader("xFooBarx", 1, 7).toString());
+        assertThat(new CharSequenceReader("FooBar").toString()).isEqualTo("FooBar");
+        assertThat(new CharSequenceReader("xFooBarx", 1, 7).toString()).isEqualTo("FooBar");
     }
 
     @Test
@@ -276,14 +273,14 @@ public class CharSequenceReaderTest {
          */
         try (ObjectInputStream ois = new ObjectInputStream(TestResources.getInputStream("CharSequenceReader.bin"))) {
             final CharSequenceReader reader = (CharSequenceReader) ois.readObject();
-            assertEquals('F', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('B', reader.read());
-            assertEquals('a', reader.read());
-            assertEquals('r', reader.read());
-            assertEquals(-1, reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('F');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('B');
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo('r');
+            assertThat(reader.read()).isEqualTo(-1);
+            assertThat(reader.read()).isEqualTo(-1);
         }
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -293,23 +290,23 @@ public class CharSequenceReaderTest {
         }
         try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
             final CharSequenceReader reader = (CharSequenceReader) ois.readObject();
-            assertEquals('F', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('B', reader.read());
-            assertEquals('a', reader.read());
-            assertEquals('r', reader.read());
-            assertEquals(-1, reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('F');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('B');
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo('r');
+            assertThat(reader.read()).isEqualTo(-1);
+            assertThat(reader.read()).isEqualTo(-1);
             reader.reset();
-            assertEquals('F', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('o', reader.read());
-            assertEquals('B', reader.read());
-            assertEquals('a', reader.read());
-            assertEquals('r', reader.read());
-            assertEquals(-1, reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('F');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('o');
+            assertThat(reader.read()).isEqualTo('B');
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo('r');
+            assertThat(reader.read()).isEqualTo(-1);
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 }

@@ -16,15 +16,12 @@
  */
 package org.apache.commons.io.monitor;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Iterator;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.CanReadFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -51,21 +48,21 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         final FileAlterationObserver observer = new FileAlterationObserver("/foo");
         // Null Listener
         observer.addListener(null);
-        assertFalse(observer.getListeners().iterator().hasNext(), "Listeners[1]");
+        assertThat(observer.getListeners().iterator().hasNext()).as("Listeners[1]").isFalse();
         observer.removeListener(null);
-        assertFalse(observer.getListeners().iterator().hasNext(), "Listeners[2]");
+        assertThat(observer.getListeners().iterator().hasNext()).as("Listeners[2]").isFalse();
 
         // Add Listener
         final FileAlterationListenerAdaptor listener = new FileAlterationListenerAdaptor();
         observer.addListener(listener);
         final Iterator<FileAlterationListener> it = observer.getListeners().iterator();
-        assertTrue(it.hasNext(), "Listeners[3]");
-        assertEquals(listener, it.next(), "Added");
-        assertFalse(it.hasNext(), "Listeners[4]");
+        assertThat(it.hasNext()).as("Listeners[3]").isTrue();
+        assertThat(it.next()).as("Added").isEqualTo(listener);
+        assertThat(it.hasNext()).as("Listeners[4]").isFalse();
 
         // Remove Listener
         observer.removeListener(listener);
-        assertFalse(observer.getListeners().iterator().hasNext(), "Listeners[5]");
+        assertThat(observer.getListeners().iterator().hasNext()).as("Listeners[5]").isFalse();
     }
 
     /**
@@ -76,14 +73,12 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         final File file = new File("/foo");
 
         FileAlterationObserver observer = new FileAlterationObserver(file);
-        assertEquals("FileAlterationObserver[file='" + file.getPath() +  "', listeners=0]",
-                observer.toString());
+        assertThat(observer.toString()).isEqualTo("FileAlterationObserver[file='" + file.getPath() +  "', listeners=0]");
 
         observer = new FileAlterationObserver(file, CanReadFileFilter.CAN_READ);
-        assertEquals("FileAlterationObserver[file='" + file.getPath() +  "', CanReadFileFilter, listeners=0]",
-                observer.toString());
+        assertThat(observer.toString()).isEqualTo("FileAlterationObserver[file='" + file.getPath() +  "', CanReadFileFilter, listeners=0]");
 
-        assertEquals(file, observer.getDirectory());
+        assertThat(observer.getDirectory()).isEqualTo(file);
   }
 
     /**
@@ -108,14 +103,14 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
 
         checkAndNotify();
         checkCollectionSizes("B", 3, 0, 0, 4, 0, 0);
-        assertTrue(listener.getCreatedDirectories().contains(testDirA), "B testDirA");
-        assertTrue(listener.getCreatedDirectories().contains(testDirB), "B testDirB");
-        assertTrue(listener.getCreatedDirectories().contains(testDirC), "B testDirC");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile1), "B testDirAFile1");
-        assertFalse(listener.getCreatedFiles().contains(testDirAFile2), "B testDirAFile2");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile3), "B testDirAFile3");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile4), "B testDirAFile4");
-        assertTrue(listener.getCreatedFiles().contains(testDirBFile1), "B testDirBFile1");
+        assertThat(listener.getCreatedDirectories().contains(testDirA)).as("B testDirA").isTrue();
+        assertThat(listener.getCreatedDirectories().contains(testDirB)).as("B testDirB").isTrue();
+        assertThat(listener.getCreatedDirectories().contains(testDirC)).as("B testDirC").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile1)).as("B testDirAFile1").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile2)).as("B testDirAFile2").isFalse();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile3)).as("B testDirAFile3").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile4)).as("B testDirAFile4").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirBFile1)).as("B testDirBFile1").isTrue();
 
         checkAndNotify();
         checkCollectionsEmpty("C");
@@ -124,18 +119,18 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         FileUtils.deleteDirectory(testDirB);
         checkAndNotify();
         checkCollectionSizes("D", 0, 0, 1, 0, 1, 1);
-        assertTrue(listener.getDeletedDirectories().contains(testDirB), "D testDirB");
-        assertTrue(listener.getChangedFiles().contains(testDirAFile4), "D testDirAFile4");
-        assertTrue(listener.getDeletedFiles().contains(testDirBFile1), "D testDirBFile1");
+        assertThat(listener.getDeletedDirectories().contains(testDirB)).as("D testDirB").isTrue();
+        assertThat(listener.getChangedFiles().contains(testDirAFile4)).as("D testDirAFile4").isTrue();
+        assertThat(listener.getDeletedFiles().contains(testDirBFile1)).as("D testDirBFile1").isTrue();
 
         FileUtils.deleteDirectory(testDir);
         checkAndNotify();
         checkCollectionSizes("E", 0, 0, 2, 0, 0, 3);
-        assertTrue(listener.getDeletedDirectories().contains(testDirA), "E testDirA");
-        assertTrue(listener.getDeletedFiles().contains(testDirAFile1), "E testDirAFile1");
-        assertFalse(listener.getDeletedFiles().contains(testDirAFile2), "E testDirAFile2");
-        assertTrue(listener.getDeletedFiles().contains(testDirAFile3), "E testDirAFile3");
-        assertTrue(listener.getDeletedFiles().contains(testDirAFile4), "E testDirAFile4");
+        assertThat(listener.getDeletedDirectories().contains(testDirA)).as("E testDirA").isTrue();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile1)).as("E testDirAFile1").isTrue();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile2)).as("E testDirAFile2").isFalse();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile3)).as("E testDirAFile3").isTrue();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile4)).as("E testDirAFile4").isTrue();
 
         testDir.mkdir();
         checkAndNotify();
@@ -165,17 +160,17 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
 
         checkAndNotify();
         checkCollectionSizes("B", 1, 0, 0, 2, 0, 0);
-        assertFalse(listener.getCreatedFiles().contains(testDirAFile1), "B testDirAFile1");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile2), "B testDirAFile2");
-        assertFalse(listener.getCreatedFiles().contains(testDirAFile3), "B testDirAFile3");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile4), "B testDirAFile4");
-        assertFalse(listener.getCreatedFiles().contains(testDirAFile5), "B testDirAFile5");
+        assertThat(listener.getCreatedFiles().contains(testDirAFile1)).as("B testDirAFile1").isFalse();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile2)).as("B testDirAFile2").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile3)).as("B testDirAFile3").isFalse();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile4)).as("B testDirAFile4").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile5)).as("B testDirAFile5").isFalse();
 
-        assertFalse(testDirAFile1.exists(), "B testDirAFile1 exists");
-        assertTrue(testDirAFile2.exists(), "B testDirAFile2 exists");
-        assertFalse(testDirAFile3.exists(), "B testDirAFile3 exists");
-        assertTrue(testDirAFile4.exists(), "B testDirAFile4 exists");
-        assertFalse(testDirAFile5.exists(), "B testDirAFile5 exists");
+        assertThat(testDirAFile1.exists()).as("B testDirAFile1 exists").isFalse();
+        assertThat(testDirAFile2.exists()).as("B testDirAFile2 exists").isTrue();
+        assertThat(testDirAFile3.exists()).as("B testDirAFile3 exists").isFalse();
+        assertThat(testDirAFile4.exists()).as("B testDirAFile4 exists").isTrue();
+        assertThat(testDirAFile5.exists()).as("B testDirAFile5 exists").isFalse();
 
         checkAndNotify();
         checkCollectionsEmpty("C");
@@ -185,24 +180,24 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         testDirA      = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("D", 0, 1, 0, 1, 0, 0);
-        assertTrue(testDirAFile1.exists(), "D testDirAFile1 exists");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile1), "D testDirAFile1");
+        assertThat(testDirAFile1.exists()).as("D testDirAFile1 exists").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile1)).as("D testDirAFile1").isTrue();
 
         // Create file with name between 2 entries
         testDirAFile3 = touch(testDirAFile3);
         testDirA      = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("E", 0, 1, 0, 1, 0, 0);
-        assertTrue(testDirAFile3.exists(), "E testDirAFile3 exists");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile3), "E testDirAFile3");
+        assertThat(testDirAFile3.exists()).as("E testDirAFile3 exists").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile3)).as("E testDirAFile3").isTrue();
 
         // Create file with name > last entry
         testDirAFile5 = touch(testDirAFile5);
         testDirA      = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("F", 0, 1, 0, 1, 0, 0);
-        assertTrue(testDirAFile5.exists(), "F testDirAFile5 exists");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile5), "F testDirAFile5");
+        assertThat(testDirAFile5.exists()).as("F testDirAFile5 exists").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile5)).as("F testDirAFile5").isTrue();
     }
 
     /**
@@ -225,17 +220,17 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
 
         checkAndNotify();
         checkCollectionSizes("B", 1, 0, 0, 5, 0, 0);
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile1), "B testDirAFile1");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile2), "B testDirAFile2");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile3), "B testDirAFile3");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile4), "B testDirAFile4");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile5), "B testDirAFile5");
+        assertThat(listener.getCreatedFiles().contains(testDirAFile1)).as("B testDirAFile1").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile2)).as("B testDirAFile2").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile3)).as("B testDirAFile3").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile4)).as("B testDirAFile4").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile5)).as("B testDirAFile5").isTrue();
 
-        assertTrue(testDirAFile1.exists(), "B testDirAFile1 exists");
-        assertTrue(testDirAFile2.exists(), "B testDirAFile2 exists");
-        assertTrue(testDirAFile3.exists(), "B testDirAFile3 exists");
-        assertTrue(testDirAFile4.exists(), "B testDirAFile4 exists");
-        assertTrue(testDirAFile5.exists(), "B testDirAFile5 exists");
+        assertThat(testDirAFile1.exists()).as("B testDirAFile1 exists").isTrue();
+        assertThat(testDirAFile2.exists()).as("B testDirAFile2 exists").isTrue();
+        assertThat(testDirAFile3.exists()).as("B testDirAFile3 exists").isTrue();
+        assertThat(testDirAFile4.exists()).as("B testDirAFile4 exists").isTrue();
+        assertThat(testDirAFile5.exists()).as("B testDirAFile5 exists").isTrue();
 
         checkAndNotify();
         checkCollectionsEmpty("C");
@@ -245,21 +240,21 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         testDirA      = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("D", 0, 1, 0, 0, 1, 0);
-        assertTrue(listener.getChangedFiles().contains(testDirAFile1), "D testDirAFile1");
+        assertThat(listener.getChangedFiles().contains(testDirAFile1)).as("D testDirAFile1").isTrue();
 
         // Update file with name between 2 entries
         testDirAFile3 = touch(testDirAFile3);
         testDirA      = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("E", 0, 1, 0, 0, 1, 0);
-        assertTrue(listener.getChangedFiles().contains(testDirAFile3), "E testDirAFile3");
+        assertThat(listener.getChangedFiles().contains(testDirAFile3)).as("E testDirAFile3").isTrue();
 
         // Update last entry
         testDirAFile5 = touch(testDirAFile5);
         testDirA      = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("F", 0, 1, 0, 0, 1, 0);
-        assertTrue(listener.getChangedFiles().contains(testDirAFile5), "F testDirAFile5");
+        assertThat(listener.getChangedFiles().contains(testDirAFile5)).as("F testDirAFile5").isTrue();
     }
 
     /**
@@ -280,19 +275,19 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         final File testDirAFile4 = touch(new File(testDirA, "A-file4.java"));
         final File testDirAFile5 = touch(new File(testDirA, "A-file5.java"));
 
-        assertTrue(testDirAFile1.exists(), "B testDirAFile1 exists");
-        assertTrue(testDirAFile2.exists(), "B testDirAFile2 exists");
-        assertTrue(testDirAFile3.exists(), "B testDirAFile3 exists");
-        assertTrue(testDirAFile4.exists(), "B testDirAFile4 exists");
-        assertTrue(testDirAFile5.exists(), "B testDirAFile5 exists");
+        assertThat(testDirAFile1.exists()).as("B testDirAFile1 exists").isTrue();
+        assertThat(testDirAFile2.exists()).as("B testDirAFile2 exists").isTrue();
+        assertThat(testDirAFile3.exists()).as("B testDirAFile3 exists").isTrue();
+        assertThat(testDirAFile4.exists()).as("B testDirAFile4 exists").isTrue();
+        assertThat(testDirAFile5.exists()).as("B testDirAFile5 exists").isTrue();
 
         checkAndNotify();
         checkCollectionSizes("B", 1, 0, 0, 5, 0, 0);
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile1), "B testDirAFile1");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile2), "B testDirAFile2");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile3), "B testDirAFile3");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile4), "B testDirAFile4");
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile5), "B testDirAFile5");
+        assertThat(listener.getCreatedFiles().contains(testDirAFile1)).as("B testDirAFile1").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile2)).as("B testDirAFile2").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile3)).as("B testDirAFile3").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile4)).as("B testDirAFile4").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile5)).as("B testDirAFile5").isTrue();
 
         checkAndNotify();
         checkCollectionsEmpty("C");
@@ -302,24 +297,24 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         testDirA = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("D", 0, 1, 0, 0, 0, 1);
-        assertFalse(testDirAFile1.exists(), "D testDirAFile1 exists");
-        assertTrue(listener.getDeletedFiles().contains(testDirAFile1), "D testDirAFile1");
+        assertThat(testDirAFile1.exists()).as("D testDirAFile1 exists").isFalse();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile1)).as("D testDirAFile1").isTrue();
 
         // Delete file with name between 2 entries
         FileUtils.deleteQuietly(testDirAFile3);
         testDirA = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("E", 0, 1, 0, 0, 0, 1);
-        assertFalse(testDirAFile3.exists(), "E testDirAFile3 exists");
-        assertTrue(listener.getDeletedFiles().contains(testDirAFile3), "E testDirAFile3");
+        assertThat(testDirAFile3.exists()).as("E testDirAFile3 exists").isFalse();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile3)).as("E testDirAFile3").isTrue();
 
         // Delete last entry
         FileUtils.deleteQuietly(testDirAFile5);
         testDirA = touch(testDirA);
         checkAndNotify();
         checkCollectionSizes("F", 0, 1, 0, 0, 0, 1);
-        assertFalse(testDirAFile5.exists(), "F testDirAFile5 exists");
-        assertTrue(listener.getDeletedFiles().contains(testDirAFile5), "F testDirAFile5");
+        assertThat(testDirAFile5.exists()).as("F testDirAFile5 exists").isFalse();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile5)).as("F testDirAFile5").isTrue();
     }
 
     /**
@@ -336,20 +331,20 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         createObserver(testDirA, nameFilter);
         checkAndNotify();
         checkCollectionsEmpty("A");
-        assertFalse(testDirAFile1.exists(), "A testDirAFile1 exists");
+        assertThat(testDirAFile1.exists()).as("A testDirAFile1 exists").isFalse();
 
         // Create
         testDirAFile1 = touch(testDirAFile1);
         File testDirAFile2 = touch(new File(testDirA, "A-file2.txt"));  /* filter should ignore */
         File testDirAFile3 = touch(new File(testDirA, "A-file3.java")); /* filter should ignore */
-        assertTrue(testDirAFile1.exists(), "B testDirAFile1 exists");
-        assertTrue(testDirAFile2.exists(), "B testDirAFile2 exists");
-        assertTrue(testDirAFile3.exists(), "B testDirAFile3 exists");
+        assertThat(testDirAFile1.exists()).as("B testDirAFile1 exists").isTrue();
+        assertThat(testDirAFile2.exists()).as("B testDirAFile2 exists").isTrue();
+        assertThat(testDirAFile3.exists()).as("B testDirAFile3 exists").isTrue();
         checkAndNotify();
         checkCollectionSizes("C", 0, 0, 0, 1, 0, 0);
-        assertTrue(listener.getCreatedFiles().contains(testDirAFile1), "C created");
-        assertFalse(listener.getCreatedFiles().contains(testDirAFile2), "C created");
-        assertFalse(listener.getCreatedFiles().contains(testDirAFile3), "C created");
+        assertThat(listener.getCreatedFiles().contains(testDirAFile1)).as("C created").isTrue();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile2)).as("C created").isFalse();
+        assertThat(listener.getCreatedFiles().contains(testDirAFile3)).as("C created").isFalse();
 
         // Modify
         testDirAFile1 = touch(testDirAFile1);
@@ -357,22 +352,22 @@ public class FileAlterationObserverTestCase extends AbstractMonitorTestCase {
         testDirAFile3 = touch(testDirAFile3);
         checkAndNotify();
         checkCollectionSizes("D", 0, 0, 0, 0, 1, 0);
-        assertTrue(listener.getChangedFiles().contains(testDirAFile1), "D changed");
-        assertFalse(listener.getChangedFiles().contains(testDirAFile2), "D changed");
-        assertFalse(listener.getChangedFiles().contains(testDirAFile3), "D changed");
+        assertThat(listener.getChangedFiles().contains(testDirAFile1)).as("D changed").isTrue();
+        assertThat(listener.getChangedFiles().contains(testDirAFile2)).as("D changed").isFalse();
+        assertThat(listener.getChangedFiles().contains(testDirAFile3)).as("D changed").isFalse();
 
         // Delete
         FileUtils.deleteQuietly(testDirAFile1);
         FileUtils.deleteQuietly(testDirAFile2);
         FileUtils.deleteQuietly(testDirAFile3);
-        assertFalse(testDirAFile1.exists(), "E testDirAFile1 exists");
-        assertFalse(testDirAFile2.exists(), "E testDirAFile2 exists");
-        assertFalse(testDirAFile3.exists(), "E testDirAFile3 exists");
+        assertThat(testDirAFile1.exists()).as("E testDirAFile1 exists").isFalse();
+        assertThat(testDirAFile2.exists()).as("E testDirAFile2 exists").isFalse();
+        assertThat(testDirAFile3.exists()).as("E testDirAFile3 exists").isFalse();
         checkAndNotify();
         checkCollectionSizes("E", 0, 0, 0, 0, 0, 1);
-        assertTrue(listener.getDeletedFiles().contains(testDirAFile1), "E deleted");
-        assertFalse(listener.getDeletedFiles().contains(testDirAFile2), "E deleted");
-        assertFalse(listener.getDeletedFiles().contains(testDirAFile3), "E deleted");
+        assertThat(listener.getDeletedFiles().contains(testDirAFile1)).as("E deleted").isTrue();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile2)).as("E deleted").isFalse();
+        assertThat(listener.getDeletedFiles().contains(testDirAFile3)).as("E deleted").isFalse();
     }
 
     /**

@@ -16,49 +16,43 @@
  */
 package org.apache.commons.io.filefilter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 
 public abstract class IOFileFilterAbstractTestCase {
 
     public static void assertFileFiltering(final int testNumber, final IOFileFilter filter, final File file, final boolean expected) {
-        assertEquals(expected, filter.accept(file),
-                "test " + testNumber + " Filter(File) " + filter.getClass().getName() + " not " + expected + " for " + file);
+        assertThat(filter.accept(file)).as("test " + testNumber + " Filter(File) " + filter.getClass().getName() + " not " + expected + " for " + file).isEqualTo(expected);
     }
 
     public static void assertFilenameFiltering(final int testNumber, final IOFileFilter filter, final File file, final boolean expected) {
         // Assumes file has parent and is not passed as null
-        assertEquals(expected, filter.accept(file.getParentFile(), file.getName()),
-                "test " + testNumber + " Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for " + file);
+        assertThat(filter.accept(file.getParentFile(), file.getName())).as("test " + testNumber + " Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for " + file).isEqualTo(expected);
     }
 
     public static void assertFiltering(final int testNumber, final IOFileFilter filter, final File file, final boolean expected) {
         // Note. This only tests the (File, String) version if the parent of
         //       the File passed in is not null
-        assertEquals(expected, filter.accept(file),
-            "test " + testNumber + " Filter(File) " + filter.getClass().getName() + " not " + expected + " for " + file);
-        assertEquals(expected, filter.accept(file.toPath(), null),
-            "test " + testNumber + " Filter(File) " + filter.getClass().getName() + " not " + expected + " for " + file);
+        assertThat(filter.accept(file)).as("test " + testNumber + " Filter(File) " + filter.getClass().getName() + " not " + expected + " for " + file).isEqualTo(expected);
+        assertThat(filter.accept(file.toPath(), null)).as("test " + testNumber + " Filter(File) " + filter.getClass().getName() + " not " + expected + " for " + file).isEqualTo(expected);
 
         if (file != null && file.getParentFile() != null) {
-            assertEquals(expected, filter.accept(file.getParentFile(), file.getName()),
-                    "test " + testNumber + " Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for " + file);
+            assertThat(filter.accept(file.getParentFile(), file.getName())).as("test " + testNumber + " Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for " + file).isEqualTo(expected);
         } else if (file == null) {
-            assertEquals(expected, filter.accept(file),
-                    "test " + testNumber + " Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for null");
+            assertThat(filter.accept(file)).as("test " + testNumber + " Filter(File, String) " + filter.getClass().getName() + " not " + expected + " for null").isEqualTo(expected);
         }
     }
 
     public static void assertTrueFiltersInvoked(final int testNumber, final TesterTrueFileFilter[] filters, final boolean[] invoked) {
         for (int i = 1; i < filters.length; i++) {
-            assertEquals(invoked[i - 1], filters[i].isInvoked(), "test " + testNumber + " filter " + i + " invoked");
+            assertThat(filters[i].isInvoked()).as("test " + testNumber + " filter " + i + " invoked").isEqualTo(invoked[i - 1]);
         }
     }
 
     public static void assertFalseFiltersInvoked(final int testNumber, final TesterFalseFileFilter[] filters, final boolean[] invoked) {
         for (int i = 1; i < filters.length; i++) {
-            assertEquals(invoked[i - 1], filters[i].isInvoked(), "test " + testNumber + " filter " + i + " invoked");
+            assertThat(filters[i].isInvoked()).as("test " + testNumber + " filter " + i + " invoked").isEqualTo(invoked[i - 1]);
         }
     }
 

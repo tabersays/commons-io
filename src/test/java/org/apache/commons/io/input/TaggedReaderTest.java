@@ -16,16 +16,13 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.UUID;
-
 import org.apache.commons.io.TaggedIOException;
 import org.junit.jupiter.api.Test;
 
@@ -37,24 +34,24 @@ public class TaggedReaderTest {
     @Test
     public void testEmptyReader() throws IOException {
         try (final Reader reader = new TaggedReader(ClosedReader.CLOSED_READER)) {
-            assertFalse(reader.ready());
-            assertEquals(-1, reader.read());
-            assertEquals(-1, reader.read(new char[1]));
-            assertEquals(-1, reader.read(new char[1], 0, 1));
+            assertThat(reader.ready()).isFalse();
+            assertThat(reader.read()).isEqualTo(-1);
+            assertThat(reader.read(new char[1])).isEqualTo(-1);
+            assertThat(reader.read(new char[1], 0, 1)).isEqualTo(-1);
         }
     }
 
     @Test
     public void testNormalReader() throws IOException {
         try (final Reader reader = new TaggedReader(new StringReader("abc"))) {
-            assertTrue(reader.ready());
-            assertEquals('a', reader.read());
+            assertThat(reader.ready()).isTrue();
+            assertThat(reader.read()).isEqualTo('a');
             final char[] buffer = new char[1];
-            assertEquals(1, reader.read(buffer));
-            assertEquals('b', buffer[0]);
-            assertEquals(1, reader.read(buffer, 0, 1));
-            assertEquals('c', buffer[0]);
-            assertEquals(-1, reader.read());
+            assertThat(reader.read(buffer)).isEqualTo(1);
+            assertThat(buffer[0]).isEqualTo('b');
+            assertThat(reader.read(buffer, 0, 1)).isEqualTo(1);
+            assertThat(buffer[0]).isEqualTo('c');
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -68,12 +65,12 @@ public class TaggedReaderTest {
             reader.ready();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(reader.isCauseOf(e));
+            assertThat(reader.isCauseOf(e)).isTrue();
             try {
                 reader.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
 
@@ -82,12 +79,12 @@ public class TaggedReaderTest {
             reader.read();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(reader.isCauseOf(e));
+            assertThat(reader.isCauseOf(e)).isTrue();
             try {
                 reader.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
 
@@ -96,12 +93,12 @@ public class TaggedReaderTest {
             reader.close();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(reader.isCauseOf(e));
+            assertThat(reader.isCauseOf(e)).isTrue();
             try {
                 reader.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
     }
@@ -111,8 +108,8 @@ public class TaggedReaderTest {
         final IOException exception = new IOException("test exception");
         try (final TaggedReader reader = new TaggedReader(ClosedReader.CLOSED_READER)) {
 
-            assertFalse(reader.isCauseOf(exception));
-            assertFalse(reader.isCauseOf(new TaggedIOException(exception, UUID.randomUUID())));
+            assertThat(reader.isCauseOf(exception)).isFalse();
+            assertThat(reader.isCauseOf(new TaggedIOException(exception, UUID.randomUUID()))).isFalse();
 
             reader.throwIfCauseOf(exception);
 

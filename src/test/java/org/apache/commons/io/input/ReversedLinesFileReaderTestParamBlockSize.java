@@ -18,9 +18,7 @@ package org.apache.commons.io.input;
 
 import static org.apache.commons.io.StandardLineSeparator.CR;
 import static org.apache.commons.io.StandardLineSeparator.LF;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
@@ -28,7 +26,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.stream.IntStream;
-
 import org.apache.commons.io.TestResources;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -117,7 +114,7 @@ public class ReversedLinesFileReaderTestParamBlockSize {
     public void testEmptyFile(final int testParamBlockSize) throws URISyntaxException, IOException {
         final File testFileEmpty = TestResources.getFile("/test-file-empty.bin");
         reversedLinesFileReader = new ReversedLinesFileReader(testFileEmpty, testParamBlockSize, UTF_8);
-        assertNull(reversedLinesFileReader.readLine());
+        assertThat(reversedLinesFileReader.readLine()).isNull();
     }
 
     @ParameterizedTest(name = "BlockSize={0}")
@@ -239,10 +236,10 @@ public class ReversedLinesFileReaderTestParamBlockSize {
 
     static void assertEqualsAndNoLineBreaks(final String msg, final String expected, final String actual) {
         if (actual != null) {
-            assertFalse(actual.contains(LF.getString()), "Line contains \\n: line=" + actual);
-            assertFalse(actual.contains(CR.getString()), "Line contains \\r: line=" + actual);
+            assertThat(actual.contains(LF.getString())).as("Line contains \\n: line=" + actual).isFalse();
+            assertThat(actual.contains(CR.getString())).as("Line contains \\r: line=" + actual).isFalse();
         }
-        assertEquals(expected, actual, msg);
+        assertThat(actual).as(msg).isEqualTo(expected);
     }
 
     static void assertEqualsAndNoLineBreaks(final String expected, final String actual) {

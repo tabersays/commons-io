@@ -16,15 +16,10 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
@@ -60,7 +55,6 @@ import java.nio.channels.Selector;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.input.CircularInputStream;
 import org.apache.commons.io.input.NullInputStream;
@@ -109,7 +103,7 @@ public class IOUtilsTestCase {
 
     /** Assert that the contents of two byte arrays are the same. */
     private void assertEqualContent(final byte[] b0, final byte[] b1) {
-        assertArrayEquals(b0, b1, "Content not equal according to java.util.Arrays#equals()");
+        assertThat(b1).as("Content not equal according to java.util.Arrays#equals()").containsExactly(b0);
     }
 
     @BeforeEach
@@ -153,7 +147,7 @@ public class IOUtilsTestCase {
         };
         final BufferedInputStream bis = IOUtils.buffer(is);
         assertNotSame(is, bis);
-        assertSame(bis, IOUtils.buffer(bis));
+        assertThat(IOUtils.buffer(bis)).isSameAs(bis);
     }
 
     @Test
@@ -166,8 +160,8 @@ public class IOUtilsTestCase {
         };
         final BufferedInputStream bis = IOUtils.buffer(is, 2048);
         assertNotSame(is, bis);
-        assertSame(bis, IOUtils.buffer(bis));
-        assertSame(bis, IOUtils.buffer(bis, 1024));
+        assertThat(IOUtils.buffer(bis)).isSameAs(bis);
+        assertThat(IOUtils.buffer(bis, 1024)).isSameAs(bis);
     }
 
     @Test
@@ -207,7 +201,7 @@ public class IOUtilsTestCase {
         };
         final BufferedOutputStream bis = IOUtils.buffer(is);
         assertNotSame(is, bis);
-        assertSame(bis, IOUtils.buffer(bis));
+        assertThat(IOUtils.buffer(bis)).isSameAs(bis);
     }
 
     @Test
@@ -219,8 +213,8 @@ public class IOUtilsTestCase {
         };
         final BufferedOutputStream bos = IOUtils.buffer(os, 2048);
         assertNotSame(os, bos);
-        assertSame(bos, IOUtils.buffer(bos));
-        assertSame(bos, IOUtils.buffer(bos, 1024));
+        assertThat(IOUtils.buffer(bos)).isSameAs(bos);
+        assertThat(IOUtils.buffer(bos, 1024)).isSameAs(bos);
     }
 
     @Test
@@ -237,7 +231,7 @@ public class IOUtilsTestCase {
         };
         final BufferedReader bis = IOUtils.buffer(is);
         assertNotSame(is, bis);
-        assertSame(bis, IOUtils.buffer(bis));
+        assertThat(IOUtils.buffer(bis)).isSameAs(bis);
     }
 
     @Test
@@ -254,8 +248,8 @@ public class IOUtilsTestCase {
         };
         final BufferedReader br = IOUtils.buffer(r, 2048);
         assertNotSame(r, br);
-        assertSame(br, IOUtils.buffer(br));
-        assertSame(br, IOUtils.buffer(br, 1024));
+        assertThat(IOUtils.buffer(br)).isSameAs(br);
+        assertThat(IOUtils.buffer(br, 1024)).isSameAs(br);
     }
 
     @Test
@@ -279,7 +273,7 @@ public class IOUtilsTestCase {
         };
         final BufferedWriter bis = IOUtils.buffer(is);
         assertNotSame(is, bis);
-        assertSame(bis, IOUtils.buffer(bis));
+        assertThat(IOUtils.buffer(bis)).isSameAs(bis);
     }
 
     @Test
@@ -303,8 +297,8 @@ public class IOUtilsTestCase {
         };
         final BufferedWriter bw = IOUtils.buffer(w, 2024);
         assertNotSame(w, bw);
-        assertSame(bw, IOUtils.buffer(bw));
-        assertSame(bw, IOUtils.buffer(bw, 1024));
+        assertThat(IOUtils.buffer(bw)).isSameAs(bw);
+        assertThat(IOUtils.buffer(bw, 1024)).isSameAs(bw);
     }
 
     @Test
@@ -312,8 +306,8 @@ public class IOUtilsTestCase {
         final Appendable a = new StringBuffer();
         final Writer w = IOUtils.writer(a);
         assertNotSame(w, a);
-        assertEquals(AppendableWriter.class, w.getClass());
-        assertSame(w, IOUtils.writer(w));
+        assertThat(w.getClass()).isEqualTo(AppendableWriter.class);
+        assertThat(IOUtils.writer(w)).isSameAs(w);
     }
 
     @Test
@@ -326,8 +320,8 @@ public class IOUtilsTestCase {
         final Appendable a = new StringBuilder();
         final Writer w = IOUtils.writer(a);
         assertNotSame(w, a);
-        assertEquals(StringBuilderWriter.class, w.getClass());
-        assertSame(w, IOUtils.writer(w));
+        assertThat(w.getClass()).isEqualTo(StringBuilderWriter.class);
+        assertThat(IOUtils.writer(w)).isSameAs(w);
     }
 
     @Test
@@ -474,20 +468,20 @@ public class IOUtilsTestCase {
 
     @Test
     public void testConstants() {
-        assertEquals('/', IOUtils.DIR_SEPARATOR_UNIX);
-        assertEquals('\\', IOUtils.DIR_SEPARATOR_WINDOWS);
-        assertEquals("\n", IOUtils.LINE_SEPARATOR_UNIX);
-        assertEquals("\r\n", IOUtils.LINE_SEPARATOR_WINDOWS);
+        assertThat(IOUtils.DIR_SEPARATOR_UNIX).isEqualTo('/');
+        assertThat(IOUtils.DIR_SEPARATOR_WINDOWS).isEqualTo('\\');
+        assertThat(IOUtils.LINE_SEPARATOR_UNIX).isEqualTo("\n");
+        assertThat(IOUtils.LINE_SEPARATOR_WINDOWS).isEqualTo("\r\n");
         if (WINDOWS) {
-            assertEquals('\\', IOUtils.DIR_SEPARATOR);
-            assertEquals("\r\n", IOUtils.LINE_SEPARATOR);
+            assertThat(IOUtils.DIR_SEPARATOR).isEqualTo('\\');
+            assertThat(IOUtils.LINE_SEPARATOR).isEqualTo("\r\n");
         } else {
-            assertEquals('/', IOUtils.DIR_SEPARATOR);
-            assertEquals("\n", IOUtils.LINE_SEPARATOR);
+            assertThat(IOUtils.DIR_SEPARATOR).isEqualTo('/');
+            assertThat(IOUtils.LINE_SEPARATOR).isEqualTo("\n");
         }
-        assertEquals('\r', IOUtils.CR);
-        assertEquals('\n', IOUtils.LF);
-        assertEquals(-1, IOUtils.EOF);
+        assertThat(IOUtils.CR).isEqualTo('\r');
+        assertThat(IOUtils.LF).isEqualTo('\n');
+        assertThat(IOUtils.EOF).isEqualTo(-1);
     }
 
     @Test
@@ -497,45 +491,45 @@ public class IOUtilsTestCase {
         final OutputStream out = NullOutputStream.NULL_OUTPUT_STREAM;
 
         // Test copy() method
-        assertEquals(-1, IOUtils.copy(in, out));
+        assertThat(IOUtils.copy(in, out)).isEqualTo(-1);
 
         // reset the input
         in.close();
 
         // Test consume() method
-        assertEquals(size, IOUtils.consume(in), "consume()");
+        assertThat(IOUtils.consume(in)).as("consume()").isEqualTo(size);
     }
 
     @Test
     public void testContentEquals_InputStream_InputStream() throws Exception {
         {
-            assertTrue(IOUtils.contentEquals((InputStream) null, null));
+            assertThat(IOUtils.contentEquals((InputStream) null, null)).isTrue();
         }
         final byte[] dataEmpty = "".getBytes(StandardCharsets.UTF_8);
         final byte[] dataAbc = "ABC".getBytes(StandardCharsets.UTF_8);
         final byte[] dataAbcd = "ABCD".getBytes(StandardCharsets.UTF_8);
         {
             final ByteArrayInputStream input1 = new ByteArrayInputStream(dataEmpty);
-            assertFalse(IOUtils.contentEquals(input1, null));
+            assertThat(IOUtils.contentEquals(input1, null)).isFalse();
         }
         {
             final ByteArrayInputStream input1 = new ByteArrayInputStream(dataEmpty);
-            assertFalse(IOUtils.contentEquals(null, input1));
+            assertThat(IOUtils.contentEquals(null, input1)).isFalse();
         }
         {
             final ByteArrayInputStream input1 = new ByteArrayInputStream(dataEmpty);
-            assertTrue(IOUtils.contentEquals(input1, input1));
+            assertThat(IOUtils.contentEquals(input1, input1)).isTrue();
         }
         {
             final ByteArrayInputStream input1 = new ByteArrayInputStream(dataAbc);
-            assertTrue(IOUtils.contentEquals(input1, input1));
+            assertThat(IOUtils.contentEquals(input1, input1)).isTrue();
         }
-        assertTrue(IOUtils.contentEquals(new ByteArrayInputStream(dataEmpty), new ByteArrayInputStream(dataEmpty)));
-        assertTrue(IOUtils.contentEquals(new BufferedInputStream(new ByteArrayInputStream(dataEmpty)),
-            new BufferedInputStream(new ByteArrayInputStream(dataEmpty))));
-        assertTrue(IOUtils.contentEquals(new ByteArrayInputStream(dataAbc), new ByteArrayInputStream(dataAbc)));
-        assertFalse(IOUtils.contentEquals(new ByteArrayInputStream(dataAbcd), new ByteArrayInputStream(dataAbc)));
-        assertFalse(IOUtils.contentEquals(new ByteArrayInputStream(dataAbc), new ByteArrayInputStream(dataAbcd)));
+        assertThat(IOUtils.contentEquals(new ByteArrayInputStream(dataEmpty), new ByteArrayInputStream(dataEmpty))).isTrue();
+        assertThat(IOUtils.contentEquals(new BufferedInputStream(new ByteArrayInputStream(dataEmpty)),
+                new BufferedInputStream(new ByteArrayInputStream(dataEmpty)))).isTrue();
+        assertThat(IOUtils.contentEquals(new ByteArrayInputStream(dataAbc), new ByteArrayInputStream(dataAbc))).isTrue();
+        assertThat(IOUtils.contentEquals(new ByteArrayInputStream(dataAbcd), new ByteArrayInputStream(dataAbc))).isFalse();
+        assertThat(IOUtils.contentEquals(new ByteArrayInputStream(dataAbc), new ByteArrayInputStream(dataAbcd))).isFalse();
         // Tests with larger inputs that DEFAULT_BUFFER_SIZE in case internal buffers are used.
         final byte[] bytes2XDefaultA = new byte[IOUtils.DEFAULT_BUFFER_SIZE * 2];
         final byte[] bytes2XDefaultB = new byte[IOUtils.DEFAULT_BUFFER_SIZE * 2];
@@ -544,71 +538,70 @@ public class IOUtilsTestCase {
         Arrays.fill(bytes2XDefaultB, (byte) 'b');
         Arrays.fill(bytes2XDefaultA2, (byte) 'a');
         bytes2XDefaultA2[bytes2XDefaultA2.length - 1] = 'd';
-        assertFalse(IOUtils.contentEquals(new ByteArrayInputStream(bytes2XDefaultA),
-            new ByteArrayInputStream(bytes2XDefaultB)));
-        assertFalse(IOUtils.contentEquals(new ByteArrayInputStream(bytes2XDefaultA),
-            new ByteArrayInputStream(bytes2XDefaultA2)));
-        assertTrue(IOUtils.contentEquals(new ByteArrayInputStream(bytes2XDefaultA),
-            new ByteArrayInputStream(bytes2XDefaultA)));
+        assertThat(IOUtils.contentEquals(new ByteArrayInputStream(bytes2XDefaultA),
+                new ByteArrayInputStream(bytes2XDefaultB))).isFalse();
+        assertThat(IOUtils.contentEquals(new ByteArrayInputStream(bytes2XDefaultA),
+                new ByteArrayInputStream(bytes2XDefaultA2))).isFalse();
+        assertThat(IOUtils.contentEquals(new ByteArrayInputStream(bytes2XDefaultA),
+                new ByteArrayInputStream(bytes2XDefaultA))).isTrue();
         // FileInputStream a bit more than 16 k.
         try (
             final FileInputStream input1 = new FileInputStream(
                 "src/test/resources/org/apache/commons/io/abitmorethan16k.txt");
             final FileInputStream input2 = new FileInputStream(
                 "src/test/resources/org/apache/commons/io/abitmorethan16kcopy.txt")) {
-            assertTrue(IOUtils.contentEquals(input1, input1));
+            assertThat(IOUtils.contentEquals(input1, input1)).isTrue();
         }
     }
 
     @Test
     public void testContentEquals_Reader_Reader() throws Exception {
         {
-            assertTrue(IOUtils.contentEquals((Reader) null, null));
+            assertThat(IOUtils.contentEquals((Reader) null, null)).isTrue();
         }
         {
             final StringReader input1 = new StringReader("");
-            assertFalse(IOUtils.contentEquals(null, input1));
+            assertThat(IOUtils.contentEquals(null, input1)).isFalse();
         }
         {
             final StringReader input1 = new StringReader("");
-            assertFalse(IOUtils.contentEquals(input1, null));
+            assertThat(IOUtils.contentEquals(input1, null)).isFalse();
         }
         {
             final StringReader input1 = new StringReader("");
-            assertTrue(IOUtils.contentEquals(input1, input1));
+            assertThat(IOUtils.contentEquals(input1, input1)).isTrue();
         }
         {
             final StringReader input1 = new StringReader("ABC");
-            assertTrue(IOUtils.contentEquals(input1, input1));
+            assertThat(IOUtils.contentEquals(input1, input1)).isTrue();
         }
-        assertTrue(IOUtils.contentEquals(new StringReader(""), new StringReader("")));
-        assertTrue(
-            IOUtils.contentEquals(new BufferedReader(new StringReader("")), new BufferedReader(new StringReader(""))));
-        assertTrue(IOUtils.contentEquals(new StringReader("ABC"), new StringReader("ABC")));
-        assertFalse(IOUtils.contentEquals(new StringReader("ABCD"), new StringReader("ABC")));
-        assertFalse(IOUtils.contentEquals(new StringReader("ABC"), new StringReader("ABCD")));
+        assertThat(IOUtils.contentEquals(new StringReader(""), new StringReader(""))).isTrue();
+        assertThat(IOUtils.contentEquals(new BufferedReader(new StringReader("")), new BufferedReader(new StringReader("")))).isTrue();
+        assertThat(IOUtils.contentEquals(new StringReader("ABC"), new StringReader("ABC"))).isTrue();
+        assertThat(IOUtils.contentEquals(new StringReader("ABCD"), new StringReader("ABC"))).isFalse();
+        assertThat(IOUtils.contentEquals(new StringReader("ABC"), new StringReader("ABCD"))).isFalse();
     }
 
     @Test
     public void testContentEqualsIgnoreEOL() throws Exception {
         {
-            assertTrue(IOUtils.contentEqualsIgnoreEOL((Reader) null, null));
+            assertThat(IOUtils.contentEqualsIgnoreEOL((Reader) null, null)).isTrue();
         }
         {
             final Reader input1 = new CharArrayReader("".toCharArray());
-            assertFalse(IOUtils.contentEqualsIgnoreEOL(null, input1));
+            assertThat(IOUtils.contentEqualsIgnoreEOL(null, input1)).isFalse();
         }
         {
             final Reader input1 = new CharArrayReader("".toCharArray());
-            assertFalse(IOUtils.contentEqualsIgnoreEOL(input1, null));
+            assertThat(IOUtils.contentEqualsIgnoreEOL(input1, null)).isFalse();
         }
         {
             final Reader input1 = new CharArrayReader("".toCharArray());
-            assertTrue(IOUtils.contentEqualsIgnoreEOL(input1, input1));
+            assertThat(IOUtils.contentEqualsIgnoreEOL(input1, input1)).isTrue();
         }
         {
             final Reader input1 = new CharArrayReader("321\r\n".toCharArray());
-            assertTrue(IOUtils.contentEqualsIgnoreEOL(input1, input1));
+            assertThat(IOUtils.contentEqualsIgnoreEOL(input1, input1)).isTrue();
         }
 
         Reader r1;
@@ -616,23 +609,23 @@ public class IOUtilsTestCase {
 
         r1 = new CharArrayReader("".toCharArray());
         r2 = new CharArrayReader("".toCharArray());
-        assertTrue(IOUtils.contentEqualsIgnoreEOL(r1, r2));
+        assertThat(IOUtils.contentEqualsIgnoreEOL(r1, r2)).isTrue();
 
         r1 = new CharArrayReader("1".toCharArray());
         r2 = new CharArrayReader("1".toCharArray());
-        assertTrue(IOUtils.contentEqualsIgnoreEOL(r1, r2));
+        assertThat(IOUtils.contentEqualsIgnoreEOL(r1, r2)).isTrue();
 
         r1 = new CharArrayReader("1".toCharArray());
         r2 = new CharArrayReader("2".toCharArray());
-        assertFalse(IOUtils.contentEqualsIgnoreEOL(r1, r2));
+        assertThat(IOUtils.contentEqualsIgnoreEOL(r1, r2)).isFalse();
 
         r1 = new CharArrayReader("123\rabc".toCharArray());
         r2 = new CharArrayReader("123\nabc".toCharArray());
-        assertTrue(IOUtils.contentEqualsIgnoreEOL(r1, r2));
+        assertThat(IOUtils.contentEqualsIgnoreEOL(r1, r2)).isTrue();
 
         r1 = new CharArrayReader("321".toCharArray());
         r2 = new CharArrayReader("321\r\n".toCharArray());
-        assertTrue(IOUtils.contentEqualsIgnoreEOL(r1, r2));
+        assertThat(IOUtils.contentEqualsIgnoreEOL(r1, r2)).isTrue();
     }
 
     @Test
@@ -703,15 +696,15 @@ public class IOUtilsTestCase {
 
             // Test our copy method
             // for extra length, it reads till EOF
-            assertEquals(200, IOUtils.copyLarge(is, os, 0, 2000));
+            assertThat(IOUtils.copyLarge(is, os, 0, 2000)).isEqualTo(200);
             final char[] oarr = os.toCharArray();
 
             // check that output length is correct
-            assertEquals(200, oarr.length);
+            assertThat(oarr.length).isEqualTo(200);
             // check that output data corresponds to input data
-            assertEquals(1, oarr[1]);
-            assertEquals(79, oarr[79]);
-            assertEquals((char) -1, oarr[80]);
+            assertThat(oarr[1]).isEqualTo(1);
+            assertThat(oarr[79]).isEqualTo(79);
+            assertThat(oarr[80]).isEqualTo((char) -1);
 
         } finally {
             IOUtils.closeQuietly(is);
@@ -729,15 +722,15 @@ public class IOUtilsTestCase {
             os = new CharArrayWriter();
 
             // Test our copy method
-            assertEquals(200, IOUtils.copyLarge(is, os, 0, -1));
+            assertThat(IOUtils.copyLarge(is, os, 0, -1)).isEqualTo(200);
             final char[] oarr = os.toCharArray();
 
             // check that output length is correct
-            assertEquals(200, oarr.length);
+            assertThat(oarr.length).isEqualTo(200);
             // check that output data corresponds to input data
-            assertEquals(1, oarr[1]);
-            assertEquals(79, oarr[79]);
-            assertEquals((char) -1, oarr[80]);
+            assertThat(oarr[1]).isEqualTo(1);
+            assertThat(oarr[79]).isEqualTo(79);
+            assertThat(oarr[80]).isEqualTo((char) -1);
 
         } finally {
             IOUtils.closeQuietly(is);
@@ -755,15 +748,15 @@ public class IOUtilsTestCase {
             os = new CharArrayWriter();
 
             // Test our copy method
-            assertEquals(100, IOUtils.copyLarge(is, os, 0, 100));
+            assertThat(IOUtils.copyLarge(is, os, 0, 100)).isEqualTo(100);
             final char[] oarr = os.toCharArray();
 
             // check that output length is correct
-            assertEquals(100, oarr.length);
+            assertThat(oarr.length).isEqualTo(100);
             // check that output data corresponds to input data
-            assertEquals(1, oarr[1]);
-            assertEquals(79, oarr[79]);
-            assertEquals((char) -1, oarr[80]);
+            assertThat(oarr[1]).isEqualTo(1);
+            assertThat(oarr[79]).isEqualTo(79);
+            assertThat(oarr[80]).isEqualTo((char) -1);
 
         } finally {
             IOUtils.closeQuietly(is);
@@ -781,15 +774,15 @@ public class IOUtilsTestCase {
             os = new CharArrayWriter();
 
             // Test our copy method
-            assertEquals(100, IOUtils.copyLarge(is, os, 10, 100));
+            assertThat(IOUtils.copyLarge(is, os, 10, 100)).isEqualTo(100);
             final char[] oarr = os.toCharArray();
 
             // check that output length is correct
-            assertEquals(100, oarr.length);
+            assertThat(oarr.length).isEqualTo(100);
             // check that output data corresponds to input data
-            assertEquals(11, oarr[1]);
-            assertEquals(79, oarr[69]);
-            assertEquals((char) -1, oarr[70]);
+            assertThat(oarr[1]).isEqualTo(11);
+            assertThat(oarr[69]).isEqualTo(79);
+            assertThat(oarr[70]).isEqualTo((char) -1);
 
         } finally {
             IOUtils.closeQuietly(is);
@@ -812,15 +805,15 @@ public class IOUtilsTestCase {
 
             // Test our copy method
             // for extra length, it reads till EOF
-            assertEquals(200, IOUtils.copyLarge(is, os, 0, 2000));
+            assertThat(IOUtils.copyLarge(is, os, 0, 2000)).isEqualTo(200);
             final byte[] oarr = os.toByteArray();
 
             // check that output length is correct
-            assertEquals(200, oarr.length);
+            assertThat(oarr.length).isEqualTo(200);
             // check that output data corresponds to input data
-            assertEquals(1, oarr[1]);
-            assertEquals(79, oarr[79]);
-            assertEquals(-1, oarr[80]);
+            assertThat(oarr[1]).isEqualTo(1);
+            assertThat(oarr[79]).isEqualTo(79);
+            assertThat(oarr[80]).isEqualTo(-1);
         }
     }
 
@@ -829,15 +822,15 @@ public class IOUtilsTestCase {
         try (ByteArrayInputStream is = new ByteArrayInputStream(iarr);
             ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // Test our copy method
-            assertEquals(200, IOUtils.copyLarge(is, os, 0, -1));
+            assertThat(IOUtils.copyLarge(is, os, 0, -1)).isEqualTo(200);
             final byte[] oarr = os.toByteArray();
 
             // check that output length is correct
-            assertEquals(200, oarr.length);
+            assertThat(oarr.length).isEqualTo(200);
             // check that output data corresponds to input data
-            assertEquals(1, oarr[1]);
-            assertEquals(79, oarr[79]);
-            assertEquals(-1, oarr[80]);
+            assertThat(oarr[1]).isEqualTo(1);
+            assertThat(oarr[79]).isEqualTo(79);
+            assertThat(oarr[80]).isEqualTo(-1);
         }
     }
 
@@ -846,15 +839,15 @@ public class IOUtilsTestCase {
         try (ByteArrayInputStream is = new ByteArrayInputStream(iarr);
             ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // Test our copy method
-            assertEquals(100, IOUtils.copyLarge(is, os, 0, 100));
+            assertThat(IOUtils.copyLarge(is, os, 0, 100)).isEqualTo(100);
             final byte[] oarr = os.toByteArray();
 
             // check that output length is correct
-            assertEquals(100, oarr.length);
+            assertThat(oarr.length).isEqualTo(100);
             // check that output data corresponds to input data
-            assertEquals(1, oarr[1]);
-            assertEquals(79, oarr[79]);
-            assertEquals(-1, oarr[80]);
+            assertThat(oarr[1]).isEqualTo(1);
+            assertThat(oarr[79]).isEqualTo(79);
+            assertThat(oarr[80]).isEqualTo(-1);
         }
     }
 
@@ -863,15 +856,15 @@ public class IOUtilsTestCase {
         try (ByteArrayInputStream is = new ByteArrayInputStream(iarr);
             ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // Test our copy method
-            assertEquals(100, IOUtils.copyLarge(is, os, 10, 100));
+            assertThat(IOUtils.copyLarge(is, os, 10, 100)).isEqualTo(100);
             final byte[] oarr = os.toByteArray();
 
             // check that output length is correct
-            assertEquals(100, oarr.length);
+            assertThat(oarr.length).isEqualTo(100);
             // check that output data corresponds to input data
-            assertEquals(11, oarr[1]);
-            assertEquals(79, oarr[69]);
-            assertEquals(-1, oarr[70]);
+            assertThat(oarr[1]).isEqualTo(11);
+            assertThat(oarr[69]).isEqualTo(79);
+            assertThat(oarr[70]).isEqualTo(-1);
         }
     }
 
@@ -894,15 +887,15 @@ public class IOUtilsTestCase {
             os = new ByteArrayOutputStream();
 
             // Test our copy method
-            assertEquals(100, IOUtils.copyLarge(is, os, -10, 100));
+            assertThat(IOUtils.copyLarge(is, os, -10, 100)).isEqualTo(100);
             final byte[] oarr = os.toByteArray();
 
             // check that output length is correct
-            assertEquals(100, oarr.length);
+            assertThat(oarr.length).isEqualTo(100);
             // check that output data corresponds to input data
-            assertEquals(1, oarr[1]);
-            assertEquals(79, oarr[79]);
-            assertEquals(-1, oarr[80]);
+            assertThat(oarr[1]).isEqualTo(1);
+            assertThat(oarr[79]).isEqualTo(79);
+            assertThat(oarr[80]).isEqualTo(-1);
 
         } finally {
             IOUtils.closeQuietly(is);
@@ -916,10 +909,10 @@ public class IOUtilsTestCase {
         final FileInputStream fileInputStream = new FileInputStream(testFile);
         final FileChannel input = fileInputStream.getChannel();
         try {
-            assertEquals(FILE_SIZE, IOUtils.read(input, buffer));
-            assertEquals(0, IOUtils.read(input, buffer));
-            assertEquals(0, buffer.remaining());
-            assertEquals(0, input.read(buffer));
+            assertThat(IOUtils.read(input, buffer)).isEqualTo(FILE_SIZE);
+            assertThat(IOUtils.read(input, buffer)).isEqualTo(0);
+            assertThat(buffer.remaining()).isEqualTo(0);
+            assertThat(input.read(buffer)).isEqualTo(0);
             buffer.clear();
             try {
                 IOUtils.readFully(input, buffer);
@@ -975,7 +968,7 @@ public class IOUtilsTestCase {
         final ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
         final byte[] buffer = "wx00000000".getBytes(StandardCharsets.UTF_8);
         IOUtils.readFully(stream, buffer, 2, 8);
-        assertEquals("wxabcd1234", new String(buffer, 0, buffer.length, StandardCharsets.UTF_8));
+        assertThat(new String(buffer, 0, buffer.length, StandardCharsets.UTF_8)).isEqualTo("wxabcd1234");
         IOUtils.closeQuietly(stream);
     }
 
@@ -986,13 +979,13 @@ public class IOUtilsTestCase {
         final FileChannel input = fileInputStream.getChannel();
         try {
             IOUtils.readFully(input, buffer);
-            assertEquals(FILE_SIZE, buffer.position());
-            assertEquals(0, buffer.remaining());
-            assertEquals(0, input.read(buffer));
+            assertThat(buffer.position()).isEqualTo(FILE_SIZE);
+            assertThat(buffer.remaining()).isEqualTo(0);
+            assertThat(input.read(buffer)).isEqualTo(0);
             IOUtils.readFully(input, buffer);
-            assertEquals(FILE_SIZE, buffer.position());
-            assertEquals(0, buffer.remaining());
-            assertEquals(0, input.read(buffer));
+            assertThat(buffer.position()).isEqualTo(FILE_SIZE);
+            assertThat(buffer.remaining()).isEqualTo(0);
+            assertThat(input.read(buffer)).isEqualTo(0);
             IOUtils.readFully(input, buffer);
             buffer.clear();
             try {
@@ -1035,7 +1028,7 @@ public class IOUtilsTestCase {
         final Reader reader = new StringReader("abcd1234");
         final char[] buffer = "wx00000000".toCharArray();
         IOUtils.readFully(reader, buffer, 2, 8);
-        assertEquals("wxabcd1234", new String(buffer));
+        assertThat(new String(buffer)).isEqualTo("wxabcd1234");
         IOUtils.closeQuietly(reader);
     }
 
@@ -1049,8 +1042,8 @@ public class IOUtilsTestCase {
 
             in = new FileInputStream(file);
             final List<String> lines = IOUtils.readLines(in);
-            assertEquals(Arrays.asList(data), lines);
-            assertEquals(-1, in.read());
+            assertThat(lines).isEqualTo(Arrays.asList(data));
+            assertThat(in.read()).isEqualTo(-1);
         } finally {
             IOUtils.closeQuietly(in);
             TestUtils.deleteFile(file);
@@ -1067,8 +1060,8 @@ public class IOUtilsTestCase {
 
             in = new FileInputStream(file);
             final List<String> lines = IOUtils.readLines(in, "UTF-8");
-            assertEquals(Arrays.asList(data), lines);
-            assertEquals(-1, in.read());
+            assertThat(lines).isEqualTo(Arrays.asList(data));
+            assertThat(in.read()).isEqualTo(-1);
         } finally {
             IOUtils.closeQuietly(in);
             TestUtils.deleteFile(file);
@@ -1085,8 +1078,8 @@ public class IOUtilsTestCase {
 
             in = new InputStreamReader(new FileInputStream(file));
             final List<String> lines = IOUtils.readLines(in);
-            assertEquals(Arrays.asList(data), lines);
-            assertEquals(-1, in.read());
+            assertThat(lines).isEqualTo(Arrays.asList(data));
+            assertThat(in.read()).isEqualTo(-1);
         } finally {
             IOUtils.closeQuietly(in);
             TestUtils.deleteFile(file);
@@ -1097,8 +1090,8 @@ public class IOUtilsTestCase {
     public void testResourceToByteArray_ExistingResourceAtRootPackage() throws Exception {
         final long fileSize = TestResources.getFile("test-file-utf8.bin").length();
         final byte[] bytes = IOUtils.resourceToByteArray("/org/apache/commons/io/test-file-utf8.bin");
-        assertNotNull(bytes);
-        assertEquals(fileSize, bytes.length);
+        assertThat(bytes).isNotNull();
+        assertThat(bytes.length).isEqualTo(fileSize);
     }
 
     @Test
@@ -1106,16 +1099,16 @@ public class IOUtilsTestCase {
         final long fileSize = TestResources.getFile("test-file-utf8.bin").length();
         final byte[] bytes = IOUtils.resourceToByteArray("org/apache/commons/io/test-file-utf8.bin",
             ClassLoader.getSystemClassLoader());
-        assertNotNull(bytes);
-        assertEquals(fileSize, bytes.length);
+        assertThat(bytes).isNotNull();
+        assertThat(bytes.length).isEqualTo(fileSize);
     }
 
     @Test
     public void testResourceToByteArray_ExistingResourceAtSubPackage() throws Exception {
         final long fileSize = TestResources.getFile("FileUtilsTestDataCR.dat").length();
         final byte[] bytes = IOUtils.resourceToByteArray("/org/apache/commons/io/FileUtilsTestDataCR.dat");
-        assertNotNull(bytes);
-        assertEquals(fileSize, bytes.length);
+        assertThat(bytes).isNotNull();
+        assertThat(bytes.length).isEqualTo(fileSize);
     }
 
     @Test
@@ -1123,8 +1116,8 @@ public class IOUtilsTestCase {
         final long fileSize = TestResources.getFile("FileUtilsTestDataCR.dat").length();
         final byte[] bytes = IOUtils.resourceToByteArray("org/apache/commons/io/FileUtilsTestDataCR.dat",
             ClassLoader.getSystemClassLoader());
-        assertNotNull(bytes);
-        assertEquals(fileSize, bytes.length);
+        assertThat(bytes).isNotNull();
+        assertThat(bytes.length).isEqualTo(fileSize);
     }
 
     @Test
@@ -1155,8 +1148,8 @@ public class IOUtilsTestCase {
         final String content = IOUtils.resourceToString("/org/apache/commons/io/test-file-simple-utf8.bin",
             StandardCharsets.UTF_8);
 
-        assertNotNull(content);
-        assertEquals(fileSize, content.getBytes().length);
+        assertThat(content).isNotNull();
+        assertThat(content.getBytes().length).isEqualTo(fileSize);
     }
 
     @Test
@@ -1165,8 +1158,8 @@ public class IOUtilsTestCase {
         final String content = IOUtils.resourceToString("org/apache/commons/io/test-file-simple-utf8.bin",
             StandardCharsets.UTF_8, ClassLoader.getSystemClassLoader());
 
-        assertNotNull(content);
-        assertEquals(fileSize, content.getBytes().length);
+        assertThat(content).isNotNull();
+        assertThat(content.getBytes().length).isEqualTo(fileSize);
     }
 
     @Test
@@ -1175,8 +1168,8 @@ public class IOUtilsTestCase {
         final String content = IOUtils.resourceToString("/org/apache/commons/io/FileUtilsTestDataCR.dat",
             StandardCharsets.UTF_8);
 
-        assertNotNull(content);
-        assertEquals(fileSize, content.getBytes().length);
+        assertThat(content).isNotNull();
+        assertThat(content.getBytes().length).isEqualTo(fileSize);
     }
 
     // Tests from IO-305
@@ -1187,8 +1180,8 @@ public class IOUtilsTestCase {
         final String content = IOUtils.resourceToString("org/apache/commons/io/FileUtilsTestDataCR.dat",
             StandardCharsets.UTF_8, ClassLoader.getSystemClassLoader());
 
-        assertNotNull(content);
-        assertEquals(fileSize, content.getBytes().length);
+        assertThat(content).isNotNull();
+        assertThat(content.getBytes().length).isEqualTo(fileSize);
     }
 
     @Test
@@ -1229,23 +1222,23 @@ public class IOUtilsTestCase {
     @Test
     public void testResourceToURL_ExistingResourceAtRootPackage() throws Exception {
         final URL url = IOUtils.resourceToURL("/org/apache/commons/io/test-file-utf8.bin");
-        assertNotNull(url);
-        assertTrue(url.getFile().endsWith("/test-file-utf8.bin"));
+        assertThat(url).isNotNull();
+        assertThat(url.getFile().endsWith("/test-file-utf8.bin")).isTrue();
     }
 
     @Test
     public void testResourceToURL_ExistingResourceAtRootPackage_WithClassLoader() throws Exception {
         final URL url = IOUtils.resourceToURL("org/apache/commons/io/test-file-utf8.bin",
             ClassLoader.getSystemClassLoader());
-        assertNotNull(url);
-        assertTrue(url.getFile().endsWith("/org/apache/commons/io/test-file-utf8.bin"));
+        assertThat(url).isNotNull();
+        assertThat(url.getFile().endsWith("/org/apache/commons/io/test-file-utf8.bin")).isTrue();
     }
 
     @Test
     public void testResourceToURL_ExistingResourceAtSubPackage() throws Exception {
         final URL url = IOUtils.resourceToURL("/org/apache/commons/io/FileUtilsTestDataCR.dat");
-        assertNotNull(url);
-        assertTrue(url.getFile().endsWith("/org/apache/commons/io/FileUtilsTestDataCR.dat"));
+        assertThat(url).isNotNull();
+        assertThat(url.getFile().endsWith("/org/apache/commons/io/FileUtilsTestDataCR.dat")).isTrue();
     }
 
     @Test
@@ -1253,8 +1246,8 @@ public class IOUtilsTestCase {
         final URL url = IOUtils.resourceToURL("org/apache/commons/io/FileUtilsTestDataCR.dat",
             ClassLoader.getSystemClassLoader());
 
-        assertNotNull(url);
-        assertTrue(url.getFile().endsWith("/org/apache/commons/io/FileUtilsTestDataCR.dat"));
+        assertThat(url).isNotNull();
+        assertThat(url.getFile().endsWith("/org/apache/commons/io/FileUtilsTestDataCR.dat")).isTrue();
     }
 
     @Test
@@ -1281,18 +1274,18 @@ public class IOUtilsTestCase {
     @Test
     public void testSkip_FileReader() throws Exception {
         try (FileReader in = new FileReader(testFile)) {
-            assertEquals(FILE_SIZE - 10, IOUtils.skip(in, FILE_SIZE - 10));
-            assertEquals(10, IOUtils.skip(in, 20));
-            assertEquals(0, IOUtils.skip(in, 10));
+            assertThat(IOUtils.skip(in, FILE_SIZE - 10)).isEqualTo(FILE_SIZE - 10);
+            assertThat(IOUtils.skip(in, 20)).isEqualTo(10);
+            assertThat(IOUtils.skip(in, 10)).isEqualTo(0);
         }
     }
 
     @Test
     public void testSkip_InputStream() throws Exception {
         try (InputStream in = new FileInputStream(testFile)) {
-            assertEquals(FILE_SIZE - 10, IOUtils.skip(in, FILE_SIZE - 10));
-            assertEquals(10, IOUtils.skip(in, 20));
-            assertEquals(0, IOUtils.skip(in, 10));
+            assertThat(IOUtils.skip(in, FILE_SIZE - 10)).isEqualTo(FILE_SIZE - 10);
+            assertThat(IOUtils.skip(in, 20)).isEqualTo(10);
+            assertThat(IOUtils.skip(in, 10)).isEqualTo(0);
         }
     }
 
@@ -1301,9 +1294,9 @@ public class IOUtilsTestCase {
         final FileInputStream fileInputStream = new FileInputStream(testFile);
         final FileChannel fileChannel = fileInputStream.getChannel();
         try {
-            assertEquals(FILE_SIZE - 10, IOUtils.skip(fileChannel, FILE_SIZE - 10));
-            assertEquals(10, IOUtils.skip(fileChannel, 20));
-            assertEquals(0, IOUtils.skip(fileChannel, 10));
+            assertThat(IOUtils.skip(fileChannel, FILE_SIZE - 10)).isEqualTo(FILE_SIZE - 10);
+            assertThat(IOUtils.skip(fileChannel, 20)).isEqualTo(10);
+            assertThat(IOUtils.skip(fileChannel, 10)).isEqualTo(0);
         } finally {
             IOUtils.closeQuietly(fileChannel, fileInputStream);
         }
@@ -1407,9 +1400,9 @@ public class IOUtilsTestCase {
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final InputStream in = IOUtils.toBufferedInputStream(fin);
             final byte[] out = IOUtils.toByteArray(in);
-            assertNotNull(out);
-            assertEquals(0, fin.available(), "Not all bytes were read");
-            assertEquals(FILE_SIZE, out.length, "Wrong output size");
+            assertThat(out).isNotNull();
+            assertThat(fin.available()).as("Not all bytes were read").isEqualTo(0);
+            assertThat(out.length).as("Wrong output size").isEqualTo(FILE_SIZE);
             TestUtils.assertEqualContent(out, testFile);
         }
     }
@@ -1419,9 +1412,9 @@ public class IOUtilsTestCase {
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final InputStream in = IOUtils.toBufferedInputStream(fin, 2048);
             final byte[] out = IOUtils.toByteArray(in);
-            assertNotNull(out);
-            assertEquals(0, fin.available(), "Not all bytes were read");
-            assertEquals(FILE_SIZE, out.length, "Wrong output size");
+            assertThat(out).isNotNull();
+            assertThat(fin.available()).as("Not all bytes were read").isEqualTo(0);
+            assertThat(out.length).as("Wrong output size").isEqualTo(FILE_SIZE);
             TestUtils.assertEqualContent(out, testFile);
         }
     }
@@ -1430,9 +1423,9 @@ public class IOUtilsTestCase {
     public void testToByteArray_InputStream() throws Exception {
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final byte[] out = IOUtils.toByteArray(fin);
-            assertNotNull(out);
-            assertEquals(0, fin.available(), "Not all bytes were read");
-            assertEquals(FILE_SIZE, out.length, "Wrong output size");
+            assertThat(out).isNotNull();
+            assertThat(fin.available()).as("Not all bytes were read").isEqualTo(0);
+            assertThat(out.length).as("Wrong output size").isEqualTo(FILE_SIZE);
             TestUtils.assertEqualContent(out, testFile);
         }
     }
@@ -1451,8 +1444,7 @@ public class IOUtilsTestCase {
             IOUtils.toByteArray(fin, -1);
             fail("IllegalArgumentException expected");
         } catch (final IllegalArgumentException exc) {
-            assertTrue(exc.getMessage().startsWith("Size must be equal or greater than zero"),
-                "Exception message does not start with \"Size must be equal or greater than zero\"");
+            assertThat(exc.getMessage().startsWith("Size must be equal or greater than zero")).as("Exception message does not start with \"Size must be equal or greater than zero\"").isTrue();
         }
 
     }
@@ -1461,9 +1453,9 @@ public class IOUtilsTestCase {
     public void testToByteArray_InputStream_Size() throws Exception {
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final byte[] out = IOUtils.toByteArray(fin, testFile.length());
-            assertNotNull(out);
-            assertEquals(0, fin.available(), "Not all bytes were read");
-            assertEquals(FILE_SIZE, out.length, "Wrong output size: out.length=" + out.length + "!=" + FILE_SIZE);
+            assertThat(out).isNotNull();
+            assertThat(fin.available()).as("Not all bytes were read").isEqualTo(0);
+            assertThat(out.length).as("Wrong output size: out.length=" + out.length + "!=" + FILE_SIZE).isEqualTo(FILE_SIZE);
             TestUtils.assertEqualContent(out, testFile);
         }
     }
@@ -1475,8 +1467,7 @@ public class IOUtilsTestCase {
             IOUtils.toByteArray(fin, testFile.length() + 1);
             fail("IOException expected");
         } catch (final IOException exc) {
-            assertTrue(exc.getMessage().startsWith("Unexpected read size"),
-                "Exception message does not start with \"Unexpected read size\"");
+            assertThat(exc.getMessage().startsWith("Unexpected read size")).as("Exception message does not start with \"Unexpected read size\"").isTrue();
         }
 
     }
@@ -1488,8 +1479,7 @@ public class IOUtilsTestCase {
             IOUtils.toByteArray(fin, (long) Integer.MAX_VALUE + 1);
             fail("IOException expected");
         } catch (final IllegalArgumentException exc) {
-            assertTrue(exc.getMessage().startsWith("Size cannot be greater than Integer max value"),
-                "Exception message does not start with \"Size cannot be greater than Integer max value\"");
+            assertThat(exc.getMessage().startsWith("Size cannot be greater than Integer max value")).as("Exception message does not start with \"Size cannot be greater than Integer max value\"").isTrue();
         }
 
     }
@@ -1499,8 +1489,8 @@ public class IOUtilsTestCase {
 
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final byte[] out = IOUtils.toByteArray(fin, 0);
-            assertNotNull(out, "Out cannot be null");
-            assertEquals(0, out.length, "Out length must be 0");
+            assertThat(out).as("Out cannot be null").isNotNull();
+            assertThat(out.length).as("Out length must be 0").isEqualTo(0);
         }
     }
 
@@ -1509,8 +1499,8 @@ public class IOUtilsTestCase {
 
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final byte[] out = IOUtils.toByteArray(fin, 1);
-            assertNotNull(out, "Out cannot be null");
-            assertEquals(1, out.length, "Out length must be 1");
+            assertThat(out).as("Out cannot be null").isNotNull();
+            assertThat(out.length).as("Out length must be 1").isEqualTo(1);
         }
     }
 
@@ -1519,9 +1509,9 @@ public class IOUtilsTestCase {
         final String charsetName = "UTF-8";
         final byte[] expecteds = charsetName.getBytes(charsetName);
         byte[] actuals = IOUtils.toByteArray(new InputStreamReader(new ByteArrayInputStream(expecteds)));
-        assertArrayEquals(expecteds, actuals);
+        assertThat(actuals).containsExactly(expecteds);
         actuals = IOUtils.toByteArray(new InputStreamReader(new ByteArrayInputStream(expecteds)), charsetName);
-        assertArrayEquals(expecteds, actuals);
+        assertThat(actuals).containsExactly(expecteds);
     }
 
     @Test
@@ -1539,14 +1529,14 @@ public class IOUtilsTestCase {
     public void testToByteArray_URI() throws Exception {
         final URI url = testFile.toURI();
         final byte[] actual = IOUtils.toByteArray(url);
-        assertEquals(FILE_SIZE, actual.length);
+        assertThat(actual.length).isEqualTo(FILE_SIZE);
     }
 
     @Test
     public void testToByteArray_URL() throws Exception {
         final URL url = testFile.toURI().toURL();
         final byte[] actual = IOUtils.toByteArray(url);
-        assertEquals(FILE_SIZE, actual.length);
+        assertThat(actual.length).isEqualTo(FILE_SIZE);
     }
 
     @Test
@@ -1558,16 +1548,16 @@ public class IOUtilsTestCase {
         } finally {
             IOUtils.close(urlConn);
         }
-        assertEquals(FILE_SIZE, actual.length);
+        assertThat(actual.length).isEqualTo(FILE_SIZE);
     }
 
     @Test
     public void testToCharArray_InputStream() throws Exception {
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final char[] out = IOUtils.toCharArray(fin);
-            assertNotNull(out);
-            assertEquals(0, fin.available(), "Not all chars were read");
-            assertEquals(FILE_SIZE, out.length, "Wrong output size");
+            assertThat(out).isNotNull();
+            assertThat(fin.available()).as("Not all chars were read").isEqualTo(0);
+            assertThat(out.length).as("Wrong output size").isEqualTo(FILE_SIZE);
             TestUtils.assertEqualContent(out, testFile);
         }
     }
@@ -1576,9 +1566,9 @@ public class IOUtilsTestCase {
     public void testToCharArray_InputStream_CharsetName() throws Exception {
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final char[] out = IOUtils.toCharArray(fin, "UTF-8");
-            assertNotNull(out);
-            assertEquals(0, fin.available(), "Not all chars were read");
-            assertEquals(FILE_SIZE, out.length, "Wrong output size");
+            assertThat(out).isNotNull();
+            assertThat(fin.available()).as("Not all chars were read").isEqualTo(0);
+            assertThat(out.length).as("Wrong output size").isEqualTo(FILE_SIZE);
             TestUtils.assertEqualContent(out, testFile);
         }
     }
@@ -1587,8 +1577,8 @@ public class IOUtilsTestCase {
     public void testToCharArray_Reader() throws Exception {
         try (FileReader fr = new FileReader(testFile)) {
             final char[] out = IOUtils.toCharArray(fr);
-            assertNotNull(out);
-            assertEquals(FILE_SIZE, out.length, "Wrong output size");
+            assertThat(out).isNotNull();
+            assertThat(out.length).as("Wrong output size").isEqualTo(FILE_SIZE);
             TestUtils.assertEqualContent(out, testFile);
         }
     }
@@ -1649,9 +1639,9 @@ public class IOUtilsTestCase {
     public void testToString_InputStream() throws Exception {
         try (FileInputStream fin = new FileInputStream(testFile)) {
             final String out = IOUtils.toString(fin);
-            assertNotNull(out);
-            assertEquals(0, fin.available(), "Not all bytes were read");
-            assertEquals(FILE_SIZE, out.length(), "Wrong output size");
+            assertThat(out).isNotNull();
+            assertThat(fin.available()).as("Not all bytes were read").isEqualTo(0);
+            assertThat(out.length()).as("Wrong output size").isEqualTo(FILE_SIZE);
         }
     }
 
@@ -1659,8 +1649,8 @@ public class IOUtilsTestCase {
     public void testToString_Reader() throws Exception {
         try (FileReader fin = new FileReader(testFile)) {
             final String out = IOUtils.toString(fin);
-            assertNotNull(out);
-            assertEquals(FILE_SIZE, out.length(), "Wrong output size");
+            assertThat(out).isNotNull();
+            assertThat(out.length()).as("Wrong output size").isEqualTo(FILE_SIZE);
         }
     }
 
@@ -1668,15 +1658,15 @@ public class IOUtilsTestCase {
     public void testToString_URI() throws Exception {
         final URI url = testFile.toURI();
         final String out = IOUtils.toString(url);
-        assertNotNull(out);
-        assertEquals(FILE_SIZE, out.length(), "Wrong output size");
+        assertThat(out).isNotNull();
+        assertThat(out.length()).as("Wrong output size").isEqualTo(FILE_SIZE);
     }
 
     private void testToString_URI(final String encoding) throws Exception {
         final URI uri = testFile.toURI();
         final String out = IOUtils.toString(uri, encoding);
-        assertNotNull(out);
-        assertEquals(FILE_SIZE, out.length(), "Wrong output size");
+        assertThat(out).isNotNull();
+        assertThat(out.length()).as("Wrong output size").isEqualTo(FILE_SIZE);
     }
 
     @Test
@@ -1693,15 +1683,15 @@ public class IOUtilsTestCase {
     public void testToString_URL() throws Exception {
         final URL url = testFile.toURI().toURL();
         final String out = IOUtils.toString(url);
-        assertNotNull(out);
-        assertEquals(FILE_SIZE, out.length(), "Wrong output size");
+        assertThat(out).isNotNull();
+        assertThat(out.length()).as("Wrong output size").isEqualTo(FILE_SIZE);
     }
 
     private void testToString_URL(final String encoding) throws Exception {
         final URL url = testFile.toURI().toURL();
         final String out = IOUtils.toString(url, encoding);
-        assertNotNull(out);
-        assertEquals(FILE_SIZE, out.length(), "Wrong output size");
+        assertThat(out).isNotNull();
+        assertThat(out.length()).as("Wrong output size").isEqualTo(FILE_SIZE);
     }
 
     @Test

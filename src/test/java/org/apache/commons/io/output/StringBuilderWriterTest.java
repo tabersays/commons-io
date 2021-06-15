@@ -16,13 +16,11 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.Writer;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,7 +35,7 @@ public class StringBuilderWriterTest {
     public void testAppendConstructCapacity() throws IOException {
         try (final Writer writer = new StringBuilderWriter(100)) {
             writer.append("Foo");
-            assertEquals("Foo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Foo");
         }
     }
 
@@ -46,8 +44,8 @@ public class StringBuilderWriterTest {
         final StringBuilder builder = new StringBuilder("Foo");
         try (final StringBuilderWriter writer = new StringBuilderWriter(builder)) {
             writer.append("Bar");
-            assertEquals("FooBar", writer.toString());
-            assertSame(builder, writer.getBuilder());
+            assertThat(writer.toString()).isEqualTo("FooBar");
+            assertThat(writer.getBuilder()).isSameAs(builder);
         }
     }
 
@@ -55,7 +53,7 @@ public class StringBuilderWriterTest {
     public void testAppendConstructNull() throws IOException {
         try (final Writer writer = new StringBuilderWriter(null)) {
             writer.append("Foo");
-            assertEquals("Foo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Foo");
         }
     }
 
@@ -63,7 +61,7 @@ public class StringBuilderWriterTest {
     public void testAppendChar() throws IOException {
         try (final Writer writer = new StringBuilderWriter()) {
             writer.append('F').append('o').append('o');
-            assertEquals("Foo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Foo");
         }
     }
 
@@ -71,7 +69,7 @@ public class StringBuilderWriterTest {
     public void testAppendCharSequence() throws IOException {
         try (final Writer writer = new StringBuilderWriter()) {
             writer.append("Foo").append("Bar");
-            assertEquals("FooBar", writer.toString());
+            assertThat(writer.toString()).isEqualTo("FooBar");
         }
     }
 
@@ -79,7 +77,7 @@ public class StringBuilderWriterTest {
     public void testAppendCharSequencePortion() throws IOException {
         try (final Writer writer = new StringBuilderWriter()) {
             writer.append("FooBar", 3, 6).append(new StringBuffer("FooBar"), 0, 3);
-            assertEquals("BarFoo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("BarFoo");
         }
     }
 
@@ -93,7 +91,7 @@ public class StringBuilderWriterTest {
             } catch (final Throwable t) {
                 fail("Threw: " + t);
             }
-            assertEquals("FooBar", writer.toString());
+            assertThat(writer.toString()).isEqualTo("FooBar");
         }
     }
 
@@ -101,11 +99,11 @@ public class StringBuilderWriterTest {
     public void testWriteChar() throws IOException {
         try (final Writer writer = new StringBuilderWriter()) {
             writer.write('F');
-            assertEquals("F", writer.toString());
+            assertThat(writer.toString()).isEqualTo("F");
             writer.write('o');
-            assertEquals("Fo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Fo");
             writer.write('o');
-            assertEquals("Foo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Foo");
         }
     }
 
@@ -113,9 +111,9 @@ public class StringBuilderWriterTest {
     public void testWriteCharArray() throws IOException {
         try (final Writer writer = new StringBuilderWriter()) {
             writer.write(new char[] { 'F', 'o', 'o' });
-            assertEquals("Foo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Foo");
             writer.write(new char[] { 'B', 'a', 'r' });
-            assertEquals("FooBar", writer.toString());
+            assertThat(writer.toString()).isEqualTo("FooBar");
         }
     }
 
@@ -123,9 +121,9 @@ public class StringBuilderWriterTest {
     public void testWriteCharArrayPortion() throws IOException {
         try (final Writer writer = new StringBuilderWriter()) {
         writer.write(FOOBAR_CHARS, 3, 3);
-        assertEquals("Bar", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Bar");
         writer.write(FOOBAR_CHARS, 0, 3);
-        assertEquals("BarFoo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("BarFoo");
         }
     }
 
@@ -133,9 +131,9 @@ public class StringBuilderWriterTest {
     public void testWriteString() throws IOException {
         try (final Writer writer = new StringBuilderWriter()) {
             writer.write("Foo");
-            assertEquals("Foo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Foo");
             writer.write("Bar");
-            assertEquals("FooBar", writer.toString());
+            assertThat(writer.toString()).isEqualTo("FooBar");
         }
     }
 
@@ -143,9 +141,9 @@ public class StringBuilderWriterTest {
     public void testWriteStringPortion() throws IOException {
         try (final Writer writer = new StringBuilderWriter()) {
             writer.write("FooBar", 3, 3);
-            assertEquals("Bar", writer.toString());
+            assertThat(writer.toString()).isEqualTo("Bar");
             writer.write("FooBar", 0, 3);
-            assertEquals("BarFoo", writer.toString());
+            assertThat(writer.toString()).isEqualTo("BarFoo");
         }
     }
 

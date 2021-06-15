@@ -18,9 +18,8 @@
 package org.apache.commons.io.file;
 
 import static org.apache.commons.io.file.CounterAssertions.assertCounts;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.IOException;
@@ -29,7 +28,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.apache.commons.io.file.Counters.PathCounters;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -119,7 +117,7 @@ public class PathUtilsDeleteFileTest {
         PathUtils.setReadOnly(resolved, true);
         if (SystemUtils.IS_OS_WINDOWS) {
             // Fails on Windows's Ubuntu subsystem.
-            assertFalse(Files.isWritable(resolved));
+            assertThat(Files.isWritable(resolved)).isFalse();
             assertThrows(IOException.class, () -> PathUtils.deleteFile(resolved));
         }
         assertCounts(0, 1, 1, PathUtils.deleteFile(resolved, StandardDeleteOption.OVERRIDE_READ_ONLY));
@@ -139,7 +137,7 @@ public class PathUtilsDeleteFileTest {
         PathUtils.setReadOnly(resolved, true);
         if (SystemUtils.IS_OS_WINDOWS) {
             // Fails on Windows's Ubuntu subsystem.
-            assertFalse(Files.isWritable(resolved));
+            assertThat(Files.isWritable(resolved)).isFalse();
             assertThrows(IOException.class, () -> PathUtils.deleteFile(resolved));
         }
         PathUtils.setReadOnly(resolved, false);
@@ -156,11 +154,11 @@ public class PathUtilsDeleteFileTest {
         final Path brokenLink = tempDir.resolve("broken.txt");
         Files.createSymbolicLink(brokenLink, missingFile);
 
-        assertTrue(Files.exists(brokenLink, LinkOption.NOFOLLOW_LINKS));
-        assertFalse(Files.exists(missingFile, LinkOption.NOFOLLOW_LINKS));
+        assertThat(Files.exists(brokenLink, LinkOption.NOFOLLOW_LINKS)).isTrue();
+        assertThat(Files.exists(missingFile, LinkOption.NOFOLLOW_LINKS)).isFalse();
 
         PathUtils.deleteFile(brokenLink);
 
-        assertFalse(Files.exists(brokenLink, LinkOption.NOFOLLOW_LINKS), "Symbolic link not removed");
+        assertThat(Files.exists(brokenLink, LinkOption.NOFOLLOW_LINKS)).as("Symbolic link not removed").isFalse();
     }
 }

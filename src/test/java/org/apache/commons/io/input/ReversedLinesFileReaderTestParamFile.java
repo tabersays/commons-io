@@ -16,8 +16,10 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -31,16 +33,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Stack;
 import java.util.stream.Stream;
-
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.TestResources;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
 
 /**
  * Test checks symmetric behavior with BufferedReader.
@@ -109,9 +107,9 @@ public class ReversedLinesFileReaderTestParamFile {
             // read in reverse order and compare with lines from stack
             while ((line = reversedLinesFileReader.readLine()) != null) {
                 final String lineFromBufferedReader = lineStack.pop();
-                assertEquals(lineFromBufferedReader, line);
+                assertThat(line).isEqualTo(lineFromBufferedReader);
             }
-            assertEquals(0, lineStack.size(), "Stack should be empty");
+            assertThat(lineStack.size()).as("Stack should be empty").isEqualTo(0);
 
             if (fileSystem != null) {
                 fileSystem.close();

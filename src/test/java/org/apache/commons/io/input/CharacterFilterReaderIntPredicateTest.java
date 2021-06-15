@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.function.IntPredicate;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +35,7 @@ public class CharacterFilterReaderIntPredicateTest {
     public void testInputSize0FilterAll() throws IOException {
         final StringReader input = new StringReader(StringUtils.EMPTY);
         try (CharacterFilterReader reader = new CharacterFilterReader(input, ch -> true)) {
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -44,7 +43,7 @@ public class CharacterFilterReaderIntPredicateTest {
     public void testInputSize1FilterAll() throws IOException {
         try (StringReader input = new StringReader("a");
                 CharacterFilterReader reader = new CharacterFilterReader(input, ch -> true)) {
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -52,7 +51,7 @@ public class CharacterFilterReaderIntPredicateTest {
     public void testInputSize2FilterAll() throws IOException {
         final StringReader input = new StringReader("aa");
         try (CharacterFilterReader reader = new CharacterFilterReader(input, ch -> true)) {
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -60,8 +59,8 @@ public class CharacterFilterReaderIntPredicateTest {
     public void testInputSize2FilterFirst() throws IOException {
         final StringReader input = new StringReader("ab");
         try (CharacterFilterReader reader = new CharacterFilterReader(input, ch -> ch == 'a')) {
-            assertEquals('b', reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('b');
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -69,8 +68,8 @@ public class CharacterFilterReaderIntPredicateTest {
     public void testInputSize2FilterLast() throws IOException {
         final StringReader input = new StringReader("ab");
         try (CharacterFilterReader reader = new CharacterFilterReader(input, ch -> ch == 'b')) {
-            assertEquals('a', reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -78,9 +77,9 @@ public class CharacterFilterReaderIntPredicateTest {
     public void testInputSize5FilterWhitespace() throws IOException {
         final StringReader input = new StringReader(" a b ");
         try (CharacterFilterReader reader = new CharacterFilterReader(input, Character::isWhitespace)) {
-            assertEquals('a', reader.read());
-            assertEquals('b', reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo('b');
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -90,8 +89,8 @@ public class CharacterFilterReaderIntPredicateTest {
         try (CharacterFilterReader reader = new CharacterFilterReader(input, ch -> ch == 'b')) {
             final char[] buff = new char[9];
             final int charCount = reader.read(buff);
-            assertEquals(6, charCount);
-            assertEquals("aacacd", new String(buff, 0, charCount));
+            assertThat(charCount).isEqualTo(6);
+            assertThat(new String(buff, 0, charCount)).isEqualTo("aacacd");
         }
     }
 
@@ -101,8 +100,8 @@ public class CharacterFilterReaderIntPredicateTest {
         try (CharacterFilterReader reader = new CharacterFilterReader(input, Character::isWhitespace)) {
             final char[] buff = new char[19];
             final int charCount = reader.read(buff);
-            assertEquals(9, charCount);
-            assertEquals("ababcabcd", new String(buff, 0, charCount));
+            assertThat(charCount).isEqualTo(9);
+            assertThat(new String(buff, 0, charCount)).isEqualTo("ababcabcd");
         }
     }
 
@@ -112,7 +111,7 @@ public class CharacterFilterReaderIntPredicateTest {
         try (StringBuilderWriter output = new StringBuilderWriter();
                 CharacterFilterReader reader = new CharacterFilterReader(input, ch -> ch == 'b')) {
             IOUtils.copy(reader, output);
-            assertEquals("aacacd", output.toString());
+            assertThat(output.toString()).isEqualTo("aacacd");
         }
     }
 
@@ -122,7 +121,7 @@ public class CharacterFilterReaderIntPredicateTest {
         try (StringBuilderWriter output = new StringBuilderWriter();
                 CharacterFilterReader reader = new CharacterFilterReader(input, Character::isWhitespace)) {
             IOUtils.copy(reader, output);
-            assertEquals("ababcabcd", output.toString());
+            assertThat(output.toString()).isEqualTo("ababcabcd");
         }
     }
 

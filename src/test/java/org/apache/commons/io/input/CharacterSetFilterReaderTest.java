@@ -17,6 +17,7 @@
 package org.apache.commons.io.input;
 
 import static org.apache.commons.io.IOUtils.EOF;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
@@ -25,7 +26,6 @@ import java.io.StringReader;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ public class CharacterSetFilterReaderTest {
     public void testInputSize0FilterSize0() throws IOException {
         final StringReader input = new StringReader("");
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, new HashSet<Integer>(0))) {
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -47,7 +47,7 @@ public class CharacterSetFilterReaderTest {
         final HashSet<Integer> codePoints = new HashSet<>();
         codePoints.add(Integer.valueOf('a'));
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, codePoints)) {
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -55,7 +55,7 @@ public class CharacterSetFilterReaderTest {
     public void testInputSize0NullFilter() throws IOException {
         final StringReader input = new StringReader("");
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, (Set<Integer>) null)) {
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -65,7 +65,7 @@ public class CharacterSetFilterReaderTest {
             final HashSet<Integer> codePoints = new HashSet<>();
             codePoints.add(Integer.valueOf('a'));
             try (final CharacterSetFilterReader reader = new CharacterSetFilterReader(input, codePoints)) {
-                assertEquals(-1, reader.read());
+                assertThat(reader.read()).isEqualTo(-1);
             }
         }
     }
@@ -76,7 +76,7 @@ public class CharacterSetFilterReaderTest {
         final HashSet<Integer> codePoints = new HashSet<>();
         codePoints.add(Integer.valueOf('a'));
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, codePoints)) {
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -86,8 +86,8 @@ public class CharacterSetFilterReaderTest {
         final HashSet<Integer> codePoints = new HashSet<>();
         codePoints.add(Integer.valueOf('a'));
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, codePoints)) {
-            assertEquals('b', reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('b');
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -97,8 +97,8 @@ public class CharacterSetFilterReaderTest {
         final HashSet<Integer> codePoints = new HashSet<>();
         codePoints.add(Integer.valueOf('b'));
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, codePoints)) {
-            assertEquals('a', reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -109,8 +109,8 @@ public class CharacterSetFilterReaderTest {
         codePoints.add(Integer.valueOf('a'));
         codePoints.add(Integer.valueOf('y'));
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, codePoints)) {
-            assertEquals('b', reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('b');
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -121,8 +121,8 @@ public class CharacterSetFilterReaderTest {
         codePoints.add(Integer.valueOf('x'));
         codePoints.add(Integer.valueOf('b'));
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, codePoints)) {
-            assertEquals('a', reader.read());
-            assertEquals(-1, reader.read());
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo(-1);
         }
     }
 
@@ -133,8 +133,8 @@ public class CharacterSetFilterReaderTest {
         codePoints.add(Integer.valueOf('x'));
         codePoints.add(Integer.valueOf('y'));
         try (CharacterSetFilterReader reader = new CharacterSetFilterReader(input, codePoints)) {
-            assertEquals('a', reader.read());
-            assertEquals('b', reader.read());
+            assertThat(reader.read()).isEqualTo('a');
+            assertThat(reader.read()).isEqualTo('b');
         }
     }
 

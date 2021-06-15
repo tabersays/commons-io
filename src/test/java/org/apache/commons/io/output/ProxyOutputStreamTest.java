@@ -16,11 +16,10 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -49,8 +48,8 @@ public class ProxyOutputStreamTest {
     @Test
     public void testWrite() throws Exception {
         proxied.write('y');
-        assertEquals(1, original.size());
-        assertEquals('y', original.toByteArray()[0]);
+        assertThat(original.size()).isEqualTo(1);
+        assertThat(original.toByteArray()[0]).isEqualTo('y');
     }
 
     @Test

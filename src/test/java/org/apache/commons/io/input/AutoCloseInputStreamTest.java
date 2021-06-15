@@ -16,14 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,18 +50,18 @@ public class AutoCloseInputStreamTest {
     @Test
     public void testClose() throws IOException {
         stream.close();
-        assertTrue(closed, "closed");
-        assertEquals(-1, stream.read(), "read()");
+        assertThat(closed).as("closed").isTrue();
+        assertThat(stream.read()).as("read()").isEqualTo(-1);
     }
 
     @Test
     public void testRead() throws IOException {
         for (final byte element : data) {
-            assertEquals(element, stream.read(), "read()");
-            assertFalse(closed, "closed");
+            assertThat(stream.read()).as("read()").isEqualTo(element);
+            assertThat(closed).as("closed").isFalse();
         }
-        assertEquals(-1, stream.read(), "read()");
-        assertTrue(closed, "closed");
+        assertThat(stream.read()).as("read()").isEqualTo(-1);
+        assertThat(closed).as("closed").isTrue();
     }
 
     @Test
@@ -72,15 +69,15 @@ public class AutoCloseInputStreamTest {
         final byte[] b = new byte[data.length * 2];
         int total = 0;
         for (int n = 0; n != -1; n = stream.read(b)) {
-            assertFalse(closed, "closed");
+            assertThat(closed).as("closed").isFalse();
             for (int i = 0; i < n; i++) {
-                assertEquals(data[total + i], b[i], "read(b)");
+                assertThat(b[i]).as("read(b)").isEqualTo(data[total + i]);
             }
             total += n;
         }
-        assertEquals(data.length, total, "read(b)");
-        assertTrue(closed, "closed");
-        assertEquals(-1, stream.read(b), "read(b)");
+        assertThat(total).as("read(b)").isEqualTo(data.length);
+        assertThat(closed).as("closed").isTrue();
+        assertThat(stream.read(b)).as("read(b)").isEqualTo(-1);
     }
 
     @Test
@@ -88,15 +85,15 @@ public class AutoCloseInputStreamTest {
         final byte[] b = new byte[data.length * 2];
         int total = 0;
         for (int n = 0; n != -1; n = stream.read(b, total, b.length - total)) {
-            assertFalse(closed, "closed");
+            assertThat(closed).as("closed").isFalse();
             total += n;
         }
-        assertEquals(data.length, total, "read(b, off, len)");
+        assertThat(total).as("read(b, off, len)").isEqualTo(data.length);
         for (int i = 0; i < data.length; i++) {
-            assertEquals(data[i], b[i], "read(b, off, len)");
+            assertThat(b[i]).as("read(b, off, len)").isEqualTo(data[i]);
         }
-        assertTrue(closed, "closed");
-        assertEquals(-1, stream.read(b, 0, b.length), "read(b, off, len)");
+        assertThat(closed).as("closed").isTrue();
+        assertThat(stream.read(b, 0, b.length)).as("read(b, off, len)").isEqualTo(-1);
     }
 
     @Test
@@ -104,21 +101,21 @@ public class AutoCloseInputStreamTest {
         final String inputStr = "1234";
         final AutoCloseInputStream inputStream = new AutoCloseInputStream(new ByteArrayInputStream(inputStr.getBytes()));
         inputStream.mark(1);
-        assertEquals('1', inputStream.read());
+        assertThat(inputStream.read()).isEqualTo('1');
         inputStream.reset();
-        assertEquals('1', inputStream.read());
-        assertEquals('2', inputStream.read());
+        assertThat(inputStream.read()).isEqualTo('1');
+        assertThat(inputStream.read()).isEqualTo('2');
         inputStream.reset();
-        assertEquals('1', inputStream.read());
-        assertEquals('2', inputStream.read());
-        assertEquals('3', inputStream.read());
+        assertThat(inputStream.read()).isEqualTo('1');
+        assertThat(inputStream.read()).isEqualTo('2');
+        assertThat(inputStream.read()).isEqualTo('3');
         inputStream.reset();
-        assertEquals('1', inputStream.read());
-        assertEquals('2', inputStream.read());
-        assertEquals('3', inputStream.read());
-        assertEquals('4', inputStream.read());
+        assertThat(inputStream.read()).isEqualTo('1');
+        assertThat(inputStream.read()).isEqualTo('2');
+        assertThat(inputStream.read()).isEqualTo('3');
+        assertThat(inputStream.read()).isEqualTo('4');
         inputStream.reset();
-        assertEquals('1', inputStream.read());
+        assertThat(inputStream.read()).isEqualTo('1');
     }
 
 }

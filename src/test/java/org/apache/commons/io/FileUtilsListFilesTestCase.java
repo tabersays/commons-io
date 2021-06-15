@@ -16,16 +16,13 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,23 +91,23 @@ public class FileUtilsListFilesTestCase {
 
         Iterator<File> files = FileUtils.iterateFiles(temporaryFolder, extensions, false);
         Collection<String> filenames = filesToFilenames(files);
-        assertEquals(1, filenames.size());
-        assertTrue(filenames.contains("dummy-build.xml"));
-        assertFalse(filenames.contains("README"));
-        assertFalse(filenames.contains("dummy-file.txt"));
+        assertThat(filenames.size()).isEqualTo(1);
+        assertThat(filenames.contains("dummy-build.xml")).isTrue();
+        assertThat(filenames.contains("README")).isFalse();
+        assertThat(filenames.contains("dummy-file.txt")).isFalse();
 
         files = FileUtils.iterateFiles(temporaryFolder, extensions, true);
         filenames = filesToFilenames(files);
-        assertEquals(4, filenames.size());
-        assertTrue(filenames.contains("dummy-file.txt"));
-        assertFalse(filenames.contains("dummy-index.html"));
+        assertThat(filenames.size()).isEqualTo(4);
+        assertThat(filenames.contains("dummy-file.txt")).isTrue();
+        assertThat(filenames.contains("dummy-index.html")).isFalse();
 
         files = FileUtils.iterateFiles(temporaryFolder, null, false);
         filenames = filesToFilenames(files);
-        assertEquals(2, filenames.size());
-        assertTrue(filenames.contains("dummy-build.xml"));
-        assertTrue(filenames.contains("README"));
-        assertFalse(filenames.contains("dummy-file.txt"));
+        assertThat(filenames.size()).isEqualTo(2);
+        assertThat(filenames.contains("dummy-build.xml")).isTrue();
+        assertThat(filenames.contains("README")).isTrue();
+        assertThat(filenames.contains("dummy-file.txt")).isFalse();
     }
 
     @Test
@@ -118,24 +115,24 @@ public class FileUtilsListFilesTestCase {
         final String[] extensions = {"xml", "txt"};
 
         Collection<File> files = FileUtils.listFiles(temporaryFolder, extensions, false);
-        assertEquals(1, files.size());
+        assertThat(files.size()).isEqualTo(1);
         Collection<String> filenames = filesToFilenames(files);
-        assertTrue(filenames.contains("dummy-build.xml"));
-        assertFalse(filenames.contains("README"));
-        assertFalse(filenames.contains("dummy-file.txt"));
+        assertThat(filenames.contains("dummy-build.xml")).isTrue();
+        assertThat(filenames.contains("README")).isFalse();
+        assertThat(filenames.contains("dummy-file.txt")).isFalse();
 
         files = FileUtils.listFiles(temporaryFolder, extensions, true);
         filenames = filesToFilenames(files);
-        assertEquals(4, filenames.size());
-        assertTrue(filenames.contains("dummy-file.txt"));
-        assertFalse(filenames.contains("dummy-index.html"));
+        assertThat(filenames.size()).isEqualTo(4);
+        assertThat(filenames.contains("dummy-file.txt")).isTrue();
+        assertThat(filenames.contains("dummy-index.html")).isFalse();
 
         files = FileUtils.listFiles(temporaryFolder, null, false);
-        assertEquals(2, files.size());
+        assertThat(files.size()).isEqualTo(2);
         filenames = filesToFilenames(files);
-        assertTrue(filenames.contains("dummy-build.xml"));
-        assertTrue(filenames.contains("README"));
-        assertFalse(filenames.contains("dummy-file.txt"));
+        assertThat(filenames.contains("dummy-build.xml")).isTrue();
+        assertThat(filenames.contains("README")).isTrue();
+        assertThat(filenames.contains("dummy-file.txt")).isFalse();
     }
 
     @Test
@@ -149,27 +146,27 @@ public class FileUtilsListFilesTestCase {
         fileFilter = FileFilterUtils.trueFileFilter();
         files = FileUtils.listFiles(temporaryFolder, fileFilter, null);
         filenames = filesToFilenames(files);
-        assertTrue(filenames.contains("dummy-build.xml"), "'dummy-build.xml' is missing");
-        assertFalse(filenames.contains("dummy-index.html"), "'dummy-index.html' shouldn't be found");
-        assertFalse(filenames.contains("Entries"), "'Entries' shouldn't be found");
+        assertThat(filenames.contains("dummy-build.xml")).as("'dummy-build.xml' is missing").isTrue();
+        assertThat(filenames.contains("dummy-index.html")).as("'dummy-index.html' shouldn't be found").isFalse();
+        assertThat(filenames.contains("Entries")).as("'Entries' shouldn't be found").isFalse();
 
         // Second, find recursively
         fileFilter = FileFilterUtils.trueFileFilter();
         dirFilter = FileFilterUtils.notFileFilter(FileFilterUtils.nameFileFilter("CVS"));
         files = FileUtils.listFiles(temporaryFolder, fileFilter, dirFilter);
         filenames = filesToFilenames(files);
-        assertTrue(filenames.contains("dummy-build.xml"), "'dummy-build.xml' is missing");
-        assertTrue(filenames.contains("dummy-index.html"), "'dummy-index.html' is missing");
-        assertFalse(filenames.contains("Entries"), "'Entries' shouldn't be found");
+        assertThat(filenames.contains("dummy-build.xml")).as("'dummy-build.xml' is missing").isTrue();
+        assertThat(filenames.contains("dummy-index.html")).as("'dummy-index.html' is missing").isTrue();
+        assertThat(filenames.contains("Entries")).as("'Entries' shouldn't be found").isFalse();
 
         // Do the same as above but now with the filter coming from FileFilterUtils
         fileFilter = FileFilterUtils.trueFileFilter();
         dirFilter = FileFilterUtils.makeCVSAware(null);
         files = FileUtils.listFiles(temporaryFolder, fileFilter, dirFilter);
         filenames = filesToFilenames(files);
-        assertTrue(filenames.contains("dummy-build.xml"), "'dummy-build.xml' is missing");
-        assertTrue(filenames.contains("dummy-index.html"), "'dummy-index.html' is missing");
-        assertFalse(filenames.contains("Entries"), "'Entries' shouldn't be found");
+        assertThat(filenames.contains("dummy-build.xml")).as("'dummy-build.xml' is missing").isTrue();
+        assertThat(filenames.contains("dummy-index.html")).as("'dummy-index.html' is missing").isTrue();
+        assertThat(filenames.contains("Entries")).as("'Entries' shouldn't be found").isFalse();
 
         // Again with the CVS filter but now with a non-null parameter
         fileFilter = FileFilterUtils.trueFileFilter();
@@ -177,9 +174,9 @@ public class FileUtilsListFilesTestCase {
         dirFilter = FileFilterUtils.makeCVSAware(dirFilter);
         files = FileUtils.listFiles(temporaryFolder, fileFilter, dirFilter);
         filenames = filesToFilenames(files);
-        assertTrue(filenames.contains("dummy-build.xml"), "'dummy-build.xml' is missing");
-        assertTrue(filenames.contains("dummy-index.html"), "'dummy-index.html' is missing");
-        assertFalse(filenames.contains("Entries"), "'Entries' shouldn't be found");
+        assertThat(filenames.contains("dummy-build.xml")).as("'dummy-build.xml' is missing").isTrue();
+        assertThat(filenames.contains("dummy-index.html")).as("'dummy-index.html' is missing").isTrue();
+        assertThat(filenames.contains("Entries")).as("'Entries' shouldn't be found").isFalse();
 
         try {
             FileUtils.listFiles(temporaryFolder, null, null);

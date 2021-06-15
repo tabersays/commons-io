@@ -17,12 +17,12 @@
 
 package org.apache.commons.io.file;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -40,31 +40,31 @@ public class PathUtilsIsEmptyTest {
 
     @Test
     public void testIsEmpty() throws IOException {
-        Assertions.assertTrue(PathUtils.isEmpty(FILE_SIZE_0));
-        Assertions.assertFalse(PathUtils.isEmpty(FILE_SIZE_1));
+        assertThat(PathUtils.isEmpty(FILE_SIZE_0)).isTrue();
+        assertThat(PathUtils.isEmpty(FILE_SIZE_1)).isFalse();
         final Path tempDir = Files.createTempDirectory(getClass().getCanonicalName());
         try {
-            Assertions.assertTrue(PathUtils.isEmpty(tempDir));
+            assertThat(PathUtils.isEmpty(tempDir)).isTrue();
         } finally {
             Files.delete(tempDir);
         }
-        Assertions.assertFalse(PathUtils.isEmpty(DIR_SIZE_1));
+        assertThat(PathUtils.isEmpty(DIR_SIZE_1)).isFalse();
     }
 
     @Test
     public void testIsEmptyDirectory() throws IOException {
         final Path tempDir = Files.createTempDirectory(getClass().getCanonicalName());
         try {
-            Assertions.assertTrue(PathUtils.isEmptyDirectory(tempDir));
+            assertThat(PathUtils.isEmptyDirectory(tempDir)).isTrue();
         } finally {
             Files.delete(tempDir);
         }
-        Assertions.assertFalse(PathUtils.isEmptyDirectory(DIR_SIZE_1));
+        assertThat(PathUtils.isEmptyDirectory(DIR_SIZE_1)).isFalse();
     }
 
     @Test
     public void testisEmptyFile() throws IOException {
-        Assertions.assertTrue(PathUtils.isEmptyFile(FILE_SIZE_0));
-        Assertions.assertFalse(PathUtils.isEmptyFile(FILE_SIZE_1));
+        assertThat(PathUtils.isEmptyFile(FILE_SIZE_0)).isTrue();
+        assertThat(PathUtils.isEmptyFile(FILE_SIZE_1)).isFalse();
     }
 }

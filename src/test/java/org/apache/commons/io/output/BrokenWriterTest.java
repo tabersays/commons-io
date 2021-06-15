@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.Writer;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,21 +45,21 @@ public class BrokenWriterTest {
             writer.write(1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
 
         try {
             writer.write(new char[1]);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
 
         try {
             writer.write(new char[1], 0, 1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -70,7 +69,7 @@ public class BrokenWriterTest {
             writer.flush();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 
@@ -80,7 +79,7 @@ public class BrokenWriterTest {
             writer.close();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertEquals(exception, e);
+            assertThat(e).isEqualTo(exception);
         }
     }
 

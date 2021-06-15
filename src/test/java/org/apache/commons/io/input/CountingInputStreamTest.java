@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -46,22 +45,22 @@ public class CountingInputStreamTest {
             final byte[] ba = new byte[5];
             int found = cis.read(ba);
             System.arraycopy(ba, 0, result, 0, 5);
-            assertEquals(found, cis.getCount());
+            assertThat(cis.getCount()).isEqualTo(found);
 
             final int value = cis.read();
             found++;
             result[5] = (byte) value;
-            assertEquals(found, cis.getCount());
+            assertThat(cis.getCount()).isEqualTo(found);
 
             found += cis.read(result, 6, 5);
-            assertEquals(found, cis.getCount());
+            assertThat(cis.getCount()).isEqualTo(found);
 
             found += cis.read(result, 11, 10); // off the end
-            assertEquals(found, cis.getCount());
+            assertThat(cis.getCount()).isEqualTo(found);
 
             // trim to get rid of the 6 empty values
             final String textResult = new String(result).trim();
-            assertEquals(textResult, text);
+            assertThat(text).isEqualTo(textResult);
         }
     }
 
@@ -94,8 +93,8 @@ public class CountingInputStreamTest {
 
         // Test long methods
         IOUtils.consume(cis);
-        assertEquals(size, cis.getByteCount(), "getByteCount()");
-        assertEquals(size, cis.resetByteCount(), "resetByteCount()");
+        assertThat(cis.getByteCount()).as("getByteCount()").isEqualTo(size);
+        assertThat(cis.resetByteCount()).as("resetByteCount()").isEqualTo(size);
     }
 
     @Test
@@ -108,11 +107,11 @@ public class CountingInputStreamTest {
             final byte[] result = new byte[bytes.length];
 
             int found = cis.read(result, 0, 5);
-            assertEquals(found, cis.getCount());
+            assertThat(cis.getCount()).isEqualTo(found);
 
             final int count = cis.resetCount();
             found = cis.read(result, 6, 5);
-            assertEquals(found, count);
+            assertThat(count).isEqualTo(found);
         }
     }
 
@@ -122,8 +121,8 @@ public class CountingInputStreamTest {
         try (final CountingInputStream cis = new CountingInputStream(bais)) {
 
             final int found = cis.read();
-            assertEquals(-1, found);
-            assertEquals(0, cis.getCount());
+            assertThat(found).isEqualTo(-1);
+            assertThat(cis.getCount()).isEqualTo(0);
         }
     }
 
@@ -135,8 +134,8 @@ public class CountingInputStreamTest {
             final byte[] result = new byte[10];
 
             final int found = cis.read(result);
-            assertEquals(-1, found);
-            assertEquals(0, cis.getCount());
+            assertThat(found).isEqualTo(-1);
+            assertThat(cis.getCount()).isEqualTo(0);
         }
     }
 
@@ -148,8 +147,8 @@ public class CountingInputStreamTest {
             final byte[] result = new byte[10];
 
             final int found = cis.read(result, 0, 5);
-            assertEquals(-1, found);
-            assertEquals(0, cis.getCount());
+            assertThat(found).isEqualTo(-1);
+            assertThat(cis.getCount()).isEqualTo(0);
         }
     }
 
@@ -159,14 +158,14 @@ public class CountingInputStreamTest {
         try (final CountingInputStream cis = new CountingInputStream(bais)) {
 
             int found = cis.read();
-            assertEquals(0, found);
-            assertEquals(1, cis.getCount());
+            assertThat(found).isEqualTo(0);
+            assertThat(cis.getCount()).isEqualTo(1);
             found = cis.read();
-            assertEquals(0, found);
-            assertEquals(2, cis.getCount());
+            assertThat(found).isEqualTo(0);
+            assertThat(cis.getCount()).isEqualTo(2);
             found = cis.read();
-            assertEquals(-1, found);
-            assertEquals(2, cis.getCount());
+            assertThat(found).isEqualTo(-1);
+            assertThat(cis.getCount()).isEqualTo(2);
         }
     }
 
@@ -178,8 +177,8 @@ public class CountingInputStreamTest {
             final byte[] result = new byte[10];
 
             final int found = cis.read(result);
-            assertEquals(2, found);
-            assertEquals(2, cis.getCount());
+            assertThat(found).isEqualTo(2);
+            assertThat(cis.getCount()).isEqualTo(2);
         }
     }
 
@@ -191,8 +190,8 @@ public class CountingInputStreamTest {
             final byte[] result = new byte[10];
 
             final int found = cis.read(result, 0, 5);
-            assertEquals(2, found);
-            assertEquals(2, cis.getCount());
+            assertThat(found).isEqualTo(2);
+            assertThat(cis.getCount()).isEqualTo(2);
         }
     }
 
@@ -203,13 +202,13 @@ public class CountingInputStreamTest {
         final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         try (final CountingInputStream cis = new CountingInputStream(bais)) {
 
-            assertEquals(6, cis.skip(6));
-            assertEquals(6, cis.getCount());
+            assertThat(cis.skip(6)).isEqualTo(6);
+            assertThat(cis.getCount()).isEqualTo(6);
             final byte[] result = new byte[6];
             cis.read(result);
 
-            assertEquals("World!", new String(result));
-            assertEquals(12, cis.getCount());
+            assertThat(new String(result)).isEqualTo("World!");
+            assertThat(cis.getCount()).isEqualTo(12);
         }
     }
 

@@ -16,10 +16,7 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -27,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,9 +37,9 @@ public class IOCaseTestCase {
     //-----------------------------------------------------------------------
     @Test
     public void test_forName() {
-        assertEquals(IOCase.SENSITIVE, IOCase.forName("Sensitive"));
-        assertEquals(IOCase.INSENSITIVE, IOCase.forName("Insensitive"));
-        assertEquals(IOCase.SYSTEM, IOCase.forName("System"));
+        assertThat(IOCase.forName("Sensitive")).isEqualTo(IOCase.SENSITIVE);
+        assertThat(IOCase.forName("Insensitive")).isEqualTo(IOCase.INSENSITIVE);
+        assertThat(IOCase.forName("System")).isEqualTo(IOCase.SYSTEM);
         try {
             IOCase.forName("Blah");
             fail();
@@ -56,40 +52,40 @@ public class IOCaseTestCase {
 
     @Test
     public void test_serialization() throws Exception {
-        assertSame(IOCase.SENSITIVE, serialize(IOCase.SENSITIVE));
-        assertSame(IOCase.INSENSITIVE, serialize(IOCase.INSENSITIVE));
-        assertSame(IOCase.SYSTEM, serialize(IOCase.SYSTEM));
+        assertThat(serialize(IOCase.SENSITIVE)).isSameAs(IOCase.SENSITIVE);
+        assertThat(serialize(IOCase.INSENSITIVE)).isSameAs(IOCase.INSENSITIVE);
+        assertThat(serialize(IOCase.SYSTEM)).isSameAs(IOCase.SYSTEM);
     }
 
     @Test
     public void test_getName() {
-        assertEquals("Sensitive", IOCase.SENSITIVE.getName());
-        assertEquals("Insensitive", IOCase.INSENSITIVE.getName());
-        assertEquals("System", IOCase.SYSTEM.getName());
+        assertThat(IOCase.SENSITIVE.getName()).isEqualTo("Sensitive");
+        assertThat(IOCase.INSENSITIVE.getName()).isEqualTo("Insensitive");
+        assertThat(IOCase.SYSTEM.getName()).isEqualTo("System");
     }
 
     @Test
     public void test_toString() {
-        assertEquals("Sensitive", IOCase.SENSITIVE.toString());
-        assertEquals("Insensitive", IOCase.INSENSITIVE.toString());
-        assertEquals("System", IOCase.SYSTEM.toString());
+        assertThat(IOCase.SENSITIVE.toString()).isEqualTo("Sensitive");
+        assertThat(IOCase.INSENSITIVE.toString()).isEqualTo("Insensitive");
+        assertThat(IOCase.SYSTEM.toString()).isEqualTo("System");
     }
 
     @Test
     public void test_isCaseSensitive() {
-        assertTrue(IOCase.SENSITIVE.isCaseSensitive());
-        assertFalse(IOCase.INSENSITIVE.isCaseSensitive());
-        assertEquals(!WINDOWS, IOCase.SYSTEM.isCaseSensitive());
+        assertThat(IOCase.SENSITIVE.isCaseSensitive()).isTrue();
+        assertThat(IOCase.INSENSITIVE.isCaseSensitive()).isFalse();
+        assertThat(IOCase.SYSTEM.isCaseSensitive()).isEqualTo(!WINDOWS);
     }
     //-----------------------------------------------------------------------
     @Test
     public void test_checkCompare_functionality() {
-        assertTrue(IOCase.SENSITIVE.checkCompareTo("ABC", "") > 0);
-        assertTrue(IOCase.SENSITIVE.checkCompareTo("", "ABC") < 0);
-        assertTrue(IOCase.SENSITIVE.checkCompareTo("ABC", "DEF") < 0);
-        assertTrue(IOCase.SENSITIVE.checkCompareTo("DEF", "ABC") > 0);
-        assertEquals(0, IOCase.SENSITIVE.checkCompareTo("ABC", "ABC"));
-        assertEquals(0, IOCase.SENSITIVE.checkCompareTo("", ""));
+        assertThat(IOCase.SENSITIVE.checkCompareTo("ABC", "") > 0).isTrue();
+        assertThat(IOCase.SENSITIVE.checkCompareTo("", "ABC") < 0).isTrue();
+        assertThat(IOCase.SENSITIVE.checkCompareTo("ABC", "DEF") < 0).isTrue();
+        assertThat(IOCase.SENSITIVE.checkCompareTo("DEF", "ABC") > 0).isTrue();
+        assertThat(IOCase.SENSITIVE.checkCompareTo("ABC", "ABC")).isEqualTo(0);
+        assertThat(IOCase.SENSITIVE.checkCompareTo("", "")).isEqualTo(0);
 
         try {
             IOCase.SENSITIVE.checkCompareTo("ABC", null);
@@ -107,32 +103,32 @@ public class IOCaseTestCase {
 
     @Test
     public void test_checkCompare_case() {
-        assertEquals(0, IOCase.SENSITIVE.checkCompareTo("ABC", "ABC"));
-        assertTrue(IOCase.SENSITIVE.checkCompareTo("ABC", "abc") < 0);
-        assertTrue(IOCase.SENSITIVE.checkCompareTo("abc", "ABC") > 0);
+        assertThat(IOCase.SENSITIVE.checkCompareTo("ABC", "ABC")).isEqualTo(0);
+        assertThat(IOCase.SENSITIVE.checkCompareTo("ABC", "abc") < 0).isTrue();
+        assertThat(IOCase.SENSITIVE.checkCompareTo("abc", "ABC") > 0).isTrue();
 
-        assertEquals(0, IOCase.INSENSITIVE.checkCompareTo("ABC", "ABC"));
-        assertEquals(0, IOCase.INSENSITIVE.checkCompareTo("ABC", "abc"));
-        assertEquals(0, IOCase.INSENSITIVE.checkCompareTo("abc", "ABC"));
+        assertThat(IOCase.INSENSITIVE.checkCompareTo("ABC", "ABC")).isEqualTo(0);
+        assertThat(IOCase.INSENSITIVE.checkCompareTo("ABC", "abc")).isEqualTo(0);
+        assertThat(IOCase.INSENSITIVE.checkCompareTo("abc", "ABC")).isEqualTo(0);
 
-        assertEquals(0, IOCase.SYSTEM.checkCompareTo("ABC", "ABC"));
-        assertEquals(WINDOWS, IOCase.SYSTEM.checkCompareTo("ABC", "abc") == 0);
-        assertEquals(WINDOWS, IOCase.SYSTEM.checkCompareTo("abc", "ABC") == 0);
+        assertThat(IOCase.SYSTEM.checkCompareTo("ABC", "ABC")).isEqualTo(0);
+        assertThat(IOCase.SYSTEM.checkCompareTo("ABC", "abc") == 0).isEqualTo(WINDOWS);
+        assertThat(IOCase.SYSTEM.checkCompareTo("abc", "ABC") == 0).isEqualTo(WINDOWS);
     }
 
 
     //-----------------------------------------------------------------------
     @Test
     public void test_checkEquals_functionality() {
-        assertFalse(IOCase.SENSITIVE.checkEquals("ABC", ""));
-        assertFalse(IOCase.SENSITIVE.checkEquals("ABC", "A"));
-        assertFalse(IOCase.SENSITIVE.checkEquals("ABC", "AB"));
-        assertTrue(IOCase.SENSITIVE.checkEquals("ABC", "ABC"));
-        assertFalse(IOCase.SENSITIVE.checkEquals("ABC", "BC"));
-        assertFalse(IOCase.SENSITIVE.checkEquals("ABC", "C"));
-        assertFalse(IOCase.SENSITIVE.checkEquals("ABC", "ABCD"));
-        assertFalse(IOCase.SENSITIVE.checkEquals("", "ABC"));
-        assertTrue(IOCase.SENSITIVE.checkEquals("", ""));
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "A")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "AB")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "ABC")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "BC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "C")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "ABCD")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEquals("", "ABC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEquals("", "")).isTrue();
 
         try {
             IOCase.SENSITIVE.checkEquals("ABC", null);
@@ -150,74 +146,74 @@ public class IOCaseTestCase {
 
     @Test
     public void test_checkEquals_case() {
-        assertTrue(IOCase.SENSITIVE.checkEquals("ABC", "ABC"));
-        assertFalse(IOCase.SENSITIVE.checkEquals("ABC", "Abc"));
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "ABC")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkEquals("ABC", "Abc")).isFalse();
 
-        assertTrue(IOCase.INSENSITIVE.checkEquals("ABC", "ABC"));
-        assertTrue(IOCase.INSENSITIVE.checkEquals("ABC", "Abc"));
+        assertThat(IOCase.INSENSITIVE.checkEquals("ABC", "ABC")).isTrue();
+        assertThat(IOCase.INSENSITIVE.checkEquals("ABC", "Abc")).isTrue();
 
-        assertTrue(IOCase.SYSTEM.checkEquals("ABC", "ABC"));
-        assertEquals(WINDOWS, IOCase.SYSTEM.checkEquals("ABC", "Abc"));
+        assertThat(IOCase.SYSTEM.checkEquals("ABC", "ABC")).isTrue();
+        assertThat(IOCase.SYSTEM.checkEquals("ABC", "Abc")).isEqualTo(WINDOWS);
     }
 
     //-----------------------------------------------------------------------
     @Test
     public void test_checkStartsWith_functionality() {
-        assertTrue(IOCase.SENSITIVE.checkStartsWith("ABC", ""));
-        assertTrue(IOCase.SENSITIVE.checkStartsWith("ABC", "A"));
-        assertTrue(IOCase.SENSITIVE.checkStartsWith("ABC", "AB"));
-        assertTrue(IOCase.SENSITIVE.checkStartsWith("ABC", "ABC"));
-        assertFalse(IOCase.SENSITIVE.checkStartsWith("ABC", "BC"));
-        assertFalse(IOCase.SENSITIVE.checkStartsWith("ABC", "C"));
-        assertFalse(IOCase.SENSITIVE.checkStartsWith("ABC", "ABCD"));
-        assertFalse(IOCase.SENSITIVE.checkStartsWith("", "ABC"));
-        assertTrue(IOCase.SENSITIVE.checkStartsWith("", ""));
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "A")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "AB")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "ABC")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "BC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "C")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "ABCD")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("", "ABC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("", "")).isTrue();
 
-        assertFalse(IOCase.SENSITIVE.checkStartsWith("ABC", null));
-        assertFalse(IOCase.SENSITIVE.checkStartsWith(null, "ABC"));
-        assertFalse(IOCase.SENSITIVE.checkStartsWith(null, null));
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", null)).isFalse();
+        assertThat(IOCase.SENSITIVE.checkStartsWith(null, "ABC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkStartsWith(null, null)).isFalse();
     }
 
     @Test
     public void test_checkStartsWith_case() {
-        assertTrue(IOCase.SENSITIVE.checkStartsWith("ABC", "AB"));
-        assertFalse(IOCase.SENSITIVE.checkStartsWith("ABC", "Ab"));
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "AB")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkStartsWith("ABC", "Ab")).isFalse();
 
-        assertTrue(IOCase.INSENSITIVE.checkStartsWith("ABC", "AB"));
-        assertTrue(IOCase.INSENSITIVE.checkStartsWith("ABC", "Ab"));
+        assertThat(IOCase.INSENSITIVE.checkStartsWith("ABC", "AB")).isTrue();
+        assertThat(IOCase.INSENSITIVE.checkStartsWith("ABC", "Ab")).isTrue();
 
-        assertTrue(IOCase.SYSTEM.checkStartsWith("ABC", "AB"));
-        assertEquals(WINDOWS, IOCase.SYSTEM.checkStartsWith("ABC", "Ab"));
+        assertThat(IOCase.SYSTEM.checkStartsWith("ABC", "AB")).isTrue();
+        assertThat(IOCase.SYSTEM.checkStartsWith("ABC", "Ab")).isEqualTo(WINDOWS);
     }
 
     //-----------------------------------------------------------------------
     @Test
     public void test_checkEndsWith_functionality() {
-        assertTrue(IOCase.SENSITIVE.checkEndsWith("ABC", ""));
-        assertFalse(IOCase.SENSITIVE.checkEndsWith("ABC", "A"));
-        assertFalse(IOCase.SENSITIVE.checkEndsWith("ABC", "AB"));
-        assertTrue(IOCase.SENSITIVE.checkEndsWith("ABC", "ABC"));
-        assertTrue(IOCase.SENSITIVE.checkEndsWith("ABC", "BC"));
-        assertTrue(IOCase.SENSITIVE.checkEndsWith("ABC", "C"));
-        assertFalse(IOCase.SENSITIVE.checkEndsWith("ABC", "ABCD"));
-        assertFalse(IOCase.SENSITIVE.checkEndsWith("", "ABC"));
-        assertTrue(IOCase.SENSITIVE.checkEndsWith("", ""));
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "A")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "AB")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "ABC")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "BC")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "C")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "ABCD")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("", "ABC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("", "")).isTrue();
 
-        assertFalse(IOCase.SENSITIVE.checkEndsWith("ABC", null));
-        assertFalse(IOCase.SENSITIVE.checkEndsWith(null, "ABC"));
-        assertFalse(IOCase.SENSITIVE.checkEndsWith(null, null));
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", null)).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEndsWith(null, "ABC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkEndsWith(null, null)).isFalse();
     }
 
     @Test
     public void test_checkEndsWith_case() {
-        assertTrue(IOCase.SENSITIVE.checkEndsWith("ABC", "BC"));
-        assertFalse(IOCase.SENSITIVE.checkEndsWith("ABC", "Bc"));
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "BC")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkEndsWith("ABC", "Bc")).isFalse();
 
-        assertTrue(IOCase.INSENSITIVE.checkEndsWith("ABC", "BC"));
-        assertTrue(IOCase.INSENSITIVE.checkEndsWith("ABC", "Bc"));
+        assertThat(IOCase.INSENSITIVE.checkEndsWith("ABC", "BC")).isTrue();
+        assertThat(IOCase.INSENSITIVE.checkEndsWith("ABC", "Bc")).isTrue();
 
-        assertTrue(IOCase.SYSTEM.checkEndsWith("ABC", "BC"));
-        assertEquals(WINDOWS, IOCase.SYSTEM.checkEndsWith("ABC", "Bc"));
+        assertThat(IOCase.SYSTEM.checkEndsWith("ABC", "BC")).isTrue();
+        assertThat(IOCase.SYSTEM.checkEndsWith("ABC", "Bc")).isEqualTo(WINDOWS);
     }
 
     //-----------------------------------------------------------------------
@@ -225,40 +221,40 @@ public class IOCaseTestCase {
     public void test_checkIndexOf_functionality() {
 
         // start
-        assertEquals(0,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "A"));
-        assertEquals(-1,  IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 1, "A"));
-        assertEquals(0,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "AB"));
-        assertEquals(-1,  IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 1, "AB"));
-        assertEquals(0,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "ABC"));
-        assertEquals(-1,  IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 1, "ABC"));
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "A")).isEqualTo(0);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 1, "A")).isEqualTo(-1);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "AB")).isEqualTo(0);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 1, "AB")).isEqualTo(-1);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "ABC")).isEqualTo(0);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 1, "ABC")).isEqualTo(-1);
 
         // middle
-        assertEquals(3,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "D"));
-        assertEquals(3,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 3, "D"));
-        assertEquals(-1,  IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 4, "D"));
-        assertEquals(3,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "DE"));
-        assertEquals(3,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 3, "DE"));
-        assertEquals(-1,  IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 4, "DE"));
-        assertEquals(3,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "DEF"));
-        assertEquals(3,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 3, "DEF"));
-        assertEquals(-1,  IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 4, "DEF"));
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "D")).isEqualTo(3);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 3, "D")).isEqualTo(3);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 4, "D")).isEqualTo(-1);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "DE")).isEqualTo(3);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 3, "DE")).isEqualTo(3);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 4, "DE")).isEqualTo(-1);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "DEF")).isEqualTo(3);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 3, "DEF")).isEqualTo(3);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 4, "DEF")).isEqualTo(-1);
 
         // end
-        assertEquals(9,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "J"));
-        assertEquals(9,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 8, "J"));
-        assertEquals(9,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 9, "J"));
-        assertEquals(8,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "IJ"));
-        assertEquals(8,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 8, "IJ"));
-        assertEquals(-1,  IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 9, "IJ"));
-        assertEquals(7,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 6, "HIJ"));
-        assertEquals(7,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 7, "HIJ"));
-        assertEquals(-1,  IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 8, "HIJ"));
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "J")).isEqualTo(9);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 8, "J")).isEqualTo(9);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 9, "J")).isEqualTo(9);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "IJ")).isEqualTo(8);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 8, "IJ")).isEqualTo(8);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 9, "IJ")).isEqualTo(-1);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 6, "HIJ")).isEqualTo(7);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 7, "HIJ")).isEqualTo(7);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 8, "HIJ")).isEqualTo(-1);
 
         // not found
-        assertEquals(-1,   IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "DED"));
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABCDEFGHIJ", 0, "DED")).isEqualTo(-1);
 
         // too long
-        assertEquals(-1,   IOCase.SENSITIVE.checkIndexOf("DEF", 0, "ABCDEFGHIJ"));
+        assertThat(IOCase.SENSITIVE.checkIndexOf("DEF", 0, "ABCDEFGHIJ")).isEqualTo(-1);
 
         try {
             IOCase.SENSITIVE.checkIndexOf("ABC", 0, null);
@@ -276,38 +272,38 @@ public class IOCaseTestCase {
 
     @Test
     public void test_checkIndexOf_case() {
-        assertEquals(1,  IOCase.SENSITIVE.checkIndexOf("ABC", 0, "BC"));
-        assertEquals(-1, IOCase.SENSITIVE.checkIndexOf("ABC", 0, "Bc"));
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABC", 0, "BC")).isEqualTo(1);
+        assertThat(IOCase.SENSITIVE.checkIndexOf("ABC", 0, "Bc")).isEqualTo(-1);
 
-        assertEquals(1, IOCase.INSENSITIVE.checkIndexOf("ABC", 0, "BC"));
-        assertEquals(1, IOCase.INSENSITIVE.checkIndexOf("ABC", 0, "Bc"));
+        assertThat(IOCase.INSENSITIVE.checkIndexOf("ABC", 0, "BC")).isEqualTo(1);
+        assertThat(IOCase.INSENSITIVE.checkIndexOf("ABC", 0, "Bc")).isEqualTo(1);
 
-        assertEquals(1, IOCase.SYSTEM.checkIndexOf("ABC", 0, "BC"));
-        assertEquals(WINDOWS ? 1 : -1, IOCase.SYSTEM.checkIndexOf("ABC", 0, "Bc"));
+        assertThat(IOCase.SYSTEM.checkIndexOf("ABC", 0, "BC")).isEqualTo(1);
+        assertThat(IOCase.SYSTEM.checkIndexOf("ABC", 0, "Bc")).isEqualTo(WINDOWS ? 1 : -1);
     }
 
     //-----------------------------------------------------------------------
     @Test
     public void test_checkRegionMatches_functionality() {
-        assertTrue(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, ""));
-        assertTrue(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "A"));
-        assertTrue(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "AB"));
-        assertTrue(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "ABC"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "BC"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "C"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "ABCD"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("", 0, "ABC"));
-        assertTrue(IOCase.SENSITIVE.checkRegionMatches("", 0, ""));
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "A")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "AB")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "ABC")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "BC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "C")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "ABCD")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("", 0, "ABC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("", 0, "")).isTrue();
 
-        assertTrue(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, ""));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "A"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "AB"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "ABC"));
-        assertTrue(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "BC"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "C"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "ABCD"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("", 1, "ABC"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("", 1, ""));
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "A")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "AB")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "ABC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "BC")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "C")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 1, "ABCD")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("", 1, "ABC")).isFalse();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("", 1, "")).isFalse();
 
         try {
             IOCase.SENSITIVE.checkRegionMatches("ABC", 0, null);
@@ -337,14 +333,14 @@ public class IOCaseTestCase {
 
     @Test
     public void test_checkRegionMatches_case() {
-        assertTrue(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "AB"));
-        assertFalse(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "Ab"));
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "AB")).isTrue();
+        assertThat(IOCase.SENSITIVE.checkRegionMatches("ABC", 0, "Ab")).isFalse();
 
-        assertTrue(IOCase.INSENSITIVE.checkRegionMatches("ABC", 0, "AB"));
-        assertTrue(IOCase.INSENSITIVE.checkRegionMatches("ABC", 0, "Ab"));
+        assertThat(IOCase.INSENSITIVE.checkRegionMatches("ABC", 0, "AB")).isTrue();
+        assertThat(IOCase.INSENSITIVE.checkRegionMatches("ABC", 0, "Ab")).isTrue();
 
-        assertTrue(IOCase.SYSTEM.checkRegionMatches("ABC", 0, "AB"));
-        assertEquals(WINDOWS, IOCase.SYSTEM.checkRegionMatches("ABC", 0, "Ab"));
+        assertThat(IOCase.SYSTEM.checkRegionMatches("ABC", 0, "AB")).isTrue();
+        assertThat(IOCase.SYSTEM.checkRegionMatches("ABC", 0, "Ab")).isEqualTo(WINDOWS);
     }
 
     //-----------------------------------------------------------------------

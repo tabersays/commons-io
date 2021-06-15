@@ -17,14 +17,11 @@
 
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.Instant;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -39,22 +36,22 @@ public class TimestampedObserverTest {
         Thread.sleep(20); // Some OS' clock granularity may be high.
         final TimestampedObserver timestampedObserver = new TimestampedObserver();
         // toString() should not blow up before close().
-        assertNotNull(timestampedObserver.toString());
-        assertTrue(timestampedObserver.getOpenInstant().isAfter(before));
-        assertTrue(timestampedObserver.getOpenToNowDuration().toNanos() > 0);
-        assertNull(timestampedObserver.getCloseInstant());
+        assertThat(timestampedObserver.toString()).isNotNull();
+        assertThat(timestampedObserver.getOpenInstant().isAfter(before)).isTrue();
+        assertThat(timestampedObserver.getOpenToNowDuration().toNanos() > 0).isTrue();
+        assertThat(timestampedObserver.getCloseInstant()).isNull();
         final byte[] buffer = MessageDigestCalculatingInputStreamTest
             .generateRandomByteStream(IOUtils.DEFAULT_BUFFER_SIZE);
         try (final ObservableInputStream ois = new ObservableInputStream(new ByteArrayInputStream(buffer),
             timestampedObserver)) {
-            assertTrue(timestampedObserver.getOpenInstant().isAfter(before));
-            assertTrue(timestampedObserver.getOpenToNowDuration().toNanos() > 0);
+            assertThat(timestampedObserver.getOpenInstant().isAfter(before)).isTrue();
+            assertThat(timestampedObserver.getOpenToNowDuration().toNanos() > 0).isTrue();
         }
-        assertTrue(timestampedObserver.getOpenInstant().isAfter(before));
-        assertTrue(timestampedObserver.getOpenToNowDuration().toNanos() > 0);
-        assertTrue(timestampedObserver.getCloseInstant().isAfter(timestampedObserver.getOpenInstant()));
-        assertTrue(timestampedObserver.getOpenToCloseDuration().toNanos() > 0);
-        assertNotNull(timestampedObserver.toString());
+        assertThat(timestampedObserver.getOpenInstant().isAfter(before)).isTrue();
+        assertThat(timestampedObserver.getOpenToNowDuration().toNanos() > 0).isTrue();
+        assertThat(timestampedObserver.getCloseInstant().isAfter(timestampedObserver.getOpenInstant())).isTrue();
+        assertThat(timestampedObserver.getOpenToCloseDuration().toNanos() > 0).isTrue();
+        assertThat(timestampedObserver.toString()).isNotNull();
     }
 
     @Test

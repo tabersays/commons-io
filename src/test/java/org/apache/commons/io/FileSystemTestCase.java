@@ -17,9 +17,7 @@
 
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
@@ -30,26 +28,26 @@ public class FileSystemTestCase {
     @Test
     public void testGetCurrent() {
         if (SystemUtils.IS_OS_WINDOWS) {
-            assertEquals(FileSystem.WINDOWS, FileSystem.getCurrent());
+            assertThat(FileSystem.getCurrent()).isEqualTo(FileSystem.WINDOWS);
         }
         if (SystemUtils.IS_OS_LINUX) {
-            assertEquals(FileSystem.LINUX, FileSystem.getCurrent());
+            assertThat(FileSystem.getCurrent()).isEqualTo(FileSystem.LINUX);
         }
         if (SystemUtils.IS_OS_MAC_OSX) {
-            assertEquals(FileSystem.MAC_OSX, FileSystem.getCurrent());
+            assertThat(FileSystem.getCurrent()).isEqualTo(FileSystem.MAC_OSX);
         }
     }
 
     @Test
     public void testIsLegalName() {
         for (final FileSystem fs : FileSystem.values()) {
-            assertFalse(fs.isLegalFileName(""), fs.name()); // Empty is always illegal
-            assertFalse(fs.isLegalFileName(null), fs.name()); // null is always illegal
-            assertFalse(fs.isLegalFileName("\0"), fs.name()); // Assume NUL is always illegal
-            assertTrue(fs.isLegalFileName("0"), fs.name()); // Assume simple name always legal
+            assertThat(fs.isLegalFileName("")).withFailMessage(fs.name()).isFalse(); // Empty is always illegal
+            assertThat(fs.isLegalFileName(null)).withFailMessage(fs.name()).isFalse(); // null is always illegal
+            assertThat(fs.isLegalFileName("\0")).withFailMessage(fs.name()).isFalse(); // Assume NUL is always illegal
+            assertThat(fs.isLegalFileName("0")).withFailMessage(fs.name()).isTrue(); // Assume simple name always legal
             for (final String candidate : fs.getReservedFileNames()) {
                 // Reserved file names are not legal
-                assertFalse(fs.isLegalFileName(candidate));
+                assertThat(fs.isLegalFileName(candidate)).isFalse();
             }
         }
     }
@@ -58,7 +56,7 @@ public class FileSystemTestCase {
     public void testIsReservedFileName() {
         for (final FileSystem fs : FileSystem.values()) {
             for (final String candidate : fs.getReservedFileNames()) {
-                assertTrue(fs.isReservedFileName(candidate));
+                assertThat(fs.isReservedFileName(candidate)).isTrue();
             }
         }
     }
@@ -69,7 +67,7 @@ public class FileSystemTestCase {
             try {
                 fs.toLegalFileName("Test", '\0'); // Assume NUL is always illegal
             } catch (final IllegalArgumentException iae) {
-                assertTrue(iae.getMessage().startsWith("The replacement character '\\0'"), iae.getMessage());
+                assertThat(iae.getMessage().startsWith("The replacement character '\\0'")).withFailMessage(iae.getMessage()).isTrue();
             }
         }
     }
@@ -79,17 +77,17 @@ public class FileSystemTestCase {
         for (final FileSystem fs : FileSystem.values()) {
             final char[] chars = fs.getIllegalFileNameChars();
             for (int i = 0; i < chars.length - 1; i++) {
-                assertTrue(chars[i] < chars[i + 1], fs.name());
+                assertThat(chars[i] < chars[i + 1]).withFailMessage(fs.name()).isTrue();
             }
         }
     }
 
     @Test
     public void testSupportsDriveLetter() {
-        assertTrue(FileSystem.WINDOWS.supportsDriveLetter());
-        assertFalse(FileSystem.GENERIC.supportsDriveLetter());
-        assertFalse(FileSystem.LINUX.supportsDriveLetter());
-        assertFalse(FileSystem.MAC_OSX.supportsDriveLetter());
+        assertThat(FileSystem.WINDOWS.supportsDriveLetter()).isTrue();
+        assertThat(FileSystem.GENERIC.supportsDriveLetter()).isFalse();
+        assertThat(FileSystem.LINUX.supportsDriveLetter()).isFalse();
+        assertThat(FileSystem.MAC_OSX.supportsDriveLetter()).isFalse();
     }
 
     @Test
@@ -97,20 +95,20 @@ public class FileSystemTestCase {
         final FileSystem fs = FileSystem.WINDOWS;
         final char replacement = '-';
         for (char i = 0; i < 32; i++) {
-            assertEquals(replacement, fs.toLegalFileName(String.valueOf(i), replacement).charAt(0));
+            assertThat(fs.toLegalFileName(String.valueOf(i), replacement).charAt(0)).isEqualTo(replacement);
         }
         final char[] illegal = { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
         for (char i = 0; i < illegal.length; i++) {
-            assertEquals(replacement, fs.toLegalFileName(String.valueOf(i), replacement).charAt(0));
+            assertThat(fs.toLegalFileName(String.valueOf(i), replacement).charAt(0)).isEqualTo(replacement);
         }
         for (char i = 'a'; i < 'z'; i++) {
-            assertEquals(i, fs.toLegalFileName(String.valueOf(i), replacement).charAt(0));
+            assertThat(fs.toLegalFileName(String.valueOf(i), replacement).charAt(0)).isEqualTo(i);
         }
         for (char i = 'A'; i < 'Z'; i++) {
-            assertEquals(i, fs.toLegalFileName(String.valueOf(i), replacement).charAt(0));
+            assertThat(fs.toLegalFileName(String.valueOf(i), replacement).charAt(0)).isEqualTo(i);
         }
         for (char i = '0'; i < '9'; i++) {
-            assertEquals(i, fs.toLegalFileName(String.valueOf(i), replacement).charAt(0));
+            assertThat(fs.toLegalFileName(String.valueOf(i), replacement).charAt(0)).isEqualTo(i);
         }
     }
 }

@@ -16,15 +16,12 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.UUID;
-
 import org.apache.commons.io.TaggedIOException;
 import org.junit.jupiter.api.Test;
 
@@ -42,10 +39,10 @@ public class TaggedWriterTest  {
                 writer.write(new char[] { 'c' }, 0, 1);
                 writer.flush();
             }
-            assertEquals(3, buffer.getBuilder().length());
-            assertEquals('a', buffer.getBuilder().charAt(0));
-            assertEquals('b', buffer.getBuilder().charAt(1));
-            assertEquals('c', buffer.getBuilder().charAt(2));
+            assertThat(buffer.getBuilder().length()).isEqualTo(3);
+            assertThat(buffer.getBuilder().charAt(0)).isEqualTo('a');
+            assertThat(buffer.getBuilder().charAt(1)).isEqualTo('b');
+            assertThat(buffer.getBuilder().charAt(2)).isEqualTo('c');
         } catch (final IOException e) {
             fail("Unexpected exception thrown");
         }
@@ -62,12 +59,12 @@ public class TaggedWriterTest  {
             writer.write(new char[] { 'x' }, 0, 1);
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(writer.isCauseOf(e));
+            assertThat(writer.isCauseOf(e)).isTrue();
             try {
                 writer.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
 
@@ -76,12 +73,12 @@ public class TaggedWriterTest  {
             writer.flush();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(writer.isCauseOf(e));
+            assertThat(writer.isCauseOf(e)).isTrue();
             try {
                 writer.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
 
@@ -90,12 +87,12 @@ public class TaggedWriterTest  {
             writer.close();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(writer.isCauseOf(e));
+            assertThat(writer.isCauseOf(e)).isTrue();
             try {
                 writer.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
     }
@@ -105,8 +102,8 @@ public class TaggedWriterTest  {
         final IOException exception = new IOException("test exception");
         try (final TaggedWriter writer = new TaggedWriter(ClosedWriter.CLOSED_WRITER)) {
 
-            assertFalse(writer.isCauseOf(exception));
-            assertFalse(writer.isCauseOf(new TaggedIOException(exception, UUID.randomUUID())));
+            assertThat(writer.isCauseOf(exception)).isFalse();
+            assertThat(writer.isCauseOf(new TaggedIOException(exception, UUID.randomUUID()))).isFalse();
 
             try {
                 writer.throwIfCauseOf(exception);

@@ -18,9 +18,8 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,7 +34,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +52,7 @@ public class BoundedReaderTest {
             mr.read();
             mr.read();
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
         }
     }
 
@@ -63,7 +61,7 @@ public class BoundedReaderTest {
         try (final BoundedReader mr = new BoundedReader(shortReader, 3)) {
             mr.read();
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
         }
     }
 
@@ -73,11 +71,11 @@ public class BoundedReaderTest {
             final char[] cbuf = new char[4];
             Arrays.fill(cbuf, 'X');
             final int read = mr.read(cbuf, 0, 4);
-            assertEquals(3, read);
-            assertEquals('0', cbuf[0]);
-            assertEquals('1', cbuf[1]);
-            assertEquals('2', cbuf[2]);
-            assertEquals('X', cbuf[3]);
+            assertThat(read).isEqualTo(3);
+            assertThat(cbuf[0]).isEqualTo('0');
+            assertThat(cbuf[1]).isEqualTo('1');
+            assertThat(cbuf[2]).isEqualTo('2');
+            assertThat(cbuf[3]).isEqualTo('X');
         }
     }
 
@@ -87,11 +85,11 @@ public class BoundedReaderTest {
             final char[] cbuf = new char[4];
             Arrays.fill(cbuf, 'X');
             final int read = mr.read(cbuf, 1, 2);
-            assertEquals(2, read);
-            assertEquals('X', cbuf[0]);
-            assertEquals('0', cbuf[1]);
-            assertEquals('1', cbuf[2]);
-            assertEquals('X', cbuf[3]);
+            assertThat(read).isEqualTo(2);
+            assertThat(cbuf[0]).isEqualTo('X');
+            assertThat(cbuf[1]).isEqualTo('0');
+            assertThat(cbuf[2]).isEqualTo('1');
+            assertThat(cbuf[3]).isEqualTo('X');
         }
     }
 
@@ -106,7 +104,7 @@ public class BoundedReaderTest {
             mr.read();
             mr.read();
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
         }
     }
 
@@ -117,7 +115,7 @@ public class BoundedReaderTest {
             mr.read();
             mr.read();
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
         }
     }
 
@@ -128,7 +126,7 @@ public class BoundedReaderTest {
             mr.mark(3);
             mr.read();
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
         }
     }
 
@@ -139,11 +137,11 @@ public class BoundedReaderTest {
             mr.read();
             mr.read();
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
             mr.reset();
             mr.mark(1);
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
         }
     }
 
@@ -158,7 +156,7 @@ public class BoundedReaderTest {
             mr.read();
             mr.read();
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
         }
     }
 
@@ -167,7 +165,7 @@ public class BoundedReaderTest {
         try (final BoundedReader mr = new BoundedReader(sr, 3)) {
             mr.skip(2);
             mr.read();
-            assertEquals(-1, mr.read());
+            assertThat(mr.read()).isEqualTo(-1);
         }
     }
 
@@ -186,7 +184,7 @@ public class BoundedReaderTest {
                 // nothing
             }
         }
-        assertTrue(closed.get());
+        assertThat(closed.get()).isTrue();
     }
 
     private void testLineNumberReader(final Reader source) throws IOException {

@@ -16,16 +16,13 @@
  */
 package org.apache.commons.io.input;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
-
 import org.apache.commons.io.TaggedIOException;
 import org.junit.jupiter.api.Test;
 
@@ -37,10 +34,10 @@ public class TaggedInputStreamTest  {
     @Test
     public void testEmptyStream() throws IOException {
         final InputStream stream = new TaggedInputStream(ClosedInputStream.CLOSED_INPUT_STREAM);
-        assertEquals(0, stream.available());
-        assertEquals(-1, stream.read());
-        assertEquals(-1, stream.read(new byte[1]));
-        assertEquals(-1, stream.read(new byte[1], 0, 1));
+        assertThat(stream.available()).isEqualTo(0);
+        assertThat(stream.read()).isEqualTo(-1);
+        assertThat(stream.read(new byte[1])).isEqualTo(-1);
+        assertThat(stream.read(new byte[1], 0, 1)).isEqualTo(-1);
         stream.close();
     }
 
@@ -48,14 +45,14 @@ public class TaggedInputStreamTest  {
     public void testNormalStream() throws IOException {
         final InputStream stream = new TaggedInputStream(
                 new ByteArrayInputStream(new byte[] { 'a', 'b', 'c' }));
-        assertEquals(3, stream.available());
-        assertEquals('a', stream.read());
+        assertThat(stream.available()).isEqualTo(3);
+        assertThat(stream.read()).isEqualTo('a');
         final byte[] buffer = new byte[1];
-        assertEquals(1, stream.read(buffer));
-        assertEquals('b', buffer[0]);
-        assertEquals(1, stream.read(buffer, 0, 1));
-        assertEquals('c', buffer[0]);
-        assertEquals(-1, stream.read());
+        assertThat(stream.read(buffer)).isEqualTo(1);
+        assertThat(buffer[0]).isEqualTo('b');
+        assertThat(stream.read(buffer, 0, 1)).isEqualTo(1);
+        assertThat(buffer[0]).isEqualTo('c');
+        assertThat(stream.read()).isEqualTo(-1);
         stream.close();
     }
 
@@ -70,12 +67,12 @@ public class TaggedInputStreamTest  {
             stream.available();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(stream.isCauseOf(e));
+            assertThat(stream.isCauseOf(e)).isTrue();
             try {
                 stream.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
 
@@ -84,12 +81,12 @@ public class TaggedInputStreamTest  {
             stream.read();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(stream.isCauseOf(e));
+            assertThat(stream.isCauseOf(e)).isTrue();
             try {
                 stream.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
 
@@ -98,12 +95,12 @@ public class TaggedInputStreamTest  {
             stream.close();
             fail("Expected exception not thrown.");
         } catch (final IOException e) {
-            assertTrue(stream.isCauseOf(e));
+            assertThat(stream.isCauseOf(e)).isTrue();
             try {
                 stream.throwIfCauseOf(e);
                 fail("Expected exception not thrown.");
             } catch (final IOException e2) {
-                assertEquals(exception, e2);
+                assertThat(e2).isEqualTo(exception);
             }
         }
     }
@@ -113,9 +110,9 @@ public class TaggedInputStreamTest  {
         final IOException exception = new IOException("test exception");
         final TaggedInputStream stream = new TaggedInputStream(ClosedInputStream.CLOSED_INPUT_STREAM);
 
-        assertFalse(stream.isCauseOf(exception));
-        assertFalse(stream.isCauseOf(
-                new TaggedIOException(exception, UUID.randomUUID())));
+        assertThat(stream.isCauseOf(exception)).isFalse();
+        assertThat(stream.isCauseOf(
+                new TaggedIOException(exception, UUID.randomUUID()))).isFalse();
 
         stream.throwIfCauseOf(exception);
 

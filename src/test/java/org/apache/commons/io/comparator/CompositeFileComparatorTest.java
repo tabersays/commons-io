@@ -16,8 +16,7 @@
  */
 package org.apache.commons.io.comparator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
 import org.apache.commons.io.test.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,9 +88,9 @@ public class CompositeFileComparatorTest extends ComparatorAbstractTestCase {
         list.add(ExtensionFileComparator.EXTENSION_COMPARATOR);
         final Comparator<File> c = new CompositeFileComparator(list);
 
-        assertEquals(0, c.compare(equalFile1, equalFile2), "equal");
-        assertTrue(c.compare(lessFile, moreFile) < 0, "less");
-        assertTrue(c.compare(moreFile, lessFile) > 0, "more");
+        assertThat(c.compare(equalFile1, equalFile2)).as("equal").isEqualTo(0);
+        assertThat(c.compare(lessFile, moreFile) < 0).as("less").isTrue();
+        assertThat(c.compare(moreFile, lessFile) > 0).as("more").isTrue();
     }
 
     /**
@@ -101,9 +99,9 @@ public class CompositeFileComparatorTest extends ComparatorAbstractTestCase {
     @Test
     public void constructorIterable_Null() {
         final Comparator<File> c = new CompositeFileComparator((Iterable<Comparator<File>>)null);
-        assertEquals(0, c.compare(lessFile, moreFile), "less,more");
-        assertEquals(0, c.compare(moreFile, lessFile), "more,less");
-        assertEquals("CompositeFileComparator{}", c.toString(), "toString");
+        assertThat(c.compare(lessFile, moreFile)).as("less,more").isEqualTo(0);
+        assertThat(c.compare(moreFile, lessFile)).as("more,less").isEqualTo(0);
+        assertThat(c.toString()).as("toString").isEqualTo("CompositeFileComparator{}");
     }
 
     /**
@@ -112,8 +110,8 @@ public class CompositeFileComparatorTest extends ComparatorAbstractTestCase {
     @Test
     public void constructorArray_Null() {
         final Comparator<File> c = new CompositeFileComparator((Comparator<File>[])null);
-        assertEquals(0, c.compare(lessFile, moreFile), "less,more");
-        assertEquals(0, c.compare(moreFile, lessFile), "more,less");
-        assertEquals("CompositeFileComparator{}", c.toString(), "toString");
+        assertThat(c.compare(lessFile, moreFile)).as("less,more").isEqualTo(0);
+        assertThat(c.compare(moreFile, lessFile)).as("more,less").isEqualTo(0);
+        assertThat(c.toString()).as("toString").isEqualTo("CompositeFileComparator{}");
     }
 }

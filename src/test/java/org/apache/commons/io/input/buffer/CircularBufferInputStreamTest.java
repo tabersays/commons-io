@@ -16,13 +16,11 @@
  */
 package org.apache.commons.io.input.buffer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
 
 
@@ -74,7 +72,7 @@ public class CircularBufferInputStreamTest {
 				throw new IllegalStateException("Unexpected random choice value");
 			}
 		}
-		assertTrue(true, "Test finished OK");
+     assertThat(true).as("Test finished OK").isTrue();
 	}
 
 	@Test
@@ -87,10 +85,10 @@ public class CircularBufferInputStreamTest {
 			int b;
 			int i = 0;
 			while((b = cbis.read()) != -1) {
-				assertEquals(buffer[i] & 0xFF,b, "byte at index " + i + " should be equal");
+       assertThat(b).as("byte at index " + i + " should be equal").isEqualTo(buffer[i] & 0xFF);
 				i++;
 			}
-			assertEquals(buffer.length, i, "Should have read all the bytes");
+      assertThat(i).as("Should have read all the bytes").isEqualTo(buffer.length);
 		}
 	}
 

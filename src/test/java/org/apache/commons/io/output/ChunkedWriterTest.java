@@ -16,13 +16,12 @@
  */
 package org.apache.commons.io.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.jupiter.api.Test;
 
 public class ChunkedWriterTest {
@@ -33,7 +32,7 @@ public class ChunkedWriterTest {
             try (final ChunkedWriter chunked = new ChunkedWriter(osw, 10)) {
                 chunked.write("0123456789012345678901234567891".toCharArray());
                 chunked.flush();
-                assertEquals(4, numWrites.get());
+                assertThat(numWrites.get()).isEqualTo(4);
             }
         }
     }
@@ -45,7 +44,7 @@ public class ChunkedWriterTest {
             try (final ChunkedWriter chunked = new ChunkedWriter(osw)) {
                 chunked.write(new char[1024 * 4 + 1]);
                 chunked.flush();
-                assertEquals(2, numWrites.get());
+                assertThat(numWrites.get()).isEqualTo(2);
             }
         }
     }

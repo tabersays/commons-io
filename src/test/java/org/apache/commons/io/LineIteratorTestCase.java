@@ -16,11 +16,8 @@
  */
 package org.apache.commons.io;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
@@ -34,7 +31,6 @@ import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -51,9 +47,9 @@ public class LineIteratorTestCase {
         try {
             for (int i = 0; i < lines.size(); i++) {
                 final String line = iterator.nextLine();
-                assertEquals(lines.get(i), line, "nextLine() line " + i);
+                assertThat(line).as("nextLine() line " + i).isEqualTo(lines.get(i));
             }
-            assertFalse(iterator.hasNext(), "No more expected");
+            assertThat(iterator.hasNext()).as("No more expected").isFalse();
         } finally {
             try {
                 IOUtils.close(iterator);
@@ -163,10 +159,10 @@ public class LineIteratorTestCase {
         ){
             int count = 0;
             while (iterator.hasNext()) {
-                assertNotNull(iterator.next());
+                assertThat(iterator.next()).isNotNull();
                 count++;
             }
-            assertEquals(3, count);
+            assertThat(count).isEqualTo(3);
         }
     }
 
@@ -229,9 +225,9 @@ public class LineIteratorTestCase {
         ){
             for (int i = 0; i < lines.size(); i++) {
                 final String line = iterator.next();
-                assertEquals(lines.get(i), line, "next() line " + i);
+                assertThat(line).as("next() line " + i).isEqualTo(lines.get(i));
             }
-            assertFalse(iterator.hasNext(), "No more expected");
+            assertThat(iterator.hasNext()).as("No more expected").isFalse();
         }
     }
 
@@ -263,12 +259,12 @@ public class LineIteratorTestCase {
             final LineIterator iterator = FileUtils.lineIterator(testFile, encoding)
         ) {
             // get
-            assertNotNull("Line expected", iterator.next());
-            assertTrue(iterator.hasNext(), "More expected");
+            assertThat("Line expected").withFailMessage(iterator.next()).isNotNull();
+            assertThat(iterator.hasNext()).as("More expected").isTrue();
 
             // close
             iterator.close();
-            assertFalse(iterator.hasNext(), "No more expected");
+            assertThat(iterator.hasNext()).as("No more expected").isFalse();
             try {
                 iterator.next();
                 fail();
@@ -326,11 +322,11 @@ public class LineIteratorTestCase {
             int idx = 0;
             while (iterator.hasNext()) {
                 final String line = iterator.next();
-                assertEquals(lines.get(idx), line, "Comparing line " + idx);
-                assertTrue(idx < lines.size(), "Exceeded expected idx=" + idx + " size=" + lines.size());
+                assertThat(line).as("Comparing line " + idx).isEqualTo(lines.get(idx));
+                assertThat(idx < lines.size()).as("Exceeded expected idx=" + idx + " size=" + lines.size()).isTrue();
                 idx++;
             }
-            assertEquals(idx, lines.size(), "Line Count doesn't match");
+            assertThat(lines.size()).as("Line Count doesn't match").isEqualTo(idx);
 
             // try calling next() after file processed
             try {
@@ -394,16 +390,16 @@ public class LineIteratorTestCase {
             while (iterator.hasNext()) {
                 final String line = iterator.next();
                 actualLines++;
-                assertEquals(lines.get(idx), line, "Comparing line " + idx);
-                assertTrue(idx < lines.size(), "Exceeded expected idx=" + idx + " size=" + lines.size());
+                assertThat(line).as("Comparing line " + idx).isEqualTo(lines.get(idx));
+                assertThat(idx < lines.size()).as("Exceeded expected idx=" + idx + " size=" + lines.size()).isTrue();
                 idx++;
                 if (idx % 3 == 1) {
                     idx++;
                 }
             }
-            assertEquals(9, lines.size(), "Line Count doesn't match");
-            assertEquals(9, idx, "Line Count doesn't match");
-            assertEquals(6, actualLines, "Line Count doesn't match");
+            assertThat(lines.size()).as("Line Count doesn't match").isEqualTo(9);
+            assertThat(idx).as("Line Count doesn't match").isEqualTo(9);
+            assertThat(actualLines).as("Line Count doesn't match").isEqualTo(6);
 
             // try calling next() after file processed
             try {
